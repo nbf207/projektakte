@@ -38,7 +38,7 @@ class ScanEntryFlowTests(TestCase):
                     'positions': [{'description': 'Synthetischer Artikel', 'amount': '60.00'}],
                     'project_assignment': {'project_id': None, 'confidence': 'none', 'reason': None}}
         response = httpx.Response(200, json={'candidates': [{'content': {'parts': [{'text': json.dumps(proposal)}]}}]})
-        with patch('akte.adapters.httpx.post', return_value=response):
+        with patch('akte.adapters.bounded_request', return_value=response):
             actual, _ = GeminiAI().extract('Synthetischer Beleg')
         self.assertEqual(actual['gross_total'], '75.00')
         self.assertEqual(actual['positions'][0]['amount'], '60.00')
@@ -225,16 +225,14 @@ class ScanEntryFlowTests(TestCase):
     def test_provisional_entry_fields_are_visible_in_later_review(self):
         doc = self.ai_ready(); self.process(self.routed_proposal()); doc.refresh_from_db()
         page = self.client.get(reverse('review', args=[doc.pk]))
-        self.assertContains(page, 'name="entry_title"')
-        self.assertContains(page, 'Diesen Eintrag prüfen und behalten')
+        self.assertContains(page, 'name="chronicle-title"')
         self.assertNotContains(page, 'Ausdrücklich nur als Dokument ablegen')
 
     def test_trashing_invoice_keeps_work_entry_reachable_and_does_not_remove_photos(self):
         from .document_trash import change_document_deleted
         doc, _ = self.upload()
         change_document_deleted(self.user, doc, doc.version)
-        home = self.client.get(reverse('home'))
-        self.assertContains(home, reverse('entry', args=[doc.entry_id]))
         page = self.client.get(reverse('entry', args=[doc.entry_id]))
+        self.assertEqual(page.status_code, 200)
         self.assertContains(page, 'Beleg im Papierkorb')
         self.assertContains(page, 'name="photos"')

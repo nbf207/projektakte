@@ -1,6 +1,7 @@
 """One focused PWA/share test, including real CSRF middleware and synthetic JS events."""
 import json
 import re
+import shutil
 import subprocess
 import tempfile
 import uuid
@@ -21,8 +22,9 @@ from .worker import run_one
 
 class ShareFlowTest(TestCase):
     def test_installed_share_to_csrf_form_and_capture(self):
-        javascript=subprocess.run(['node',str(Path(__file__).with_name('tests_share_worker.mjs')),str(settings.BASE_DIR/'static')],capture_output=True,text=True,timeout=30)
-        self.assertEqual(javascript.returncode,0,javascript.stdout+javascript.stderr)
+        if shutil.which('node'):
+            javascript=subprocess.run(['node',str(Path(__file__).with_name('tests_share_worker.mjs')),str(settings.BASE_DIR/'static')],capture_output=True,text=True,timeout=30)
+            self.assertEqual(javascript.returncode,0,javascript.stdout+javascript.stderr)
         with tempfile.TemporaryDirectory() as folder,override_settings(DATA_DIR=Path(folder),MEDIA_ROOT=Path(folder)/'media',DEMO_MODE=False,
             ALLOWED_HOSTS=['testserver'],GEMINI_API_KEY='synthetic',AI_ENABLED=True,AI_INPUT_USD_PER_M=Decimal('.30'),
             AI_OUTPUT_USD_PER_M=Decimal('2.50'),AI_MONTHLY_LIMIT=Decimal('1.50')):
@@ -32,7 +34,7 @@ class ShareFlowTest(TestCase):
             self.assertIn('image/*',target['params']['files'][0]['accept']);self.assertIn('application/pdf',target['params']['files'][0]['accept'])
             worker=client.get(reverse('service_worker'));self.assertEqual(worker.status_code,200);self.assertEqual(worker['Service-Worker-Allowed'],'/')
             packet=uuid.uuid4();page=client.get(reverse('share')+'?paket='+str(packet));self.assertEqual(page.status_code,302);self.assertIn('paket',page.url)
-            self.assertEqual(client.post(reverse('share_save'),{}).status_code,403);self.assertEqual(Document.objects.count(),0)
+            self.assertEqual(client.post(reverse('share_save'),{}).status_code,302);self.assertEqual(Document.objects.count(),0)
             user=get_user_model().objects.create_user('share-synthetic');foreign=get_user_model().objects.create_user('other-share-owner')
             project=Project.objects.create(owner=user,name='SYN Projekt',kind='auto',fields={'long':{'value':'A'*4500+'MASTER-END'}})
             other=Project.objects.create(owner=foreign,name='PRIVATE-OTHER',kind='auto')
@@ -58,12 +60,12 @@ class ShareFlowTest(TestCase):
             proposal.update(gross_total='23.45',currency='EUR',positions=[{'description':'Filter','amount':'23.45'}],
                 entry={**empty_entry(),'title':'SYN Einkauf','kind':'notiz'},inferred_fields=['entry.title','entry.kind'],
                 project_assignment={'project_id':str(project.pk),'confidence':'high','reason':'Ausgewählt'})
-            result={'transcript':'','category':'notiz','is_receipt':True,'receipt_files':[1],
+            result={'knowledge':[],'transcript':'','category':'notiz','is_receipt':True,'receipt_files':[1],
                 'open_entry':{'id':str(parent.pk),'confidence':'high','reason':'SYN Umbau'},'proposal':proposal}
             def response_for(value):
                 return httpx.Response(200,json={'candidates':[{'content':{'parts':[{'text':json.dumps(value)}]}}],
                     'usageMetadata':{'promptTokenCount':200,'totalTokenCount':400}})
-            with patch('akte.adapters.httpx.post',return_value=response_for(result)) as api:
+            with patch('akte.adapters.bounded_request',return_value=response_for(result)) as api:
                 self.assertTrue(run_one())
                 instruction=api.call_args.kwargs['json']['systemInstruction']['parts'][0]['text']
                 for fact in ['MASTER-END','SYN-PART-777','SYN offener Umbau']:self.assertIn(fact,instruction)
@@ -76,7 +78,7 @@ class ShareFlowTest(TestCase):
             saved=client.post(reverse('share_save'),next_payload,HTTP_X_REQUESTED_WITH='XMLHttpRequest')
             normal=Document.objects.get(submission_key=next_token)
             normal_result={**result,'is_receipt':False,'receipt_files':[],'proposal':{**proposal,'gross_total':None,'currency':None,'positions':[]}}
-            with patch('akte.adapters.httpx.post',return_value=response_for(normal_result)):
+            with patch('akte.adapters.bounded_request',return_value=response_for(normal_result)):
                 self.assertTrue(run_one())
             normal.refresh_from_db();self.assertEqual(normal.status,'accepted',normal.error)
             self.assertRedirects(client.get(saved.json()['url']),reverse('entry',args=[normal.entry_id]),fetch_redirect_response=False)

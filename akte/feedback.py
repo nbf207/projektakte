@@ -8,7 +8,7 @@ from django import forms
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.utils import timezone
 from django.utils.http import url_has_allowed_host_and_scheme
@@ -32,6 +32,8 @@ class FeedbackForm(forms.Form):
 @login_required
 @require_POST
 def save_feedback(request):
+    if not settings.FEEDBACK_WIDGET_ENABLED:
+        return HttpResponse('Nicht gefunden.', status=404)
     form=FeedbackForm(request.POST,request.FILES)
     if not form.is_valid():return JsonResponse({'error':form.errors.as_text()},status=400)
     data=form.cleaned_data

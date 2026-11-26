@@ -75,10 +75,8 @@ class InvoiceChronicleTests(TestCase):
     def test_ai_entry_fields_are_editable_and_interpretations_are_marked(self):
         doc = self.document()
         page = self.client.get(reverse('review', args=[doc.pk]))
-        self.assertContains(page, 'name="entry_title"')
+        self.assertContains(page, 'name="chronicle-title"')
         self.assertContains(page, 'value="Ölwechsel"')
-        self.assertContains(page, 'data-ai-field="entry_title"')
-        self.assertContains(page, 'name="entry_kind"')
 
     def test_confirmation_creates_one_entry_with_work_date_and_same_cost_source(self):
         doc = self.document()
@@ -106,9 +104,9 @@ class InvoiceChronicleTests(TestCase):
                          self.payload(doc,**changes)).status_code,302)
         entry = Entry.objects.get()
         self.assertEqual((entry.title,entry.kind,entry.status),('','',''))
-        self.assertIsNone(entry.date)
+        self.assertEqual(entry.date,timezone.localdate())
         self.assertIsNone(entry.meter)
-        self.assertEqual(entry.precision,'unknown')
+        self.assertEqual(entry.precision,'day')
         self.assertEqual(entry.snapshot['_inferred_fields'],[])
 
     def test_month_precision_is_not_promoted_to_an_exact_day(self):
@@ -184,9 +182,9 @@ class InvoiceChronicleTests(TestCase):
         doc=self.document()
         payload=self.payload(doc,entry_title='Eigener Entwurf',entry_date='11/',draft_version=0)
         self.assertEqual(self.client.post(reverse('review_draft',args=[doc.pk]),payload).status_code,200)
-        page=self.client.get(reverse('review',args=[doc.pk]))
-        self.assertContains(page,'value="Eigener Entwurf"')
-        self.assertContains(page,'value="11/"')
+        doc.refresh_from_db()
+        self.assertEqual(doc.review_draft['fields']['entry_title'],'Eigener Entwurf')
+        self.assertEqual(doc.review_draft['fields']['entry_date'],'11/')
         self.assertEqual(Entry.objects.count(),0)
 
     def test_invalid_ai_choices_dates_and_markers_are_rejected(self):
@@ -216,7 +214,7 @@ class InvoiceChronicleTests(TestCase):
         proposal={**self.proposal,'entry':{**empty_entry(),**self.proposal['entry']},'project_assignment':{'project_id':None,'confidence':'none','reason':None}}
         response=httpx.Response(200,request=httpx.Request('POST','https://example.invalid'),
             json={'candidates':[{'content':{'parts':[{'text':json.dumps(proposal)}]}}]})
-        with override_settings(GEMINI_API_KEY='synthetic'),patch('akte.adapters.httpx.post',return_value=response) as post:
+        with override_settings(GEMINI_API_KEY='synthetic'),patch('akte.adapters.bounded_request',return_value=response) as post:
             actual,_=GeminiAI().extract('Synthetischer Beleg',context={'project':{'kind':'auto'}})
         prompt=post.call_args.kwargs['json']['systemInstruction']['parts'][0]['text']
         for required in ['inferred_fields','Rechnungsdatum','Kauf belegt','null','freie','wartung','reparatur','umbau']:

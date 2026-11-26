@@ -8,6 +8,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - Full English UI localization (i18n) planned for a future release.
 
+## [0.8.0] - 2026-11-26
+
+### Added
+- **CI test gate (`.github/workflows/ci.yml`):** Automated `manage.py check --deploy --fail-level WARNING` and full Django test suite on pushes to `main` and pull requests, plus a blocking `test` job before Docker publishing in `.github/workflows/docker-publish.yml`.
+- **HTML Content-Security-Policy:** Strict `Content-Security-Policy` (`script-src 'self'`, `frame-ancestors 'none'`, `object-src 'none'`) on all HTML responses while keeping `sandbox; default-src 'none'` on streaming downloads.
+- **Integration status overview:** `/einstellungen/anbindungen/` now clearly shows active/disabled status for Gemini AI, Paperless-ngx, and IMAP and hides inactive action buttons in favor of calm `.env` setup hints.
+- **Operations & disaster recovery docs:** Added fresh-host restore from full ZIP backup and forgotten admin password reset (`changepassword`) to `docs/SELF-HOSTING.md`, plus standard OCI labels in `Dockerfile`.
+- **Rate-limiting on `/setup/`:** Extended `PreAuthRateMiddleware` to throttle the one-time onboarding endpoint.
+
+### Changed
+- **Self-hosting feedback default:** Added `FEEDBACK_WIDGET_ENABLED` (default `0`), hiding the floating feedback button and Feedback settings tab and returning `404` for feedback endpoints unless explicitly enabled.
+- **Strict Gemini model allowlist (`ALLOWED_GEMINI_MODELS`):** Centralized supported models (`gemini-3.5-flash-lite`, `gemini-3.8-flash`) across `config/settings.py` (fail-fast startup check) and `akte/preferences.py` (safe fallback for legacy DB values).
+- **CSP-clean handover print button:** Extracted inline `onclick="window.print()"` from `templates/handover.html` into `static/handover.js`.
+- **Theme toggle accessibility:** Synced dynamic `aria-label` on `#theme-toggle` in `static/theme.js`.
+
+### Fixed
+- **Review draft empty project crash:** Fixed a `UUID` `ValidationError` in `ReviewForm` when reopening a saved review draft with an empty `chronicle_project`.
+- **Full test suite modernization:** Cleaned up legacy test mocks (`bounded_request`, `BoundedIMAP`, `LivePaperless`) and removed references to deprecated `0.7.11` routes so all 306 tests pass cleanly.
+
 ## [0.7.30] - 2026-11-26
 
 ### Added

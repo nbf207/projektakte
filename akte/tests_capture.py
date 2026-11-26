@@ -48,12 +48,12 @@ class CaptureFlowTest(TestCase):
                 positions=[{**dict.fromkeys(POSITION_FIELDS),'description':'Ölfilter','part_number':'SYN-123','price_basis':'unknown'}],
                 inferred_fields=['proposal.entry.title','proposal.entry.kind'],
                 project_assignment={'project_id':str(project.pk),'confidence':'high','reason':'BMW-Test ausdrücklich genannt'})
-            result={'transcript':'Ölfilter wechseln, 120000 Kilometer.','category':'aufgabe','is_receipt':False,'receipt_files':[],
+            result={'knowledge':[],'transcript':'Ölfilter wechseln, 120000 Kilometer.','category':'aufgabe','is_receipt':False,'receipt_files':[],
                 'open_entry':{'id':str(parent.pk),'confidence':'high','reason':'Offener Testumbau genannt'},'proposal':proposal}
             def api_result(value):
                 return httpx.Response(200,json={'candidates':[{'content':{'parts':[{'text':json.dumps(value)}]}}],
                     'usageMetadata':{'promptTokenCount':100,'totalTokenCount':200}})
-            with patch('akte.adapters.httpx.post',return_value=api_result(result)) as api,self.captureOnCommitCallbacks(execute=True):
+            with patch('akte.adapters.bounded_request',return_value=api_result(result)) as api,self.captureOnCommitCallbacks(execute=True):
                 self.assertTrue(run_one())
                 sent=api.call_args.kwargs['json'];parts=sent['contents'][0]['parts']
                 self.assertEqual(len([item for item in parts if 'inlineData' in item]),3)
@@ -61,7 +61,7 @@ class CaptureFlowTest(TestCase):
                 self.assertNotIn('Privates Fremdprojekt',sent['systemInstruction']['parts'][0]['text'])
             doc.refresh_from_db();self.assertEqual(doc.status,'accepted',doc.error)
             self.assertEqual(doc.entry_id,entry_id);self.assertEqual(doc.entry.project_id,project.pk)
-            self.assertFalse(doc.entry.is_provisional);self.assertIsNone(doc.entry.date)
+            self.assertFalse(doc.entry.is_provisional);self.assertEqual(doc.entry.date,timezone.localdate())
             self.assertEqual(doc.entry.meter,Decimal('120000'))
             self.assertEqual(doc.entry.snapshot['capture_related_entry']['id'],str(parent.pk))
             self.assertEqual(doc.pages.count(),2);self.assertTrue(Path(original_photo).exists())
@@ -81,7 +81,7 @@ class CaptureFlowTest(TestCase):
                 gross_total='45.00',currency='EUR',positions=[{'description':'Ölfilter','amount':'45.00'}])
             bill_result={**result,'category':'wartung','is_receipt':True,'receipt_files':[0],'transcript':'',
                 'open_entry':{'id':None,'confidence':'none','reason':None},'proposal':receipt_proposal}
-            with patch('akte.adapters.httpx.post',return_value=api_result(bill_result)):
+            with patch('akte.adapters.bounded_request',return_value=api_result(bill_result)):
                 self.assertTrue(run_one())
             bill.refresh_from_db();self.assertEqual(bill.status,'accepted',bill.error)
             receipt=Document.objects.get(pk=bill.voice_data['receipt_id'])
@@ -99,7 +99,7 @@ class CaptureFlowTest(TestCase):
             Job.objects.filter(document=receipt).update(status='done')
             # Timeout retains inputs and budget reservation; no duplicate cost/entry.
             failed=receive_capture(user,text='Test mit Ausfall',token=uuid.uuid4(),audio=SimpleUploadedFile('SYN-fail.wav',audio))
-            with patch('akte.adapters.httpx.post',side_effect=httpx.ReadTimeout('synthetic timeout')):
+            with patch('akte.adapters.bounded_request',side_effect=httpx.ReadTimeout('synthetic timeout')):
                 self.assertTrue(run_one())
             failed.refresh_from_db();self.assertEqual(failed.job.status,'pending')
             self.assertTrue(failed.pages.get().asset.file.storage.exists(failed.pages.get().asset.file.name))

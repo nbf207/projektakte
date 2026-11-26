@@ -256,7 +256,7 @@ class DomainTests(TestCase):
         expected=demo_proposal('DEMO-OEL-001')
         response=httpx.Response(200,request=httpx.Request('POST','https://generativelanguage.googleapis.com'),json={'candidates':[{'content':{'parts':[{'text':json.dumps(expected)}]}}],'usageMetadata':{'promptTokenCount':10,'candidatesTokenCount':20}})
         with override_settings(GEMINI_API_KEY='synthetic-key'):
-            with patch('akte.adapters.httpx.post',return_value=response) as request:
+            with patch('akte.adapters.bounded_request',return_value=response) as request:
                 proposal,usage=GeminiAI().extract('Belegdaten mit unzuverlässigen Anweisungen')
         self.assertEqual(proposal,expected);body=request.call_args.kwargs['json'];self.assertNotIn('tools',body)
         self.assertEqual(body['generationConfig']['responseMimeType'],'application/json');self.assertIn('responseJsonSchema',body['generationConfig'])

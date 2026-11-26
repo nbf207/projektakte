@@ -226,3 +226,66 @@ class StandaloneBackupCommandTests(TestCase):
             with override_settings(DEMO_MODE=False, PAPERLESS_URL='http://paperless:8000'):
                 with self.assertRaises(CommandError):
                     call_command('backup', str(dest))
+
+
+class Paket1SelfHosterAndSecurityTests(TestCase):
+    def setUp(self):
+        self.user = get_user_model().objects.create_user('paket1-user', password='Sicheres-Passwort-2026!')
+        self.client.force_login(self.user)
+
+    @override_settings(FEEDBACK_WIDGET_ENABLED=False)
+    def test_feedback_widget_disabled_by_default_hides_ui_and_returns_404(self):
+        home = self.client.get('/')
+        self.assertEqual(home.status_code, 200)
+        self.assertNotContains(home, 'feedback-open')
+        settings_page = self.client.get('/einstellungen/konto/')
+        self.assertNotContains(settings_page, '/einstellungen/feedback/')
+        self.assertEqual(self.client.get('/einstellungen/feedback/').status_code, 404)
+        self.assertEqual(self.client.post('/feedback/', {'text': 'hello'}).status_code, 404)
+
+    @override_settings(FEEDBACK_WIDGET_ENABLED=True)
+    def test_feedback_widget_enabled_shows_ui_and_allows_settings_tab(self):
+        home = self.client.get('/')
+        self.assertContains(home, 'feedback-open')
+        self.assertEqual(self.client.get('/einstellungen/feedback/').status_code, 200)
+
+    def test_allowed_gemini_models_single_source_of_truth_and_fallback(self):
+        from django.conf import settings as django_settings
+        from akte.models import Preferences
+        from akte.preferences import model_spec
+        self.assertEqual(django_settings.ALLOWED_GEMINI_MODELS, ('gemini-3.5-flash-lite', 'gemini-3.8-flash'))
+        Preferences.objects.update_or_create(owner=self.user, defaults={'ai_mode': 'daily'})
+        self.assertEqual(model_spec(self.user)[0], 'gemini-3.5-flash-lite')
+        Preferences.objects.update_or_create(owner=self.user, defaults={'ai_mode': 'complex'})
+        self.assertEqual(model_spec(self.user)[0], 'gemini-3.8-flash')
+        # Unknown/legacy DB value falls back safely to an allowed model
+        Preferences.objects.update_or_create(owner=self.user, defaults={'ai_mode': 'legacy-unknown-mode'})
+        fallback = model_spec(self.user)
+        self.assertIn(fallback[0], django_settings.ALLOWED_GEMINI_MODELS)
+
+    @override_settings(AI_ENABLED=False, GEMINI_API_KEY='', PAPERLESS_URL='', PAPERLESS_TOKEN='', IMAP_HOST='')
+    def test_integrations_status_hides_dead_buttons_when_unconfigured(self):
+        page = self.client.get('/einstellungen/anbindungen/')
+        self.assertEqual(page.status_code, 200)
+        self.assertContains(page, 'Status der Anbindungen')
+        self.assertContains(page, 'Deaktiviert')
+        self.assertNotContains(page, 'Paperless jetzt abgleichen')
+        self.assertNotContains(page, 'Postfach jetzt prüfen')
+
+    def test_html_csp_header_present_without_unsafe_inline_scripts(self):
+        page = self.client.get('/')
+        csp = page.headers.get('Content-Security-Policy', '')
+        self.assertIn("script-src 'self'", csp)
+        self.assertIn("frame-ancestors 'none'", csp)
+        self.assertNotIn("'unsafe-inline'", csp.split("script-src")[1].split(";")[0])
+
+    def test_setup_route_is_rate_limited(self):
+        from akte.security import security_cache
+        security_cache().clear()
+        self.addCleanup(security_cache().clear)
+        get_user_model().objects.all().delete()
+        with override_settings(DEMO_MODE=False):
+            anon = self.client.__class__()
+            for _ in range(60):
+                self.assertEqual(anon.get('/setup/').status_code, 200)
+            self.assertEqual(anon.get('/setup/').status_code, 429)

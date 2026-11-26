@@ -22,7 +22,7 @@ class GeminiErrorMessagesTests(SimpleTestCase):
     def test_billing_auth_model_and_quota_errors_are_distinct_and_redacted(self):
         for status, expected in [(400,'Schema'),(401,'Schlüssel'),(402,'Vorauszahlungsguthaben'),
                                  (403,'Schlüsselberechtigung'),(404,'Modell'),(429,'Kontingent')]:
-            with self.subTest(status=status),patch('akte.adapters.httpx.post',return_value=self.response(status)):
+            with self.subTest(status=status),patch('akte.adapters.bounded_request',return_value=self.response(status)):
                 with self.assertRaises(AIRequestRejected) as caught:GeminiAI().extract('synthetic')
                 self.assertIn(expected,str(caught.exception))
                 self.assertIn(str(status),str(caught.exception))
@@ -32,7 +32,7 @@ class GeminiErrorMessagesTests(SimpleTestCase):
     def test_timeout_and_transient_service_error_remain_retryable(self):
         for failure in [httpx.ReadTimeout('secret in URL'),None]:
             options={'side_effect':failure} if failure else {'return_value':self.response(503)}
-            with self.subTest(failure=failure),patch('akte.adapters.httpx.post',**options):
+            with self.subTest(failure=failure),patch('akte.adapters.bounded_request',**options):
                 with self.assertRaises(IntegrationError) as caught:GeminiAI().extract('synthetic')
                 self.assertNotIsInstance(caught.exception,AIRequestRejected)
                 self.assertNotIn('secret in URL',str(caught.exception))
@@ -40,7 +40,7 @@ class GeminiErrorMessagesTests(SimpleTestCase):
     def test_invalid_success_retains_usage_and_reports_output_failure(self):
         body={'candidates':[{'content':{'parts':[{'text':'not JSON'}]}}],
               'usageMetadata':{'promptTokenCount':10,'totalTokenCount':20}}
-        with patch('akte.adapters.httpx.post',return_value=self.response(200,body)):
+        with patch('akte.adapters.bounded_request',return_value=self.response(200,body)):
             with self.assertRaises(AIResponseInvalid) as caught:GeminiAI().extract('synthetic')
         self.assertEqual(caught.exception.usage['totalTokenCount'],20)
         self.assertIn('strukturierten',str(caught.exception))
@@ -49,7 +49,7 @@ class GeminiErrorMessagesTests(SimpleTestCase):
         proposal=demo_proposal('DEMO-OEL-001')
         body={'candidates':[{'content':{'parts':[{'thought':True,'text':'internal'},
               {'text':json.dumps(proposal)}]},'finishReason':'STOP'}]}
-        with patch('akte.adapters.httpx.post',return_value=self.response(200,body)):
+        with patch('akte.adapters.bounded_request',return_value=self.response(200,body)):
             actual,_=GeminiAI().extract('synthetic')
         self.assertEqual(actual,proposal)
 
@@ -64,7 +64,7 @@ class GeminiErrorMessagesTests(SimpleTestCase):
 
     def test_truncated_structured_output_is_never_accepted_as_complete(self):
         body={'candidates':[{'finishReason':'MAX_TOKENS','content':{'parts':[{'text':'{}'}]}}]}
-        with patch('akte.adapters.httpx.post',return_value=self.response(200,body)):
+        with patch('akte.adapters.bounded_request',return_value=self.response(200,body)):
             with self.assertRaisesMessage(AIResponseInvalid,'Ausgabelimit'):GeminiAI().extract('synthetic')
 
 
@@ -88,7 +88,7 @@ class GeminiWorkerFailureTests(TestCase):
     def test_402_blocks_after_one_attempt_and_releases_rejected_reservation(self):
         doc=self.prepared()
         response=httpx.Response(402,request=httpx.Request('POST','https://example.invalid'))
-        with self.settings(),patch('akte.adapters.httpx.post',return_value=response) as post:
+        with self.settings(),patch('akte.adapters.bounded_request',return_value=response) as post:
             self.assertTrue(run_one())
             self.assertFalse(run_one())
             self.assertEqual(post.call_count,1)
@@ -105,7 +105,7 @@ class GeminiWorkerFailureTests(TestCase):
         response=httpx.Response(200,request=httpx.Request('POST','https://example.invalid'),
             json={'candidates':[{'content':{'parts':[{'text':'invalid'}]}}],
                   'usageMetadata':{'promptTokenCount':10,'totalTokenCount':20}})
-        with self.settings(),patch('akte.adapters.httpx.post',return_value=response):run_one()
+        with self.settings(),patch('akte.adapters.bounded_request',return_value=response):run_one()
         usage=AIUsage.objects.get(document=doc)
         self.assertEqual((usage.state,usage.estimated_usd),('complete',Decimal('.000028')))
 

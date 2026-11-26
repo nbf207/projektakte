@@ -73,9 +73,10 @@ Projektakte runs as two containers from the same multi-architecture image (`ghcr
 
 All external integrations are disabled by default (`AI_ENABLED=0`, empty URLs/credentials) and can be enabled or changed at any time without reinstalling or risking existing data—simply edit `.env` and run `docker compose up -d`:
 
-- **Google Gemini AI:** Set `AI_ENABLED=1`, `GEMINI_MODEL`, `GEMINI_API_KEY` (or `GEMINI_API_KEY_FILE`), and configure your monthly budget guardrails (`AI_MONTHLY_WARN`, `AI_MONTHLY_LIMIT`, token prices, `GEMINI_ORIGINAL_MAX_MB`).
+- **Google Gemini AI:** Set `AI_ENABLED=1`, `GEMINI_MODEL` (supported values: `gemini-3.5-flash-lite` or `gemini-3.8-flash`), `GEMINI_API_KEY` (or `GEMINI_API_KEY_FILE`), and configure your monthly budget guardrails (`AI_MONTHLY_WARN`, `AI_MONTHLY_LIMIT`, token prices, `GEMINI_ORIGINAL_MAX_MB`). Invalid model names fail fast at startup.
 - **Paperless-ngx:** Set `PAPERLESS_URL` (reachable from `worker`) and `PAPERLESS_TOKEN` (or `PAPERLESS_TOKEN_FILE`). Paperless stays a separate system with its own database and backup lifecycle.
 - **IMAP Mail Import:** Configure `MAIL_IMAP_HOST`, `MAIL_IMAP_USER`, `MAIL_IMAP_PASSWORD`, `MAIL_ALLOWED_SENDER`, and `MAIL_CAPTURE_USER`.
+- **Feedback Widget (optional):** Disabled by default (`FEEDBACK_WIDGET_ENABLED=0`) for clean self-hosting. Set `FEEDBACK_WIDGET_ENABLED=1` if you want the floating feedback button and `/einstellungen/feedback/` tab enabled.
 - **Repair Library:** Operator-owned manuals and media live strictly in runtime `/data/` outside version control.
 
 ---
@@ -140,14 +141,38 @@ Test restores into a **separate empty directory** first—never directly over yo
 docker compose run --rm --no-deps web python manage.py restore /data/backups/projektakte-backup.zip /tmp/restore-test
 ```
 
+### Disaster Recovery (Restoring onto a Fresh Host)
+
+To rebuild Projektakte on a brand-new server or SD card from a full ZIP backup:
+
+1. Prepare a clean deployment folder with `compose.yaml` and your backed-up `.env` (plus `./secrets` if you use `*_FILE` mounts).
+2. Create an empty data directory owned by UID/GID `10001` (or start with an empty named volume) and place your verified `projektakte-backup.zip` where the container can read it (e.g. `./restore-input/projektakte-backup.zip`).
+3. Verify and unpack the archive into the fresh data directory **before** starting `web` and `worker`:
+   ```sh
+   docker compose run --rm --no-deps \
+     -v "$(pwd)/restore-input:/restore:ro" \
+     web python manage.py restore /restore/projektakte-backup.zip /data
+   ```
+   `restore` verifies archive paths, SHA-256 checksums, and SQLite integrity before writing anything.
+4. Start the stack and verify both containers become `healthy`:
+   ```sh
+   docker compose up -d
+   docker compose ps
+   ```
+   If you restore an older backup onto a newer image, `entrypoint.py` will automatically create a pre-migration snapshot and apply any newer migrations. If Paperless-ngx was used, restore Paperless separately from its matching backup.
+
 > Back up `.env`, secret files, Compose overrides, and external services separately, and copy backup archives off the host disk.
 
 ---
 
 ## 6. Security Model & Maintenance Commands
 
-- **Default-deny auth boundary:** All routes except `/login/`, `/setup/` (only while 0 users exist), `/manifest.json`, `/sw.js`, and the isolated `/demo/` boundary require authentication. `/admin/` returns `404` for non-staff users.
-- **Safe file & Markdown handling:** Streamed files get `Content-Security-Policy: sandbox; default-src 'none'`; active formats (`.html`, `.svg`, `.js`, etc.) are forced to download; Markdown is sanitized with `nh3` (Rust).
+- **Default-deny auth boundary:** All routes except `/login/`, `/setup/` (only while 0 users exist), `/manifest.json`, `/sw.js`, and the isolated `/demo/` boundary require authentication. `/admin/` returns `404` for non-staff users. Both `/login/` and `/setup/` are rate-limited per client IP.
+- **Security headers & CSP:** Dynamic HTML responses send `Content-Security-Policy` (`default-src 'self'; script-src 'self'; ...; frame-ancestors 'none'`), `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: same-origin`, and `Cache-Control: no-store, private`. Streamed user files receive a stricter `sandbox; default-src 'none'` CSP; active formats (`.html`, `.svg`, `.js`, etc.) are forced to download; Markdown is sanitized with `nh3` (Rust).
+- **Reset a forgotten admin password:**
+  ```sh
+  docker compose exec web python manage.py changepassword <username>
+  ```
 - **Maintenance commands:**
   - `python manage.py check` — configuration sanity check.
   - `python manage.py cleanup` — previews orphan/temporary cleanup before applying.

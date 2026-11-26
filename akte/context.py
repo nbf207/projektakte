@@ -16,4 +16,4 @@ def common(request):
     if getattr(request,'user',None) and request.user.is_authenticated:
         from .preferences import preferences
         keep_audio=preferences(request.user).keep_audio
-    return {'keep_audio_default':keep_audio,'nav_section':nav_section,'demo_mode':settings.DEMO_MODE,'app_version':settings.APP_VERSION,'ai_original_limit_mb':settings.GEMINI_ORIGINAL_MAX_BYTES//(1024*1024)}
+    return {'keep_audio_default':keep_audio,'nav_section':nav_section,'demo_mode':settings.DEMO_MODE,'app_version':settings.APP_VERSION,'ai_original_limit_mb':settings.GEMINI_ORIGINAL_MAX_BYTES//(1024*1024),'feedback_widget_enabled':settings.FEEDBACK_WIDGET_ENABLED}

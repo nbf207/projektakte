@@ -72,7 +72,7 @@ class ReviewRefreshTests(TestCase):
         doc = self.document()
         Job.objects.filter(document=doc).update(status='pending', stage='ai')
         page = self.client.post(reverse('review', args=[doc.pk]), self.payload(
-            doc, entry_title='Meine noch ungespeicherte Korrektur', gross_total='kein Betrag'))
+            doc, vendor='Meine noch ungespeicherte Korrektur', gross_total='kein Betrag'))
         self.assertEqual(page.status_code, 200)
         self.assertContains(page, 'Meine noch ungespeicherte Korrektur')
         self.assertContains(page, 'data-preserve-input="1"')

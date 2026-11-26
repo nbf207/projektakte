@@ -266,14 +266,12 @@ class PurgeTests(TestCase):
         import hashlib,httpx
         from .adapters import LivePaperless,IntegrationError
         with override_settings(PAPERLESS_URL='https://paperless.invalid',PAPERLESS_TOKEN='SYN'):
-            adapter=LivePaperless();adapter.client.close()
+            adapter=LivePaperless()
             def handle(request):
                 self.assertEqual(request.url.params['original'],'true')
                 return httpx.Response(200,content=b'synthetic original')
-            adapter.client=httpx.Client(base_url='https://paperless.invalid/',transport=httpx.MockTransport(handle))
+            adapter._client=lambda: httpx.Client(base_url='https://paperless.invalid/',transport=httpx.MockTransport(handle))
             self.assertEqual(adapter.original_sha256(701),hashlib.sha256(b'synthetic original').hexdigest())
-            adapter=LivePaperless();adapter.client.close()
-            adapter.client=httpx.Client(base_url='https://paperless.invalid/',transport=httpx.MockTransport(handle))
             with override_settings(MAX_DOCUMENT_BYTES=3),self.assertRaises(IntegrationError):
                 adapter.original_sha256(701)
 

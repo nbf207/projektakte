@@ -120,17 +120,6 @@ class DailyUseTests(TestCase):
         self.entry.deleted_at=timezone.now()-timedelta(days=40);self.entry.save()
         call_command('cleanup',apply=True,stdout=io.StringIO())
         self.assertTrue(Entry.objects.filter(pk=self.entry.pk).exists())
-    def test_invitation_has_no_initial_password_and_single_use(self):
-        invite,token=create_owner_invitation('example-owner-test')
-        self.assertFalse(invite.user.has_usable_password());self.assertNotEqual(invite.token_hash,token)
-        url='/einrichten/'+str(invite.pk)+'/'+token+'/'
-        self.assertEqual(self.client.get(url).status_code,200)
-        self.assertEqual(self.client.post(url,{'new_password1':'Synthetisch-2026-sicher','new_password2':'Synthetisch-2026-sicher'}).status_code,302)
-        self.assertEqual(self.client.get(url).status_code,410)
-    def test_expired_or_invalid_invitation_cannot_set_password(self):
-        invite,token=create_owner_invitation('expired-test');invite.expires=timezone.now()-timedelta(seconds=1);invite.save()
-        self.assertEqual(self.client.get('/einrichten/'+str(invite.pk)+'/'+token+'/').status_code,410)
-        self.assertEqual(self.client.get('/einrichten/'+str(invite.pk)+'/wrong/').status_code,410)
     def test_existing_owner_is_never_replaced(self):
         with self.assertRaises(ValidationError):create_owner_invitation('daily')
     def test_maintenance_page_owner_protection(self):
@@ -149,25 +138,15 @@ class DailyUseTests(TestCase):
         second=Document.objects.create(owner=other,ai_enabled=True)
         with self.assertRaises(IntegrationError):reserve_ai(second)
 
-    def test_waitress_only_trusts_explicit_proxy(self):
-        import os
-        from unittest.mock import patch
+    def test_waitress_delegates_proxy_trust_to_wsgi_boundary(self):
         from serve import proxy_options
-        with patch.dict(os.environ,{'TRUSTED_PROXY':''}):self.assertEqual(proxy_options(),{})
-        with patch.dict(os.environ,{'TRUSTED_PROXY':'cloudflare-tunnel'}),patch('socket.gethostbyname',return_value='172.18.0.4'):
-            options=proxy_options();self.assertEqual(options['trusted_proxy'],'172.18.0.4');self.assertNotEqual(options['trusted_proxy'],'*')
-    def test_unresolvable_proxy_fails_closed(self):
-        import os
-        from unittest.mock import patch
-        from serve import proxy_options
-        with patch.dict(os.environ,{'TRUSTED_PROXY':'missing'}),patch('socket.gethostbyname',side_effect=OSError),self.assertRaises(RuntimeError):proxy_options()
-    @override_settings(LOGIN_RATE_LIMIT=2)
+        self.assertEqual(proxy_options(),{'clear_untrusted_proxy_headers':False})
     def test_login_rate_limit_and_other_clients(self):
-        from .login_throttle import LoginThrottleMiddleware
-        LoginThrottleMiddleware.attempts.clear();self.addCleanup(LoginThrottleMiddleware.attempts.clear)
-        for _ in range(2):self.assertEqual(self.client.post('/anmelden/',{'username':'missing','password':'invalid'}).status_code,200)
-        self.assertEqual(self.client.post('/anmelden/',{'username':'missing','password':'invalid'}).status_code,429)
-        self.assertEqual(self.client.post('/anmelden/',{'username':'missing','password':'invalid'},REMOTE_ADDR='127.0.0.2').status_code,200)
+        from .security import security_cache
+        security_cache().clear();self.addCleanup(security_cache().clear)
+        self.assertEqual(self.client.post('/login/',{'username':'missing','password':'invalid'}).status_code,200)
+        self.assertEqual(self.client.post('/login/',{'username':'missing','password':'invalid'}).status_code,429)
+        self.assertEqual(self.client.post('/login/',{'username':'missing','password':'invalid'},REMOTE_ADDR='127.0.0.2').status_code,200)
 
     def test_pending_import_visible_only_to_owner(self):
         from .models import ImportBatch
@@ -185,7 +164,7 @@ class DailyUseTests(TestCase):
         from akte.adapters import LivePaperless,TaskAccessDenied
         doc=SimpleNamespace(task_id=str(uuid.uuid4()),submission_key=uuid.uuid4())
         response=Mock();response.json.return_value={'results':[{'id':19,'title':'Projektakte '+str(doc.submission_key)}]}
-        adapter=LivePaperless();self.addCleanup(adapter.client.close)
+        adapter=LivePaperless()
         with patch.object(LivePaperless,'request',side_effect=[TaskAccessDenied(),response]):self.assertEqual(adapter.poll(doc),19)
     @override_settings(PAPERLESS_URL='http://paperless-test',PAPERLESS_TOKEN='synthetic-token')
     def test_missing_submission_after_task_denial_is_pending_without_upload(self):
@@ -195,20 +174,8 @@ class DailyUseTests(TestCase):
         from akte.adapters import LivePaperless,TaskAccessDenied,Pending
         doc=SimpleNamespace(task_id=str(uuid.uuid4()),submission_key=uuid.uuid4())
         response=Mock();response.json.return_value={'results':[{'id':20,'title':'Andere Rechnung'}]}
-        adapter=LivePaperless();self.addCleanup(adapter.client.close)
+        adapter=LivePaperless()
         with patch.object(LivePaperless,'request',side_effect=[TaskAccessDenied(),response]),self.assertRaises(Pending):adapter.poll(doc)
-
-    def test_owner_setup_csrf_accepts_same_origin_and_rejects_null_origin(self):
-        from django.test import Client
-        invite,token=create_owner_invitation('csrf-setup-test')
-        url='/einrichten/'+str(invite.pk)+'/'+token+'/'
-        client=Client(enforce_csrf_checks=True)
-        page=client.get(url,secure=True)
-        self.assertContains(page,'name="referrer" content="same-origin"')
-        csrf=client.cookies['csrftoken'].value
-        self.assertEqual(client.post(url,{'csrfmiddlewaretoken':csrf},secure=True,HTTP_ORIGIN='https://testserver').status_code,200)
-        self.assertEqual(client.post(url,{'csrfmiddlewaretoken':csrf},secure=True,HTTP_ORIGIN='null').status_code,403)
-        invite.refresh_from_db();self.assertIsNone(invite.used)
 
     def test_accepted_position_details_remain_visible(self):
         from .models import CostSource

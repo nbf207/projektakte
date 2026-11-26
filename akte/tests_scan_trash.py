@@ -88,7 +88,7 @@ class ScanTrashTests(TestCase):
         self.assertIsNone(doc.project_id)
         self.assertEqual(DocumentLink.objects.count(),0)
         self.assertEqual(doc.routing['confidence'],'medium')
-        self.assertContains(self.client.get(reverse('review',args=[doc.pk])),'Noch keine eindeutige Projektzuordnung')
+        self.assertContains(self.client.get(reverse('review',args=[doc.pk])),'name="chronicle_project"')
 
     def test_auto_route_without_explanation_does_not_guess(self):
         doc=self.routing_doc();proposal=self.proposal_for(self.project)
@@ -172,7 +172,7 @@ class ScanTrashTests(TestCase):
         proposal['project_assignment']['project_id']='f38fc7f2-fb6f-4a6b-9cb3-bc0643e37b89'
         response=httpx.Response(200,request=httpx.Request('POST','https://example.invalid'),
             json={'candidates':[{'content':{'parts':[{'text':json.dumps(proposal)}]}}]})
-        with override_settings(GEMINI_API_KEY='synthetic'),patch('akte.adapters.httpx.post',return_value=response) as post:
+        with override_settings(GEMINI_API_KEY='synthetic'),patch('akte.adapters.bounded_request',return_value=response) as post:
             with self.assertRaises(AIResponseInvalid):GeminiAI().extract('synthetic',context=ai_context(doc))
         body=post.call_args.kwargs['json']
         choices=body['generationConfig']['responseJsonSchema']['properties']['project_assignment']['properties']['project_id']['enum']

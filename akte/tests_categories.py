@@ -16,6 +16,7 @@ from .models import Allocation, Asset, Category, CostSource, Entry, Project, Tas
 
 
 class CategoryWorkflowTest(TransactionTestCase):
+    databases = {'default', 'demo'}
     def test_migration_grouping_editing_and_safe_removal(self):
         with tempfile.TemporaryDirectory() as folder, override_settings(
             DATA_DIR=Path(folder), MEDIA_ROOT=Path(folder)/'media', DEMO_MODE=True, ALLOWED_HOSTS=['testserver']
@@ -46,6 +47,8 @@ class CategoryWorkflowTest(TransactionTestCase):
             MigrationExecutor(connection).migrate([('akte','0019_project_entry_definitions')])
             with connection.cursor() as cursor:
                 for query, rows in baseline.items():cursor.execute(query);self.assertEqual(cursor.fetchall(), rows)
+            leaf=MigrationExecutor(connection).loader.graph.leaf_nodes('akte')[0][1]
+            MigrationExecutor(connection).migrate([('akte',leaf)])
             call_command('makemigrations','akte',check=True,dry_run=True,verbosity=0)
             owner=get_user_model().objects.get(pk=user.pk)
             entry=Entry.objects.get(pk=entry.pk);task=Task.objects.get(pk=task.pk)
@@ -72,7 +75,7 @@ class CategoryWorkflowTest(TransactionTestCase):
             payload={'title':entry.title,'kind':entry.kind,'status':entry.status,'cost_state':'known','amount':'12,34',
                      'token':uuid.uuid4(),'version':entry.version,'category':custom.pk}
             self.assertEqual(self.client.post(edit,payload).status_code,302)
-            entry.refresh_from_db();self.assertEqual(entry.category_id,custom.pk)
+            entry.refresh_from_db();task.refresh_from_db();self.assertEqual(entry.category_id,custom.pk)
             self.assertEqual(self.client.post(reverse('task_edit',args=[task.pk]),{'title':task.title,'entry':entry.pk,'category':custom.pk,'version':task.version}).status_code,302)
             self.assertEqual(self.client.post(manage,{'action':'delete','category_id':custom.pk,'version':custom.version,'name':''}).status_code,302)
             entry.refresh_from_db();task.refresh_from_db()

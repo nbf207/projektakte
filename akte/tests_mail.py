@@ -12,6 +12,7 @@ from unittest.mock import Mock,patch
 import httpx
 from django.contrib.auth import get_user_model
 from django.test import TestCase,override_settings
+from django.utils import timezone
 from .demo import synthetic_photo,synthetic_pdf
 from .mail_config import MailConfig
 from .mail_ingest import MailPoller,import_message,subject_project
@@ -54,7 +55,7 @@ class MailFlowTest(TestCase):
                     return 'OK',[(f'{number} (UID {number} RFC822.SIZE {size})'.encode(),headers)]
                 fetched.append(number);return 'OK',[(b'2 (BODY[] literal)',raw)]
             client.uid.side_effect=uid;poller=MailPoller()
-            with patch('akte.mail_ingest.mail_config',return_value=config),patch('akte.mail_ingest.imaplib.IMAP4_SSL',return_value=client) as factory:
+            with patch('akte.mail_ingest.mail_config',return_value=config),patch('akte.mail_ingest.BoundedIMAP',return_value=client) as factory:
                 with self.assertLogs('akte.mail_ingest',level='WARNING') as logs:self.assertEqual(poller.tick(),0)
                 self.assertNotIn('fixture-secret',' '.join(logs.output))
                 doc=Document.objects.get(capture_type='snap');entry_id=doc.entry_id
@@ -74,17 +75,17 @@ class MailFlowTest(TestCase):
             proposal.update(vendor='SYN Teilehandel',gross_total='19.99',currency='EUR',positions=[{'description':'Ölfilter','amount':'19.99'}],
                 entry={**empty_entry(),'title':'SYN Bestellung Ölfilter','kind':'notiz'},inferred_fields=['entry.title','entry.kind'],
                 project_assignment={'project_id':str(project.pk),'confidence':'high','reason':'Betreffkürzel'})
-            result={'transcript':'','category':'notiz','is_receipt':True,'receipt_files':[2],
+            result={'knowledge':[],'transcript':'','category':'notiz','is_receipt':True,'receipt_files':[2],
                 'open_entry':{'id':None,'confidence':'none','reason':None},'proposal':proposal}
             response=httpx.Response(200,json={'candidates':[{'content':{'parts':[{'text':json.dumps(result)}]}}],
                 'usageMetadata':{'promptTokenCount':300,'totalTokenCount':600}})
-            with patch('akte.adapters.httpx.post',return_value=response) as api:
+            with patch('akte.adapters.bounded_request',return_value=response) as api:
                 self.assertTrue(run_one());instruction=api.call_args.kwargs['json']['systemInstruction']['parts'][0]['text']
                 self.assertIn('source_kind',instruction);self.assertIn('email_source_index',instruction)
             doc.refresh_from_db();self.assertEqual(doc.entry_id,entry_id)
             receipt=Document.objects.get(pk=doc.voice_data['receipt_id'])
             self.assertEqual(receipt.proposal['gross_total'],'19.99');self.assertFalse(receipt.ai_enabled)
-            self.assertEqual(CostSource.objects.count(),0);self.assertIsNone(doc.entry.date)
+            self.assertEqual(CostSource.objects.count(),0);self.assertEqual(doc.entry.date,timezone.localdate())
             # HTML-only/text-only mail is stored with an original-source PDF.
             html=EmailMessage();html['From']=config.sender;html['Subject']='Allgemeine Notiz'
             html.set_content('<style>DO-NOT-SHOW</style><p>Notiz aus HTML</p>',subtype='html')
@@ -96,6 +97,6 @@ class MailFlowTest(TestCase):
             for index in range(8):bundle.add_attachment(synthetic_photo(160+index),maintype='image',subtype='jpeg',filename=f'SYN-{index}.jpg')
             grouped=import_message(owner,config,bundle.as_bytes());self.assertEqual(grouped.pages.count(),9)
             poller.next_check=0
-            with patch('akte.mail_ingest.mail_config',return_value=config),patch('akte.mail_ingest.imaplib.IMAP4_SSL',side_effect=imaplib.IMAP4.error('fixture-secret')):
+            with patch('akte.mail_ingest.mail_config',return_value=config),patch('akte.mail_ingest.BoundedIMAP',side_effect=imaplib.IMAP4.error('fixture-secret')):
                 with self.assertLogs('akte.mail_ingest',level='WARNING') as logs:self.assertEqual(poller.tick(),0)
                 self.assertNotIn('fixture-secret',' '.join(logs.output))

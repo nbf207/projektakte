@@ -141,7 +141,7 @@ class ReviewRegressionTests(TestCase):
 
     def test_custom_field_form_preserves_history_and_retires_removed_fields(self):
         e=self.entry('Alte Wartung')
-        data={'name':'Auto','kind':'auto','version':self.auto.version,'field_editor':'fields','field_json':'ABSICHTLICH KEIN JSON','fields-TOTAL_FORMS':'4','fields-INITIAL_FORMS':'2','fields-MAX_NUM_FORMS':'100','fields-MIN_NUM_FORMS':'0',
+        data={'name':'Auto','kind':'auto','position':'0','color':'#087f80','icon':'car','version':self.auto.version,'field_editor':'fields','field_json':'ABSICHTLICH KEIN JSON','fields-TOTAL_FORMS':'4','fields-INITIAL_FORMS':'2','fields-MAX_NUM_FORMS':'100','fields-MIN_NUM_FORMS':'0',
             'fields-0-original_name':'Öl','fields-0-name':'Öl','fields-0-kind':'text','fields-0-value':'Demo 0W-30','fields-0-active':'on',
             'fields-1-original_name':'Alt','fields-1-name':'Alt','fields-1-kind':'text','fields-1-value':'','fields-1-DELETE':'on',
             'fields-2-name':'Volumen','fields-2-kind':'number','fields-2-value':'180,5','fields-2-unit':'l','fields-2-active':'on',
@@ -158,7 +158,7 @@ class ReviewRegressionTests(TestCase):
         response=httpx.Response(200,request=httpx.Request('POST','https://example.invalid'),json={'candidates':[{'content':{'parts':[{'text':json.dumps(expected)}]}}]})
         for raw,mime in [(synthetic_pdf('DEMO-OEL-001'),'application/pdf'),(synthetic_photo(1),'image/jpeg')]:
             with override_settings(GEMINI_API_KEY='synthetic'):
-                with patch('akte.adapters.httpx.post',return_value=response) as post:
+                with patch('akte.adapters.bounded_request',return_value=response) as post:
                     GeminiAI().extract('Schlecht erkannter OCR-Text',original=raw,mime_type=mime)
             body=post.call_args.kwargs['json'];parts=body['contents'][0]['parts']
             self.assertEqual(parts[0]['text'],'Schlecht erkannter OCR-Text');self.assertEqual(parts[1]['inlineData']['mimeType'],mime)
@@ -184,7 +184,7 @@ class ReviewRegressionTests(TestCase):
             with self.assertRaises(IntegrationError): reserve_ai(doc)
 
     def test_choice_date_and_link_fields_and_duplicate_names(self):
-        data={'name':'Auto','kind':'auto','version':self.auto.version,'field_editor':'fields','fields-TOTAL_FORMS':'3','fields-INITIAL_FORMS':'0','fields-MAX_NUM_FORMS':'100','fields-MIN_NUM_FORMS':'0',
+        data={'name':'Auto','kind':'auto','position':'0','color':'#087f80','icon':'car','version':self.auto.version,'field_editor':'fields','fields-TOTAL_FORMS':'3','fields-INITIAL_FORMS':'0','fields-MAX_NUM_FORMS':'100','fields-MIN_NUM_FORMS':'0',
             'fields-0-name':'Modus','fields-0-kind':'choice','fields-0-options':'Normal\nSparsam','fields-0-value':'Sparsam','fields-0-active':'on',
             'fields-1-name':'Bauzeit','fields-1-kind':'date','fields-1-value':'11/2026','fields-1-active':'on',
             'fields-2-name':'Anleitung','fields-2-kind':'link','fields-2-value':'https://example.com/manual','fields-2-active':'on'}

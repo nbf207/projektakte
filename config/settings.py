@@ -123,10 +123,14 @@ PAPERLESS_TOKEN = server_secret('PAPERLESS_TOKEN')
 PAPERLESS_API_VERSION = os.environ.get('PAPERLESS_API_VERSION','9')
 FILE_UPLOAD_TEMP_DIR = DATA_DIR/'tmp'
 FILE_UPLOAD_TEMP_DIR.mkdir(exist_ok=True)
+ALLOWED_GEMINI_MODELS = ('gemini-3.5-flash-lite', 'gemini-3.8-flash')
 GEMINI_API_BASE = os.environ.get('GEMINI_API_BASE','https://generativelanguage.googleapis.com/v1beta')
-GEMINI_MODEL = os.environ.get('GEMINI_MODEL','gemini-3.5-flash-lite')
+GEMINI_MODEL = os.environ.get('GEMINI_MODEL', ALLOWED_GEMINI_MODELS[0]).strip()
+if GEMINI_MODEL not in ALLOWED_GEMINI_MODELS:
+    raise RuntimeError('GEMINI_MODEL muss eines der unterstützten Modelle sein: ' + ', '.join(ALLOWED_GEMINI_MODELS) + '.')
 GEMINI_API_KEY = server_secret('GEMINI_API_KEY')
 AI_ENABLED = os.environ.get('AI_ENABLED','1') == '1'
+FEEDBACK_WIDGET_ENABLED = os.environ.get('FEEDBACK_WIDGET_ENABLED', '0') == '1'
 AI_MONTHLY_WARN = Decimal(os.environ.get('AI_MONTHLY_WARN','1'))
 AI_MONTHLY_LIMIT = Decimal(os.environ.get('AI_MONTHLY_LIMIT','2'))
 # Live pricing must be consciously configured. A reservation remains charged on timeout.
@@ -137,7 +141,7 @@ AI_MAX_OUTPUT = 4096
 GEMINI_ORIGINAL_MAX_BYTES = int(os.environ.get('GEMINI_ORIGINAL_MAX_MB','8'))*1024*1024
 if not 0<GEMINI_ORIGINAL_MAX_BYTES<=12*1024*1024: raise RuntimeError('GEMINI_ORIGINAL_MAX_MB muss zwischen 1 und 12 liegen.')
 AI_VISION_INPUT_RESERVE = int(os.environ.get('AI_VISION_INPUT_RESERVE','1100000'))
-APP_VERSION = '0.7.30'
+APP_VERSION = '0.8.0'
 
 for name in ('AI_MONTHLY_WARN','AI_MONTHLY_LIMIT','AI_INPUT_USD_PER_M','AI_OUTPUT_USD_PER_M','AI_REQUEST_RESERVE'):
     value=globals()[name]

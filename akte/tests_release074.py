@@ -55,6 +55,7 @@ class Settings074Tests(TestCase):
         stream=io.BytesIO();Image.new('RGB',(width,1000),(70,130,160)).save(stream,'JPEG',quality=97)
         return SimpleUploadedFile(name,stream.getvalue(),content_type='image/jpeg')
 
+    @override_settings(FEEDBACK_WIDGET_ENABLED=True)
     def test_all_settings_pages_render_and_require_login_csrf(self):
         for section in ('konto','anbindungen','medien','system','feedback'):
             response=self.client.get(self.url(section));self.assertEqual(response.status_code,200)
@@ -83,10 +84,12 @@ class Settings074Tests(TestCase):
         self.client.post(self.url('konto'),{'action':'sessions'})
         self.assertEqual(other.get(reverse('home')).status_code,302)
         self.assertEqual(self.client.get(reverse('home')).status_code,200)
+        from .security import failure_history, security_cache
+        security_cache().clear();self.addCleanup(security_cache().clear)
         attacker=Client()
-        for unused in range(12):attacker.post(reverse('login'),{'username':self.user.username,'password':'SYN wrong'})
-        self.assertEqual(LoginAttempt.objects.filter(owner=self.user).count(),10)
-        self.assertFalse(LoginAttempt.objects.filter(owner=self.user,success=True).exists())
+        for idx in range(12):attacker.post(reverse('login'),{'username':self.user.username,'password':'SYN wrong'},REMOTE_ADDR=f'127.0.0.{idx+10}')
+        self.assertEqual(len(failure_history()),10)
+        self.assertTrue(all(not row.success for row in failure_history()))
 
     def test_models_preserve_reserved_prices_and_budget_limit(self):
         self.pref(ai_mode='complex')
@@ -101,11 +104,11 @@ class Settings074Tests(TestCase):
             with self.assertRaises(IntegrationError):reserve_ai(doc)
 
     def test_model_specific_thinking_parameters(self):
-        with override_settings(GEMINI_API_KEY='SYN nonsecret key'),patch('akte.adapters.httpx.post') as post:
+        with override_settings(GEMINI_API_KEY='SYN nonsecret key'),patch('akte.adapters.bounded_request') as post:
             post.return_value.status_code=400
             for model,level in [('gemini-3.8-flash','low'),('gemini-3.5-flash-lite','minimal')]:
                 with self.assertRaises(AIRequestRejected):GeminiAI(model).extract('SYN text')
-                self.assertIn(model,post.call_args.args[0])
+                self.assertIn(model,post.call_args.args[2])
                 self.assertEqual(post.call_args.kwargs['json']['generationConfig']['thinkingConfig']['thinkingLevel'],level)
                 if model=='gemini-3.8-flash':self.assertEqual(post.call_args.kwargs['timeout'].read,150)
 
@@ -117,7 +120,7 @@ class Settings074Tests(TestCase):
         Job.objects.create(document=doc,kind='capture',stage='capture')
         job=reserve();self.assertGreater(job.leased_until,timezone.now()+timedelta(minutes=4))
         usage=AIUsage.objects.create(owner=self.user,document=doc,estimated_usd='.8',model='gemini-3.8-flash')
-        with override_settings(GEMINI_API_KEY='SYN'),patch('akte.adapters.httpx.post',side_effect=httpx.ReadTimeout('SYN')):
+        with override_settings(GEMINI_API_KEY='SYN'),patch('akte.adapters.bounded_request',side_effect=httpx.ReadTimeout('SYN')):
             with self.assertRaises(AIOutcomeUncertain) as error:GeminiAI('gemini-3.8-flash').extract('SYN text')
         fail(job,error.exception);job.refresh_from_db();doc.refresh_from_db();usage.refresh_from_db()
         self.assertEqual(job.status,'blocked');self.assertEqual(doc.ocr,'SYN retained')
@@ -176,6 +179,7 @@ class Settings074Tests(TestCase):
         self.assertEqual(again.pk,first.pk);self.assertEqual(Asset.objects.count(),1)
         self.assertEqual(len(list((self.root/'media/originals').iterdir())),1)
 
+    @override_settings(FEEDBACK_WIDGET_ENABLED=True)
     def test_feedback_image_edit_ownership_and_backup(self):
         response=self.client.post(reverse('feedback'),{'text':'SYN <script>bad</script>','image':self.photo(width=400)},HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         self.assertEqual(response.status_code,200)
@@ -254,7 +258,7 @@ class Settings074Tests(TestCase):
                 return 'OK',[(b'RFC822.SIZE 400',('From: '+address+'\r\n\r\n').encode())]
             return 'OK',[(b'BODY[]',b'SYN mail')]
         client.uid.side_effect=uid;context=Mock();context.__enter__=Mock(return_value=client);context.__exit__=Mock(return_value=False)
-        with patch('akte.mail_ingest.imaplib.IMAP4_SSL',return_value=context),patch('akte.mail_ingest.import_message',return_value=object()) as ingest:
+        with patch('akte.mail_ingest.BoundedIMAP',return_value=context),patch('akte.mail_ingest.import_message',return_value=object()) as ingest:
             self.assertEqual(MailPoller().collect(config),1)
             self.assertEqual(ingest.call_args.args[1].sender,'alice@example.com')
             stores=[call.args for call in client.uid.call_args_list if call.args[0]=='store'];self.assertEqual(stores[0][1],'2')

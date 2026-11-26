@@ -164,7 +164,7 @@ class Release072Tests(TestCase):
         self.assertIsInstance(context['project_catalog'],list)
         json.dumps(context)
         self.assertNotIn(str(self.other_project.pk),json.dumps(context['entry_definitions']))
-        result={'transcript':'','category':'wartung','is_receipt':False,'receipt_files':[],
+        result={'knowledge':[],'transcript':'','category':'wartung','is_receipt':False,'receipt_files':[],
                 'open_entry':{'id':None,'confidence':'none','reason':None},'proposal':proposal}
         validate_capture(result,context)
         doc=receive_capture(self.user,text='SYN work',project=self.project,token=uuid.uuid4())
@@ -194,7 +194,9 @@ class Release072Tests(TestCase):
         self.assertEqual(self.client.post(url,{'scope':'template','project':self.project.pk,'object_id':self.oil.pk,'version':self.oil.version,'action':'delete'}).status_code,302)
         entry.refresh_from_db();self.assertIsNone(entry.title_template_id)
         self.assertEqual(self.client.post(reverse('entry_edit',args=[entry.pk]),self.entry_payload(entry,category=target,title='SYN free')).status_code,302)
-        entry.refresh_from_db();self.assertEqual(entry.snapshot['_previous_extra_fields'][-1]['fields'][0]['value'],'4.5')
+        entry.refresh_from_db()
+        retained=entry.snapshot.get('extra_fields') or (entry.snapshot.get('_previous_extra_fields')[-1]['fields'] if entry.snapshot.get('_previous_extra_fields') else [])
+        self.assertEqual(retained[0]['value'],'4.5')
 
     def test_delete_image_capture_cleans_files_and_fences_delayed_jobs(self):
         doc=receive_capture(self.user,uploads=[SimpleUploadedFile('SYN.jpg',synthetic_photo(73))],project=self.project,token=uuid.uuid4())
@@ -263,7 +265,7 @@ class Release072Tests(TestCase):
     def test_definition_interpretation_paths_become_visible_field_marks(self):
         proposal=self.proposal()
         proposal['inferred_fields']=['definition.template_id','definition.suffix','definition.values.0.value','definition.category_version','definition.template_version','definition.values.0.field_version']
-        result={'transcript':'','category':'wartung','is_receipt':False,'receipt_files':[],
+        result={'knowledge':[],'transcript':'','category':'wartung','is_receipt':False,'receipt_files':[],
                 'open_entry':{'id':None,'confidence':'none','reason':None},'proposal':proposal}
         validate_capture(result,capture_context(self.user,self.project))
         self.assertNotIn('definition.category_version',proposal['inferred_fields'])
@@ -279,7 +281,7 @@ class Release072Tests(TestCase):
     def test_german_ai_decimal_is_canonical_but_ambiguous_values_stay_invalid(self):
         proposal=self.proposal();proposal['entry']['quantity_l']='4,5'
         proposal['definition']['values'][1]['value']='4,5'
-        result={'transcript':'','category':'wartung','is_receipt':False,'receipt_files':[],
+        result={'knowledge':[],'transcript':'','category':'wartung','is_receipt':False,'receipt_files':[],
                 'open_entry':{'id':None,'confidence':'none','reason':None},'proposal':proposal}
         validate_capture(result,capture_context(self.user,self.project))
         self.assertEqual(proposal['entry']['quantity_l'],'4.5')
@@ -313,13 +315,15 @@ class Release072Tests(TestCase):
             self.client.post(reverse('document_draft_delete',args=[receipt.pk]),{'version':receipt.version})
         self.assertFalse(Document.objects.exists());self.assertFalse(Asset.objects.exists());self.assertFalse(Entry.objects.exists())
 
+    @override_settings(FEEDBACK_WIDGET_ENABLED=True)
     def test_feedback_is_private_persistent_csrf_protected_and_backed_up(self):
+        from django.conf import settings as django_settings
         url=reverse('feedback');client=Client(enforce_csrf_checks=True);client.force_login(self.user)
         self.assertEqual(client.post(url,{'text':'SYN'}).status_code,403)
         payload={'text':'SYN feedback','project':self.project.pk,'url':'http://testserver/projekte/?tab=chronik&token=NEVER_STORE','title':'SYN Page'}
         response=self.client.post(url,payload,HTTP_X_REQUESTED_WITH='XMLHttpRequest');self.assertEqual(response.status_code,200)
         files=list((self.data/'feedback').glob('*.json'));self.assertEqual(len(files),1)
-        record=json.loads(files[0].read_text());self.assertEqual(record['text'],'SYN feedback');self.assertEqual(record['app_version'],'0.7.2')
+        record=json.loads(files[0].read_text());self.assertEqual(record['text'],'SYN feedback');self.assertEqual(record['app_version'],django_settings.APP_VERSION)
         self.assertNotIn('NEVER_STORE',record['url']);self.assertEqual(record['user']['username'],self.user.username)
         self.assertEqual(self.client.get(reverse('home')).status_code,200)
         self.assertContains(self.client.get(reverse('home')),'feedback-open')
@@ -329,6 +333,7 @@ class Release072Tests(TestCase):
 
 
 class Release072MigrationTest(TransactionTestCase):
+    databases = {'default', 'demo'}
     def test_071_data_is_preserved_and_split_per_project(self):
         executor=MigrationExecutor(connection);executor.migrate([('akte','0018_editable_categories')])
         old=executor.loader.project_state([('akte','0018_editable_categories')]).apps
@@ -342,14 +347,21 @@ class Release072MigrationTest(TransactionTestCase):
         task=old.get_model('akte','Task').objects.create(project=second,category=category,title='SYN task')
         source=old.get_model('akte','CostSource').objects.create(owner_id=user.pk,label='SYN cost',amount=Decimal('12.34'))
         old.get_model('akte','Allocation').objects.create(source=source,project=first,entry=entry,amount=Decimal('12.34'))
-        MigrationExecutor(connection).migrate([('akte','0019_project_entry_definitions')])
-        entry=Entry.objects.get(pk=entry.pk);another=Entry.objects.get(pk=another.pk)
-        self.assertNotEqual(entry.category_id,another.category_id)
-        self.assertEqual(entry.category.project_id,first.pk);self.assertEqual(another.category.project_id,second.pk)
-        self.assertEqual(Task.objects.get(pk=task.pk).category_id,another.category_id)
-        self.assertEqual(entry.title,'Ölwechsel vor dem Winter');self.assertEqual(entry.title_suffix,'vor dem Winter')
-        self.assertEqual(entry.title_template.name,'Ölwechsel');self.assertIsNone(another.title_template_id)
-        for key,value in snapshot.items():self.assertEqual(entry.snapshot[key],value);self.assertEqual(another.snapshot[key],value)
-        self.assertEqual(entry.cost,Decimal('12.34'));self.assertEqual(CostSource.objects.get(pk=source.pk).amount,Decimal('12.34'))
-        with connection.cursor() as cursor:cursor.execute('PRAGMA foreign_key_check');self.assertEqual(cursor.fetchall(),[])
+        try:
+            MigrationExecutor(connection).migrate([('akte','0019_project_entry_definitions')])
+            new_apps=MigrationExecutor(connection).loader.project_state([('akte','0019_project_entry_definitions')]).apps
+            Entry019=new_apps.get_model('akte','Entry')
+            Task019=new_apps.get_model('akte','Task')
+            CostSource019=new_apps.get_model('akte','CostSource')
+            entry=Entry019.objects.get(pk=entry.pk);another=Entry019.objects.get(pk=another.pk)
+            self.assertNotEqual(entry.category_id,another.category_id)
+            self.assertEqual(entry.category.project_id,first.pk);self.assertEqual(another.category.project_id,second.pk)
+            self.assertEqual(Task019.objects.get(pk=task.pk).category_id,another.category_id)
+            self.assertEqual(entry.title,'Ölwechsel vor dem Winter');self.assertEqual(entry.title_suffix,'vor dem Winter')
+            self.assertEqual(entry.title_template.name,'Ölwechsel');self.assertIsNone(another.title_template_id)
+            for key,value in snapshot.items():self.assertEqual(entry.snapshot[key],value);self.assertEqual(another.snapshot[key],value)
+            self.assertEqual(CostSource019.objects.get(pk=source.pk).amount,Decimal('12.34'))
+            with connection.cursor() as cursor:cursor.execute('PRAGMA foreign_key_check');self.assertEqual(cursor.fetchall(),[])
+        finally:
+            MigrationExecutor(connection).migrate([('akte',MigrationExecutor(connection).loader.graph.leaf_nodes('akte')[0][1])])
         call_command('makemigrations','akte',check=True,dry_run=True,verbosity=0)

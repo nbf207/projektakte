@@ -29,8 +29,10 @@ def monthly_budget():
 
 
 def model_spec(owner):
-    if preferences(owner).ai_mode == 'complex':
+    allowed = getattr(settings, 'ALLOWED_GEMINI_MODELS', ('gemini-3.5-flash-lite', 'gemini-3.8-flash'))
+    default_model = settings.GEMINI_MODEL if settings.GEMINI_MODEL in allowed else allowed[0]
+    if preferences(owner).ai_mode == 'complex' and 'gemini-3.8-flash' in allowed:
         # Published standard rates; the announced 2027 increase is included.
         future = date.today() >= date(2027, 1, 1)
         return 'gemini-3.8-flash', Decimal('1.50' if future else '.75'), Decimal('7.50' if future else '3.75')
-    return settings.GEMINI_MODEL, settings.AI_INPUT_USD_PER_M, settings.AI_OUTPUT_USD_PER_M
+    return default_model, settings.AI_INPUT_USD_PER_M, settings.AI_OUTPUT_USD_PER_M

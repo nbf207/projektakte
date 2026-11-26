@@ -54,7 +54,7 @@ class Release073Tests(TestCase):
 
     def test_settings_tree_crud_scope_and_ownership(self):
         url=reverse('settings');page=self.client.get(url,{'project':self.project.pk})
-        self.assertEqual(page.status_code,200);self.assertContains(page,'Stammdaten-Felder verwalten')
+        self.assertEqual(page.status_code,200);self.assertContains(page,'id="projekt-stammdaten"')
         identity=uuid.uuid4()
         payload={'project':self.project.pk,'scope':'field','object_id':identity,'version':0,'action':'save',
                  'template':'','label':'SYN global','field_type':'text','unit':'','placeholder':''}

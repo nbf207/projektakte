@@ -52,6 +52,7 @@
       if (button) {
         const dark = root.dataset.theme === 'dark';
         button.setAttribute('aria-pressed', String(dark));
+        button.setAttribute('aria-label', dark ? 'Hellmodus aktivieren' : 'Dunkelmodus aktivieren');
         button.textContent = dark ? 'Hellmodus' : 'Dunkelmodus';
         button.title = dark ? 'Hellmodus aktivieren' : 'Dunkelmodus aktivieren';
       }

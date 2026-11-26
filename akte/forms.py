@@ -243,7 +243,9 @@ class ReviewForm(forms.Form):
     def __init__(self,*args,owner=None,**kwargs):
         super().__init__(*args,**kwargs)
         if owner:
-            self.fields['chronicle_project'].queryset=Project.objects.filter(owner=owner,is_scan_inbox=False).filter(Q(archived=False)|Q(pk=self.initial.get('chronicle_project')))
+            initial_project=self.initial.get('chronicle_project')
+            project_filter=Q(archived=False)|Q(pk=initial_project) if initial_project else Q(archived=False)
+            self.fields['chronicle_project'].queryset=Project.objects.filter(owner=owner,is_scan_inbox=False).filter(project_filter)
             self.fields['chronicle_entry'].queryset=Entry.objects.filter(project__owner=owner,deleted_at__isnull=True).select_related('project')
         self.chronicle_names=[key for key in self.fields if key.startswith(('entry_','chronicle_'))]
         self.chronicle_fields=[self[key] for key in self.chronicle_names if not self.fields[key].widget.is_hidden]

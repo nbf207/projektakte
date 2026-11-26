@@ -25,5 +25,5 @@
 </div></main></div>
 <footer class="window-status"><span>{% if demo_mode %}Synthetische Testdaten{% else %}Dein persönlicher Workspace{% endif %}</span><span>KI-Vorschläge bleiben prüfbar.</span></footer>
 </div>
-{% include 'feedback.html' %}
+{% if feedback_widget_enabled %}{% include 'feedback.html' %}{% endif %}
 </body></html>

@@ -53,7 +53,7 @@ class ReleaseSecurityTests(TestCase):
 
     def test_all_mutating_routes_keep_csrf_enforcement(self):
         client=Client(enforce_csrf_checks=True);client.force_login(self.owner)
-        targets=[('capture_upload',[]),('voice_upload',[]),('share_save',[]),('document_upload',[]),
+        targets=[('capture_upload',[]),('share_save',[]),('document_upload',[]),
             ('document_action',[self.doc.pk]),('review_draft',[self.doc.pk]),('document_route',[self.doc.pk]),
             ('entry_delete',[self.entry.pk]),('document_delete',[self.doc.pk]),('export',[]),('project_new',[])]
         for name,args in targets:
@@ -109,7 +109,7 @@ class ReleaseSecurityTests(TestCase):
         from .models import Part,Task,Job
         self.client.force_login(self.owner)
         token=uuid.uuid4()
-        data={'name':'Once project','kind':'auto','field_editor':'expert','field_json':'{}','request_token':str(token)}
+        data={'name':'Once project','kind':'auto','position':'0','color':'#087f80','icon':'car','field_editor':'expert','field_json':'{}','request_token':str(token)}
         for _ in range(2):self.assertEqual(self.client.post(reverse('project_new'),data).status_code,302)
         project=Project.objects.get(pk=token)
         for route,model,values in [('part_new',Part,{'name':'Once part','state':'vorhanden'}),('task_new',Task,{'title':'Once task'})]:

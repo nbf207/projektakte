@@ -96,6 +96,7 @@ def monitor():
 @require_http_methods(['GET','POST'])
 def settings_center(request,section):
     if section not in dict(SECTIONS) or section=='projekte':raise Http404
+    if section=='feedback' and not settings.FEEDBACK_WIDGET_ENABLED:raise Http404
     pref=preferences(request.user);initial=preference_initial(pref)
     if not pref.mail_override:
         from .mail_config import mail_config
@@ -184,6 +185,26 @@ def settings_center(request,section):
     if budget_form is not None:
         spent = AIUsage.objects.filter(created__gte=budget_month_start()).aggregate(total=Sum('estimated_usd'))['total'] or 0
         context.update(budget_form=budget_form, budget_spent=spent, budget_max=settings.AI_MONTHLY_LIMIT)
+    if section == 'anbindungen':
+        from .integration_secrets import gemini_key
+        from .mail_config import mail_config
+        from .preferences import model_spec
+        ai_key_present = bool(gemini_key())
+        ai_active = bool(settings.AI_ENABLED and (ai_key_present or settings.DEMO_MODE))
+        ai_model_name = model_spec(request.user)[0]
+        paperless_active = bool(settings.PAPERLESS_URL and settings.PAPERLESS_TOKEN) or settings.DEMO_MODE
+        try:
+            mail_active = bool(mail_config()) or settings.DEMO_MODE
+        except ValueError:
+            mail_active = False
+        context.update(
+            ai_enabled=settings.AI_ENABLED,
+            ai_key_present=ai_key_present,
+            ai_active=ai_active,
+            ai_model_name=ai_model_name,
+            paperless_active=paperless_active,
+            mail_active=mail_active,
+        )
     if section=='konto':
         attempts=LoginAttempt.objects.filter(Q(owner=request.user)|Q(owner=None)) if system_access(request.user) else LoginAttempt.objects.filter(owner=request.user)
         recent=list(attempts.order_by('-created','-id')[:10])
@@ -246,6 +267,7 @@ def backup_download(request,pk):
 @login_required
 @require_safe
 def feedback_image(request,key,identity):
+    if not settings.FEEDBACK_WIDGET_ENABLED:raise Http404
     path=image_path(request.user,key,identity)
     response=FileResponse(path.open('rb'),content_type={'.jpg':'image/jpeg','.png':'image/png','.webp':'image/webp'}[path.suffix])
     response['Content-Security-Policy']="default-src 'none'"

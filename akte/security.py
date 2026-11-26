@@ -93,6 +93,13 @@ class SecurityHeadersMiddleware:
                 response['Content-Type'] = 'application/octet-stream'
                 if not response.get('Content-Disposition', '').startswith('attachment'):
                     response['Content-Disposition'] = content_disposition_header(True, filename) or 'attachment'
+        elif not request.path_info.startswith('/static/') and 'Content-Security-Policy' not in response:
+            response['Content-Security-Policy'] = (
+                "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; "
+                "img-src 'self' data: blob:; media-src 'self' blob:; font-src 'self'; "
+                "connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; "
+                "form-action 'self'; object-src 'none'"
+            )
         return response
 
 
@@ -157,6 +164,13 @@ class PreAuthRateMiddleware:
             response = self.request_budget(request, 'share', now)
             if response is not None:
                 return response
+        if path == '/setup/':
+            if request.method not in ('GET', 'HEAD', 'POST'):
+                return HttpResponseNotAllowed(('GET', 'HEAD', 'POST'))
+            response = self.request_budget(request, 'setup-requests', now)
+            if response is not None:
+                return response
+            return self.get_response(request)
         if path not in LOGIN_PATHS:
             return self.get_response(request)
         if request.method not in ('GET', 'HEAD', 'POST'):
