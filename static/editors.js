@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+function initEditors() {
   const changed = node => node.dispatchEvent(new Event('input', { bubbles: true }));
   const deleted = row => row.querySelector('input[name$="-DELETE"]')?.checked;
   const control = (row, suffix) => row.querySelector(`[name$="-${suffix}"]`);
@@ -32,6 +32,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   document.querySelectorAll('[data-formset]').forEach(section => {
+    if (section.dataset.editorBound) return;
+    section.dataset.editorBound = '1';
     const rows = section.querySelector('[data-editor-rows]');
     const total = section.querySelector('[name$="-TOTAL_FORMS"]');
     const maximum = Number(section.querySelector('[name$="-MAX_NUM_FORMS"]')?.value || 100);
@@ -66,6 +68,8 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.querySelectorAll('[data-editor-form]').forEach(form => {
+    if (form.dataset.editorFormBound) return;
+    form.dataset.editorFormBound = '1';
     const selector = form.querySelector('select[name="field_editor"],select[name="positions_editor"]');
     const mode = () => { for (const panel of form.querySelectorAll('[data-mode-panel]')) panel.hidden = panel.dataset.modePanel !== selector.value; };
     if (selector) { selector.addEventListener('change', () => { mode(); changed(selector); }); mode(); }
@@ -85,7 +89,8 @@ document.addEventListener('DOMContentLoaded', () => {
     return Number.isSafeInteger(amount) ? amount : null;
   }
   const review = document.querySelector('#review-form');
-  if (!review) return;
+  if (!review || review.dataset.reviewTotalsBound) return;
+  review.dataset.reviewTotalsBound = '1';
   function totals() {
     const t = window.t || (s => s);
     const locale = (document.documentElement.lang || 'de').toLowerCase().startsWith('en') ? 'en-US' : 'de-DE';
@@ -116,4 +121,6 @@ document.addEventListener('DOMContentLoaded', () => {
     else status.textContent = t('Zugeordnet: {allocated} · Offener Rest: {remainder}', { allocated: money(allocated), remainder: money(gross - allocated) }) + (connect.value ? t(' · Vorhandene Ausgabe wird verbunden.') : '');
   }
   review.addEventListener('input', totals); review.addEventListener('change', totals); totals();
-});
+}
+document.addEventListener('DOMContentLoaded', initEditors);
+document.addEventListener('lg:navigate', initEditors);

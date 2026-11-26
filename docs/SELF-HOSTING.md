@@ -35,8 +35,9 @@ Projektakte runs as two containers from the same multi-architecture image (`ghcr
    sudo install -d -m 0700 -o 10001 -g 10001 ./data
    ```
 
-2. **Configure HTTPS & reverse proxy in `.env`:**
+2. **Configure HTTPS & reverse proxy (or private LAN access) in `.env`:**
    - Terminate TLS at your reverse proxy (Caddy, Nginx, Traefik, Cloudflare Tunnel, etc.). `compose.yaml` binds only to `127.0.0.1:${APP_PORT:-8010}:8000` on the host.
+   - If you access the app directly over a private LAN/VPN without a reverse proxy, add your server's LAN IP/hostname to `ALLOWED_HOSTS` (keeping `127.0.0.1` for the healthcheck) and change the port mapping in `compose.yaml` to `${APP_PORT:-8010}:8000`.
    - For any public/internet-facing installation, set:
 
      ```dotenv

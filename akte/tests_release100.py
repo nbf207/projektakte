@@ -289,3 +289,64 @@ class Paket1SelfHosterAndSecurityTests(TestCase):
             for _ in range(60):
                 self.assertEqual(anon.get('/setup/').status_code, 200)
             self.assertEqual(anon.get('/setup/').status_code, 429)
+
+
+class Pre100PiAndSoftNavRegressionTests(TestCase):
+    databases = {'default', 'demo'}
+
+    def test_healthcheck_accepts_setup_redirect_at_zero_users(self):
+        import os
+        from akte import healthcheck
+        with tempfile.TemporaryDirectory() as tmp:
+            db_path = Path(tmp) / 'db.sqlite3'
+            with closing(sqlite3.connect(db_path)) as conn:
+                conn.execute('CREATE TABLE t (id INTEGER)')
+            fake_resp = mock.Mock(status=302)
+            fake_resp.getheader.return_value = '/setup/'
+            fake_conn = mock.Mock()
+            fake_conn.getresponse.return_value = fake_resp
+            with mock.patch.dict(os.environ, {'DATA_DIR': tmp}), \
+                 mock.patch('akte.healthcheck.http.client.HTTPConnection', return_value=fake_conn):
+                healthcheck.main()
+            fake_conn.request.assert_called_once_with('HEAD', '/login/', headers={'Host': '127.0.0.1'})
+
+    def test_dockerignore_keeps_rollback_db_management_command(self):
+        from django.conf import settings as django_settings
+        root = Path(django_settings.BASE_DIR)
+        cmd = root / 'akte' / 'management' / 'commands' / 'rollback_db.py'
+        self.assertTrue(cmd.is_file())
+        dockerignore = (root / '.dockerignore').read_text(encoding='utf-8').splitlines()
+        self.assertIn('!akte/management/commands/rollback_db.py', [line.strip() for line in dockerignore])
+
+    def test_prepare_startup_migrates_demo_database_when_file_backed(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            demo_db = Path(tmp) / 'demo.sqlite3'
+            fake_default = mock.Mock()
+            fake_default.settings_dict = {'NAME': ':memory:'}
+            fake_demo = mock.Mock()
+            fake_demo.settings_dict = {'NAME': str(demo_db)}
+            fake_conns = {'default': fake_default, 'demo': fake_demo}
+            with mock.patch('akte.updates.connections', fake_conns), \
+                 mock.patch('akte.updates.check_downgrade'), \
+                 mock.patch('akte.updates.pending_migrations', side_effect=[[], [('akte', '0001_initial')]]), \
+                 mock.patch('akte.updates.call_command') as mock_cmd:
+                prepare_startup(data_dir=tmp, app_version='0.9.0', auto_migrate=True)
+                mock_cmd.assert_called_once_with('migrate', database='demo', interactive=False, verbosity=0)
+
+    def test_demo_language_switch_immediately_after_start_is_not_rate_limited(self):
+        from akte.security import security_cache
+        security_cache().clear()
+        self.addCleanup(security_cache().clear)
+        client = self.client.__class__()
+        start = client.post('/demo/start/', HTTP_ACCEPT_LANGUAGE='en-US,en;q=0.9')
+        self.assertEqual(start.status_code, 302)
+        switch = client.post('/demo/sprache/', {'language': 'de', 'next': '/demo/'})
+        self.assertEqual(switch.status_code, 302)
+        self.assertEqual(switch['Location'], '/demo/')
+
+    def test_soft_nav_scripts_rebind_on_lg_navigate(self):
+        from django.conf import settings as django_settings
+        static_dir = Path(django_settings.BASE_DIR) / 'static'
+        for name in ('theme.js', 'editors.js', 'app.js', 'handover.js', 'capture.js', 'voice.js'):
+            text = (static_dir / name).read_text(encoding='utf-8')
+            self.assertIn('lg:navigate', text, f'{name} must re-initialize on lg:navigate')

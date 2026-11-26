@@ -149,7 +149,7 @@ class PreAuthRateMiddleware:
         if path.startswith('/demo/'):
             response = self.request_budget(request, 'demo-requests', time.time())
             if response is not None: return response
-            if request.method == 'POST':
+            if request.method == 'POST' and path != '/demo/sprache/':
                 cache = security_cache()
                 key = ip_key(request, 'demo-post')
                 with _cache_lock:

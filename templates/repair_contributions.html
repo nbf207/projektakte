@@ -4,6 +4,6 @@
   {% for item in contributions %}
     <p><a href="{% url 'knowledge_detail' item.pk %}">{{ item.title }}</a>{% if item.youtube_id %} · YouTube{% endif %}</p>
   {% empty %}
-    <p class="muted">{% trans 'Hier kannst du eigene Hinweise zu den BMW-Originalunterlagen ablegen.' %}</p>
+    <p class="muted">{% trans 'Hier kannst du eigene Hinweise zu den Originalunterlagen ablegen.' %}</p>
   {% endfor %}
 </section>

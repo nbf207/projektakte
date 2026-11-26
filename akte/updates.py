@@ -324,6 +324,11 @@ def prepare_startup(data_dir=None, app_version=None, auto_migrate=None, keep=5, 
             if db_path and db_path.exists():
                 snapshot = create_pre_migrate_snapshot(db_path, data_dir, app_version, keep=keep)
             call_command('migrate', database=connection_alias, interactive=False, verbosity=1)
+        if connection_alias == 'default' and 'demo' in connections:
+            demo_conn = connections['demo']
+            demo_name = demo_conn.settings_dict.get('NAME')
+            if demo_name and str(demo_name) != ':memory:' and pending_migrations(demo_conn):
+                call_command('migrate', database='demo', interactive=False, verbosity=0)
 
     write_app_version(data_dir, app_version)
     return snapshot

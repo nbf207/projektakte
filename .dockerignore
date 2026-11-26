@@ -57,6 +57,8 @@
 **/rollback_*
 **/rollback.*
 **/*-rollback
+# Keep the Django rollback_db management command in the image.
+!akte/management/commands/rollback_db.py
 **/*.db
 **/*.db-*
 **/*.sqlite*

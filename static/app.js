@@ -51,16 +51,21 @@ document.addEventListener('DOMContentLoaded',()=>{
     // versions are independent, and a late draft cannot recreate confirmed data.
     form.addEventListener('submit',()=>{clearTimeout(timer);submitting=true;latest=null});
   };
-  document.querySelectorAll('form[data-autosave]').forEach(form=>autosave(form,false));
-  document.querySelectorAll('form[data-review-autosave]').forEach(form=>autosave(form,true));
-  document.querySelectorAll('[data-add-allocation]').forEach(btn=>btn.addEventListener('click',()=>{const rows=document.querySelector('#allocation-rows'),copy=rows.lastElementChild.cloneNode(true);copy.querySelectorAll('input').forEach(e=>e.value='');copy.querySelectorAll('select').forEach(e=>e.selectedIndex=0);rows.append(copy)}));
-  document.querySelectorAll('form[data-upload]').forEach(form=>form.addEventListener('submit',event=>{
-    const t=window.t||(s=>s);
-    event.preventDefault();const xhr=new XMLHttpRequest(),progress=form.querySelector('progress'),status=form.querySelector('.upload-status'),button=form.querySelector('button');button.disabled=true;progress.hidden=false;status.textContent=t('Upload läuft. Annahme wird nach dauerhafter Speicherung bestätigt.');
-    xhr.open('POST',form.action||location.href);xhr.setRequestHeader('X-Requested-With','XMLHttpRequest');xhr.upload.onprogress=e=>{if(e.lengthComputable)progress.value=e.loaded/e.total*100};
-    xhr.onload=()=>{button.disabled=false;if(xhr.status>=200&&xhr.status<400){location.assign(xhr.responseURL)}else {let message=t('Upload nicht bestätigt. Eingabe bleibt erhalten; Status im Eingang prüfen.');try{message=JSON.parse(xhr.responseText).error||message}catch{}status.textContent=message}};
-    xhr.onerror=()=>{button.disabled=false;status.textContent=t('Verbindung unklar. Eingang prüfen; identische Datei wird anhand ihres Hashes wiedererkannt.')};xhr.send(new FormData(form));
-  }));
+  const initContent = () => {
+    document.querySelectorAll('form[data-autosave]').forEach(form=>{if(form.dataset.autosaveBound)return;form.dataset.autosaveBound='1';autosave(form,false);});
+    document.querySelectorAll('form[data-review-autosave]').forEach(form=>{if(form.dataset.autosaveBound)return;form.dataset.autosaveBound='1';autosave(form,true);});
+    document.querySelectorAll('[data-add-allocation]').forEach(btn=>{if(btn.dataset.allocBound)return;btn.dataset.allocBound='1';btn.addEventListener('click',()=>{const rows=document.querySelector('#allocation-rows'),copy=rows.lastElementChild.cloneNode(true);copy.querySelectorAll('input').forEach(e=>e.value='');copy.querySelectorAll('select').forEach(e=>e.selectedIndex=0);rows.append(copy)});});
+    document.querySelectorAll('form[data-upload]').forEach(form=>{if(form.dataset.uploadBound)return;form.dataset.uploadBound='1';form.addEventListener('submit',event=>{
+      const t=window.t||(s=>s);
+      event.preventDefault();const xhr=new XMLHttpRequest(),progress=form.querySelector('progress'),status=form.querySelector('.upload-status'),button=form.querySelector('button');button.disabled=true;progress.hidden=false;status.textContent=t('Upload läuft. Annahme wird nach dauerhafter Speicherung bestätigt.');
+      xhr.open('POST',form.action||location.href);xhr.setRequestHeader('X-Requested-With','XMLHttpRequest');xhr.upload.onprogress=e=>{if(e.lengthComputable)progress.value=e.loaded/e.total*100};
+      xhr.onload=()=>{button.disabled=false;if(xhr.status>=200&&xhr.status<400){location.assign(xhr.responseURL)}else {let message=t('Upload nicht bestätigt. Eingabe bleibt erhalten; Status im Eingang prüfen.');try{message=JSON.parse(xhr.responseText).error||message}catch{}status.textContent=message}};
+      xhr.onerror=()=>{button.disabled=false;status.textContent=t('Verbindung unklar. Eingang prüfen; identische Datei wird anhand ihres Hashes wiedererkannt.')};xhr.send(new FormData(form));
+    });});
+    document.querySelectorAll('[data-ai-field]').forEach(marker=>{if(marker.dataset.aiFieldBound)return;marker.dataset.aiFieldBound='1';const field=document.getElementsByName(marker.dataset.aiField)[0];if(!field)return;const initial=field.value;field.addEventListener('input',()=>{marker.hidden=field.value!==initial});field.addEventListener('change',()=>{marker.hidden=field.value!==initial})});
+    if(location.pathname==='/suche/'){const input=document.querySelector('main input[name=q]');if(input&&!input.value)input.focus();}
+    restoreChronicle();
+  };
   const chronicleKey=()=> 'chronik:'+location.pathname+location.search;
   const chronicleRows=()=>[...document.querySelectorAll('details[data-chronicle-id]')];
   const rememberChronicle=()=>{
@@ -83,19 +88,13 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.addEventListener('htmx:beforeRequest',rememberChronicle);
   document.addEventListener('htmx:afterSettle',restoreChronicle);
   addEventListener('pagehide',rememberChronicle);
-  restoreChronicle();
+  document.addEventListener('lg:navigate',initContent);
+  initContent();
 });
 
-// Hide an interpretation marker when its proposed field is manually replaced.
-document.addEventListener("DOMContentLoaded",()=>{document.querySelectorAll("[data-ai-field]").forEach(marker=>{const field=document.getElementsByName(marker.dataset.aiField)[0];if(!field)return;const initial=field.value;field.addEventListener("input",()=>{marker.hidden=field.value!==initial});field.addEventListener("change",()=>{marker.hidden=field.value!==initial})})});
-
-// Quick-search shortcut ('/' or Ctrl/Cmd+K) and subtle autofocus on empty search page.
+// Quick-search shortcut ('/' or Ctrl/Cmd+K).
 document.addEventListener('DOMContentLoaded',()=>{
   const searchLink=document.querySelector('.window-search');
-  if(location.pathname==='/suche/'){
-    const input=document.querySelector('main input[name=q]');
-    if(input&&!input.value)input.focus();
-  }
   document.addEventListener('keydown',event=>{
     const tag=document.activeElement?.tagName;
     const typing=tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT'||document.activeElement?.isContentEditable;

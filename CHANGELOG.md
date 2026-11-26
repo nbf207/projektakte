@@ -6,7 +6,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
-- Final polish and stabilization toward release `1.0.0`.
+## [1.0.0] - 2026-11-26
+
+First stable release of **Projektakte** — self-hosted, bilingual (English & German) project logbook for repairs, maintenance, and receipts, ready for Raspberry Pi 4 (2 GB RAM) and `amd64`/`arm64` Docker hosts.
+
+### Added
+- **Pre-1.0.0 regression tests (`akte/tests_release100.py`):** Automated coverage for zero-user healthchecks, `.dockerignore` preservation of `rollback_db.py`, automatic `demo` database migration on startup, demo language-switch rate limits, and `lg:navigate` soft-navigation re-initialization (322 passing tests).
+- **English README screenshots:** Refreshed `docs/screenshots/desktop-overview.png` and `docs/screenshots/mobile-capture.png` captured from the English workspace, plus a clean AI-generated sample photo for `static/demo/werkstatt.jpg`.
+- **LAN quickstart guidance:** Added a concise note on `ALLOWED_HOSTS` and host port binding for private LAN/Raspberry Pi access in `README.md` and `docs/SELF-HOSTING.md`.
+
+### Changed
+- **Default `compose.yaml` image tag:** Updated default image pin to `ghcr.io/nbf207/projektakte:1.0.0`.
+- **Neutralized generic templates:** Removed personal/vehicle-specific wording (BMW/E82/ISTA references) from `templates/import.html`, `templates/repair_library.html`, `templates/repair_document.html`, and `templates/repair_contributions.html`, and updated the English translation catalog (`1,085` entries, `0` fuzzy/missing).
+
+### Fixed
+- **Fresh-start container healthcheck (`akte/healthcheck.py`):** Accepted `302 -> /setup/` at 0 users so `web` becomes `healthy` immediately and `worker` starts cleanly on the very first `docker compose up -d`; also wrapped the SQLite probe in `contextlib.closing()`.
+- **Docker image packaging (`.dockerignore`):** Explicitly kept `akte/management/commands/rollback_db.py` in Docker images (`!akte/management/commands/rollback_db.py`) so `python manage.py rollback_db` is always available inside containers.
+- **Fresh-container Live Demo (`akte/updates.py`):** Automatically migrate the file-backed `demo` database during `prepare_startup()` so `/demo/start/` works immediately without returning `503`.
+- **Demo language switching (`akte/security.py`):** Exempted `POST /demo/sprache/` from the 3-second demo-post mutex (while keeping the 60 req/min budget) so switching language right after starting the demo never triggers `429`.
+- **Soft-navigation UI binding (`static/theme.js`, `static/editors.js`, `static/app.js`, `static/handover.js`):** Re-initialized appearance controls (`/einstellungen/darstellung/`), formset editors, autosave/upload forms, AI markers, chronicle state, and handover print triggers idempotently on `lg:navigate` so interactive controls work seamlessly without manual page reloads.
 
 ## [0.9.0] - 2026-11-26
 

@@ -3240,3 +3240,24 @@ msgstr "also under"
 
 msgid "gespeichert"
 msgstr "saved"
+
+msgid "%(vehicle)s – Vorauswahl"
+msgstr "%(vehicle)s – preselection"
+
+msgid "Die KI erklärt Arbeitsumfang und Unterschiede vorhandener Originalanleitungen für dein Fahrzeug. Die Fahrzeug-Vorauswahl ersetzt keine Prüfung der Gültigkeitsangaben."
+msgstr "AI explains the scope and differences of available original manuals for your vehicle. Vehicle preselection does not replace checking applicability."
+
+msgid "Die Vorauswahl ist keine Bestätigung sämtlicher Gültigkeitsbedingungen. Motor, Baureihe, Ausstattung und Arbeitsvorschriften in jeder Originalunterlage prüfen. Der Bestand enthält auch andere Varianten. Interaktive Diagnoseprogramme werden nicht ausgeführt."
+msgstr "Preselection does not confirm all applicability conditions. Verify engine, series, equipment, and procedures in each original document. The archive also contains other variants. Interactive diagnostic programs are not executed."
+
+msgid "Hier kannst du eigene Hinweise zu den Originalunterlagen ablegen."
+msgstr "Store your own notes for the original documents here."
+
+msgid "Originalquelle bleibt unverändert. CSV/JSON mit Spalten title;date;km;cost;description;kind. Deutsche Zahlen und ungenaue Daten sind erlaubt. PDF-Text wird seitenweise als Prüfentwurf übernommen. Datum, Kilometer und Kosten werden dabei nicht geraten. Zeilen vor Bestätigung fachlich aufteilen und korrigieren. Strukturierte Wartungstabellen werden als Entwurf erkannt; unbekannte Felder bleiben leer."
+msgstr "Original source stays untouched. CSV/JSON with columns title;date;km;cost;description;kind. German numbers and partial dates are supported. PDF text is imported page by page as a review draft without guessing dates, mileage, or costs. Split and correct rows before confirming. Structured maintenance tables are parsed as a draft; unknown fields stay empty."
+
+msgid "Originalunterlagen aus deinem lokalen Export"
+msgstr "Original documents from your local export"
+
+msgid "Werkstatthandbuch-Export · Quellen-ID %(res_id)s · %(doc_id)s"
+msgstr "Workshop manual export · Source ID %(res_id)s · %(doc_id)s"

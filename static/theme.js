@@ -91,12 +91,18 @@
   }
   for (const name of Object.keys(options)) apply(name, read(name));
   refreshCustomColors();
-  document.addEventListener('DOMContentLoaded', () => {
+  function bindAppearanceUI() {
     const t = window.t || (s => s);
     for (const name of Object.keys(options)) apply(name, root.dataset[name]);
     syncBrowserColor();
-    document.getElementById('theme-toggle')?.addEventListener('click', () => choose('theme', root.dataset.theme === 'dark' ? 'light' : 'dark'));
+    const toggle = document.getElementById('theme-toggle');
+    if (toggle && !toggle.dataset.themeBound) {
+      toggle.dataset.themeBound = '1';
+      toggle.addEventListener('click', () => choose('theme', root.dataset.theme === 'dark' ? 'light' : 'dark'));
+    }
     document.querySelectorAll('[data-appearance]').forEach(input => {
+      if (input.dataset.appearanceBound) return;
+      input.dataset.appearanceBound = '1';
       const name = input.dataset.appearance;
       if (!Object.hasOwn(options, name)) return;
       if (options[name].color) {
@@ -110,7 +116,9 @@
         input.addEventListener('change', () => { if (input.checked) choose(name, input.value); });
       }
     });
-  });
+  }
+  document.addEventListener('DOMContentLoaded', bindAppearanceUI);
+  document.addEventListener('lg:navigate', bindAppearanceUI);
   window.addEventListener('storage', event => {
     if (event.key !== null && !Object.values(options).some(option => option.key === event.key)) return;
     for (const name of Object.keys(options)) apply(name, read(name));

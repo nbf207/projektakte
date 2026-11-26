@@ -61,6 +61,8 @@ On first start, the `web` container automatically:
 
 Open [http://127.0.0.1:8010/](http://127.0.0.1:8010/)—with zero users in the database, you are redirected to the one-time `/setup/` page to create your admin account directly in the browser. Once created, `/setup/` is permanently disabled (`404`).
 
+> **Accessing from another device on your LAN (e.g. Raspberry Pi):** Add your server's LAN IP or hostname to `ALLOWED_HOSTS` in `.env` (keep `127.0.0.1` for the healthcheck) and change the port binding in `compose.yaml` from `127.0.0.1:${APP_PORT:-8010}:8000` to `${APP_PORT:-8010}:8000` (or place a reverse proxy with HTTPS in front).
+
 ### 2. Enable Optional Integrations Anytime Later
 
 AI (Google Gemini), Paperless-ngx, IMAP mail import, and reverse-proxy HTTPS are all **optional**. You can start clean and enable any of them later without reinstalling or touching your data: edit `.env` and run `docker compose up -d`.
