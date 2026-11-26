@@ -93,7 +93,7 @@ Do **not** run `seed_demo` on a production database. See the full [Self-Hosting 
 
 ## Development Note
 
-Large parts of this project—including architecture iterations, backend features, security hardening, and UI polish—were built with AI coding assistance, primarily using **6.1 Sol**, **6 Astra**, **6.2 Sol**, and **4 Neon**. All changes were reviewed and tested against a real self-hosted Raspberry Pi 4 setup.
+Large parts of this project—including architecture iterations, backend features, security hardening, and UI polish—were built with AI coding assistance, primarily using **6.1 Sol**, **6 Astra**, **6.2 Sol**, and **4 Neon**. Core workflows were tested on a self-hosted Raspberry Pi 4.
 
 ---
 
