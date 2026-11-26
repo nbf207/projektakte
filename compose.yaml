@@ -1,15 +1,19 @@
 name: projektakte
+
 x-app: &app
-  build:
-    context: .
-    args:
-      PYTHON_IMAGE: ${PYTHON_IMAGE:-python:3.14.10-slim-trixie}
-  image: projektakte:0.7.30
-  env_file: ${PROJEKTAKTE_ENV_FILE:-.env}
+  # Prebuilt multi-arch image (linux/amd64 + linux/arm64 for Raspberry Pi).
+  # Pin to a specific version tag for reproducible updates and clean rollbacks.
+  # To build locally from source, combine with deployment/compose-build.yaml.
+  image: ${PROJEKTAKTE_IMAGE:-ghcr.io/nbf207/projektakte:0.7.30}
+  env_file:
+    - path: ${PROJEKTAKTE_ENV_FILE:-.env}
+      required: false
   environment:
     DATA_DIR: /data
   volumes:
-    - ${APP_DATA_DIR:-./data}:/data
+    # Named volume avoids host UID 10001 permission issues out of the box.
+    # Replace with "./data:/data" (owned by 10001:10001) if you prefer a host bind-mount.
+    - projektakte_data:/data
   restart: unless-stopped
   init: true
   security_opt:
@@ -19,22 +23,31 @@ x-app: &app
   tmpfs:
     - /tmp:size=64m,mode=1777
   read_only: true
+
 services:
   web:
     <<: *app
     ports:
       - "127.0.0.1:${APP_PORT:-8010}:8000"
-    command: ["python", "serve.py", "--host", "0.0.0.0", "--port", "8000"]
+    command: ["python", "scripts/entrypoint.py", "--host", "0.0.0.0", "--port", "8000"]
     healthcheck:
       test: ["CMD", "python", "-m", "akte.healthcheck"]
-      interval: 30s
+      interval: 15s
       timeout: 8s
+      start_period: 25s
       retries: 3
+
   worker:
     <<: *app
+    depends_on:
+      web:
+        condition: service_healthy
     command: ["python", "manage.py", "worker"]
     healthcheck:
       test: ["CMD", "python", "scripts/worker_health.py"]
       interval: 30s
       timeout: 8s
       retries: 3
+
+volumes:
+  projektakte_data:

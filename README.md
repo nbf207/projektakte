@@ -42,44 +42,45 @@ Projektakte is intentionally built as a lean, self-contained **Django monolith**
 
 ## Quickstart with Docker Compose
 
-### 1. Local Demo (Loopback Only)
+Prebuilt multi-architecture images (`linux/amd64` and `linux/arm64` for Raspberry Pi) are published to GitHub Container Registry (`ghcr.io/nbf207/projektakte`). No local build or repository clone is required.
 
-Create a local `.env` from the provided template. The defaults run in `DEMO_MODE=1` on `127.0.0.1` with synthetic sample data:
+### 1. Minimal First Start (Local / LAN)
+
+Download `compose.yaml` and `.env.example`, copy `.env.example` to `.env`, and start:
 
 ```sh
 cp .env.example .env
+docker compose up -d
 ```
 
 *(PowerShell: `Copy-Item .env.example .env`)*
 
-On Linux, prepare the data directory so the unprivileged container user (`UID/GID 10001`) can write to it, then build, migrate, seed the demo dataset, and start:
+On first start, the `web` container automatically:
+1. Generates a persistent random secret key inside the `/data` volume (`/data/.secret-key`) if `SECRET_KEY` is left empty.
+2. Runs database migrations safely before accepting traffic (with `worker` waiting until `web` is healthy).
+
+Open [http://127.0.0.1:8010/](http://127.0.0.1:8010/)—with zero users in the database, you are redirected to the one-time `/setup/` page to create your admin account directly in the browser. Once created, `/setup/` is permanently disabled (`404`).
+
+### 2. Enable Optional Integrations Anytime Later
+
+AI (Google Gemini), Paperless-ngx, IMAP mail import, and reverse-proxy HTTPS are all **optional**. You can start clean and enable any of them later without reinstalling or touching your data: edit `.env` and run `docker compose up -d`.
+
+### 3. Safe Updates & Rollback
 
 ```sh
-sudo install -d -m 0700 -o 10001 -g 10001 ./data
-docker compose build
-docker compose run --rm --no-deps web python manage.py migrate --noinput
-docker compose run --rm --no-deps web python manage.py seed_demo
+docker compose pull
 docker compose up -d
-docker compose ps
 ```
 
-Open [http://127.0.0.1:8010/](http://127.0.0.1:8010/) and sign in with the local synthetic demo account:
-- **Username:** `demo`
-- **Password:** `Projektakte-Demo-2026!`
+Whenever a new version includes database migrations, Projektakte automatically verifies SQLite integrity and saves a consistent pre-migration snapshot to `/data/backups/pre-migrate/` before migrating. If you ever need to roll back, pin the previous image tag in `compose.yaml` and restore the snapshot via `python manage.py rollback_db --restore latest`.
 
-### 2. Production Self-Hosting (Linux / Raspberry Pi)
+### 4. Building Locally or Running on Raspberry Pi
 
-For real data, use a fresh empty `APP_DATA_DIR`, set `DEMO_MODE=0`, `DEBUG=0`, `HTTPS=1`, a strong random `SECRET_KEY`, and your reverse-proxy host settings in `.env`. On low-memory hosts or when mounting secret files from `./secrets`, combine the root `compose.yaml` with the optional Pi override:
+- **Local build from source:** `docker compose -f compose.yaml -f deployment/compose-build.yaml up -d --build`
+- **Raspberry Pi limits & secret mounts:** `docker compose -f compose.yaml -f deployment/compose-pi.example.yaml up -d`
+- **Local synthetic demo:** Set `DEMO_MODE=1` in `.env`, run `docker compose run --rm --no-deps web python manage.py seed_demo`, and sign in as `demo` / `Projektakte-Demo-2026!`.
 
-```sh
-docker compose -f compose.yaml -f deployment/compose-pi.example.yaml config --quiet
-docker compose -f compose.yaml -f deployment/compose-pi.example.yaml build
-docker compose -f compose.yaml -f deployment/compose-pi.example.yaml run --rm --no-deps web python manage.py migrate --noinput
-docker compose -f compose.yaml -f deployment/compose-pi.example.yaml run --rm --no-deps web python manage.py createsuperuser
-docker compose -f compose.yaml -f deployment/compose-pi.example.yaml up -d
-```
-
-Do **not** run `seed_demo` on a production database. See the full [Self-Hosting & Operations Guide](docs/SELF-HOSTING.md) for reverse-proxy/TLS setup, Paperless-ngx, Gemini, IMAP, and verified backup/restore procedures.
+See the full [Self-Hosting & Operations Guide](docs/SELF-HOSTING.md) for reverse-proxy/TLS setup, integrations, backups, and rollback details.
 
 ---
 

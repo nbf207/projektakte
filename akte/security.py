@@ -20,7 +20,7 @@ from django.utils.http import content_disposition_header
 from .operations import operation_gate
 
 LOGIN_PATHS = frozenset(('/login/', '/anmelden/'))
-PUBLIC_VIEWS = {'login': '/login/', 'manifest': '/manifest.json', 'service_worker': '/sw.js'}
+PUBLIC_VIEWS = {'login': '/login/', 'first_run_setup': '/setup/', 'manifest': '/manifest.json', 'service_worker': '/sw.js'}
 # No bearer-link feature exists. Never exempt an arbitrary /teilen/<token>/ prefix.
 # Future share routes must be reviewed and registered by exact route name here,
 # and must validate token expiry + explicit file membership in their own view.
@@ -244,6 +244,13 @@ class GuardedSessionMiddleware(SessionMiddleware):
 
 
 class SecureLoginView(LoginView):
+    def dispatch(self, request, *args, **kwargs):
+        if not settings.DEMO_MODE:
+            from django.contrib.auth import get_user_model
+            if not get_user_model().objects.exists():
+                return HttpResponseRedirect('/setup/')
+        return super().dispatch(request, *args, **kwargs)
+
     def form_valid(self, form):
         with operation_gate():
             response = super().form_valid(form)

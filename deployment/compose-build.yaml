@@ -1,0 +1,15 @@
+# Optional override to build the Docker image locally from source instead of pulling from GHCR.
+# Usage: docker compose -f compose.yaml -f deployment/compose-build.yaml up -d --build
+services:
+  web:
+    build:
+      context: .
+      args:
+        PYTHON_IMAGE: ${PYTHON_IMAGE:-python:3.14.10-slim-trixie}
+    image: projektakte:local
+  worker:
+    build:
+      context: .
+      args:
+        PYTHON_IMAGE: ${PYTHON_IMAGE:-python:3.14.10-slim-trixie}
+    image: projektakte:local

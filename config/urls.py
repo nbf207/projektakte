@@ -2,6 +2,7 @@ from django.contrib.auth import views as auth
 from django.urls import path
 from akte import views as v
 from akte.security import SecureLoginView
+from akte.setup_views import first_run_setup
 from akte import capture_views, share_views
 from akte.purge_views import purge
 from akte.maintenance_views import maintenance
@@ -47,7 +48,7 @@ urlpatterns=[
     path('papierkorb/<str:kind>/<uuid:pk>/endgueltig/',purge,name='purge'),
     path('wartungsplan/',maintenance,name='maintenance'),path('wartungsplan/<uuid:pk>/',maintenance,name='maintenance_edit'),path('projekte/<uuid:project_id>/wartungsplan/',maintenance,name='project_maintenance'),
     path('',v.home,name='home'),path('health/',v.health,name='health'),
-    path('login/',SecureLoginView.as_view(template_name='login.html'),name='login'),path('anmelden/',SecureLoginView.as_view(template_name='login.html'),name='legacy_login'),path('abmelden/',auth.LogoutView.as_view(),name='logout'),
+    path('login/',SecureLoginView.as_view(template_name='login.html'),name='login'),path('anmelden/',SecureLoginView.as_view(template_name='login.html'),name='legacy_login'),path('setup/',first_run_setup,name='first_run_setup'),path('abmelden/',auth.LogoutView.as_view(),name='logout'),
     path('projekte/neu/',v.project_edit,name='project_new'),path('projekte/<uuid:pk>/',v.project_view,name='project'),path('projekte/<uuid:pk>/bearbeiten/',v.project_edit,name='project_edit'),
     path('projekte/<uuid:project_id>/eintrag/',v.entry_edit,name='entry_new'),path('projekte/<uuid:project_id>/entwurf/',v.draft_save,name='draft_save'),
     path('vorgaenge/<uuid:pk>/',v.entry_detail,name='entry'),path('vorgaenge/<uuid:pk>/bearbeiten/',v.entry_edit,name='entry_edit'),path('vorgaenge/<uuid:pk>/verbinden/',v.entry_merge,name='entry_merge'),path('vorgaenge/<uuid:pk>/papierkorb/',v.entry_delete,name='entry_delete'),path('papierkorb/',v.trash,name='trash'),

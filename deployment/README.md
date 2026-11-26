@@ -3,6 +3,9 @@
 The root [Compose file](../compose.yaml) is the self-hosting entry point. The
 [Self-Hosting & Operations Guide](../docs/SELF-HOSTING.md) applies to Linux and Raspberry Pi.
 
+- `compose-build.yaml` overrides the default prebuilt GHCR image to build locally
+  from source:
+  `docker compose -f compose.yaml -f deployment/compose-build.yaml up -d --build`.
 - `compose-pi.example.yaml` adds optional CPU/process limits and mounts the
   installer's protected `./secrets` folder read-only. Set the relevant
   `*_FILE` variables in the private configuration. Use both Compose files, e.g.

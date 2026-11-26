@@ -8,6 +8,7 @@ class Command(BaseCommand):
     def handle(self,*args,**o):
         # --offline remains accepted for older maintenance scripts. The actual
         # application write gate is enforced regardless of this flag.
-        if not settings.DEMO_MODE and not o['paperless_bundle']: raise CommandError('Live-Sicherung braucht zusammengehöriges Paperless-Bundle (--paperless-bundle). Konfiguration separat geschützt sichern.')
+        if not settings.DEMO_MODE and settings.PAPERLESS_URL and not o['paperless_bundle']:
+            raise CommandError('Live-Sicherung mit aktiviertem Paperless braucht zusammengehöriges Paperless-Bundle (--paperless-bundle). Konfiguration separat geschützt sichern.')
         try: self.stdout.write(str(backup(o['destination'],o['paperless_bundle'])))
         except (ValueError,OSError) as e: raise CommandError(str(e))

@@ -10,4 +10,4 @@ COPY . .
 RUN DEMO_MODE=1 DATA_DIR=/tmp/akte-build python manage.py collectstatic --noinput && mkdir -p /data && chown 10001:10001 /data
 USER 10001:10001
 EXPOSE 8000
-CMD ["python", "serve.py", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["python", "scripts/entrypoint.py", "--host", "0.0.0.0", "--port", "8000"]

@@ -1,19 +1,19 @@
 # Projektakte · Self-Hosting & Operations Guide
 
-This guide covers production deployment on Linux and Raspberry Pi (including 2 GB RAM models), reverse-proxy/TLS configuration, external integrations, consistent backups, verified restores, and safe updates.
+This guide covers production deployment on Linux and Raspberry Pi (including 2 GB RAM models), reverse-proxy/TLS setup, optional integrations, automatic pre-migration snapshots, verified backups, and safe rollbacks.
 
-For a quick loopback-only demo, see the root [README](../README.md).
+For a quick local start, see the root [README](../README.md).
 
 ---
 
 ## 1. Architecture Overview
 
-Projektakte runs as two containers built from the same image (`compose.yaml`):
+Projektakte runs as two containers from the same multi-architecture image (`ghcr.io/nbf207/projektakte`, supporting `linux/amd64` and `linux/arm64`):
 
 | Service | Command | Role |
 | --- | --- | --- |
-| `web` | `python serve.py --host 0.0.0.0 --port 8000` | Waitress WSGI server + Django + WhiteNoise static serving |
-| `worker` | `python manage.py worker` | Single serial background worker (OCR sync, Gemini extraction, thumbnails, IMAP import, exports, backups, demo cleanup) |
+| `web` | `python scripts/entrypoint.py --host 0.0.0.0 --port 8000` | Startup safety checks, auto-secret/migrate, then Waitress WSGI + Django + WhiteNoise |
+| `worker` | `python manage.py worker` | Single serial background worker (OCR sync, Gemini extraction, thumbnails, IMAP import, exports, backups); waits for `web` to become `healthy` |
 
 - **Storage:** SQLite (`/data/db.sqlite3`) in `IMMEDIATE` transaction mode, coordinated across `web` and `worker` by a shared OS file lock (`akte/operations.py`). Media, backups, and feedback live under `/data/`.
 - **Container hardening:** Both services run as unprivileged UID/GID `10001`, with `read_only: true`, `cap_drop: [ALL]`, `no-new-privileges:true`, and a 64 MiB `/tmp` tmpfs. Neither container needs Docker socket access.
@@ -23,116 +23,133 @@ Projektakte runs as two containers built from the same image (`compose.yaml`):
 
 ## 2. Production Installation (Linux / Raspberry Pi)
 
-1. **Prepare the directory and configuration:**
-   Copy `.env.example` to `.env` in your deployment directory. Choose a dedicated empty `APP_DATA_DIR` for a new installation and make it writable by container UID/GID `10001`:
+1. **Prepare configuration:**
+   Place `compose.yaml` and `.env.example` in your deployment folder and copy `.env.example` to `.env`:
 
    ```sh
    cp .env.example .env
+   ```
+
+   By default, `compose.yaml` uses the named Docker volume `projektakte_data:/data` (no manual `chown` required). If you prefer a host bind-mount (`./data:/data`), make it writable by UID/GID `10001`:
+   ```sh
    sudo install -d -m 0700 -o 10001 -g 10001 ./data
    ```
 
-2. **Configure production secrets and security flags in `.env`:**
-   - Set `DEMO_MODE=0`, `DEBUG=0`, and `HTTPS=1`.
-   - Generate a strong random Django secret key:
-     ```sh
-     python3 -c "import secrets; print(secrets.token_urlsafe(64))"
-     ```
-   - Provide secrets either directly in `.env` or via mounted files (`SECRET_KEY_FILE`, `PAPERLESS_TOKEN_FILE`, `GEMINI_API_KEY_FILE`)—never set both forms for the same secret. See [deployment/README.md](../deployment/README.md) and `deployment/compose-pi.example.yaml` for read-only `./secrets:/run/secrets:ro` mounts and CPU/PID limits.
-
-3. **Configure reverse proxy and TLS:**
-   - Terminate TLS at your own reverse proxy (Caddy, Nginx, Traefik, Cloudflare Tunnel, etc.).
-   - By default, `compose.yaml` binds only to `127.0.0.1:${APP_PORT:-8010}:8000` on the host.
-   - Replace the example domain and proxy placeholder in `.env`:
+2. **Configure HTTPS & reverse proxy in `.env`:**
+   - Terminate TLS at your reverse proxy (Caddy, Nginx, Traefik, Cloudflare Tunnel, etc.). `compose.yaml` binds only to `127.0.0.1:${APP_PORT:-8010}:8000` on the host.
+   - For any public/internet-facing installation, set:
 
      ```dotenv
+     DEMO_MODE=0
+     DEBUG=0
+     HTTPS=1
+     ALLOW_INSECURE_HTTP=0
      PUBLIC_HOST=projektakte.example.com
      ALLOWED_HOSTS=projektakte.example.com,127.0.0.1
      CSRF_TRUSTED_ORIGINS=https://projektakte.example.com
      TRUSTED_PROXY=<proxy-ip-or-dns-name>
      ```
 
-   - Keep `127.0.0.1` in `ALLOWED_HOSTS`—the internal container healthcheck uses it.
-   - `TRUSTED_PROXY` must match the actual source IP or DNS name seen by the `web` container; only that proxy is trusted for forwarded scheme/client headers. Never use wildcard hosts.
+   - Always keep `127.0.0.1` in `ALLOWED_HOSTS` for the internal healthcheck.
+   - `TRUSTED_PROXY` must match the actual source IP or DNS name seen by the `web` container. Never use wildcard hosts.
+   - For a private LAN/VPN-only installation without TLS, you may explicitly set `HTTPS=0` and `ALLOW_INSECURE_HTTP=1`.
+   - **Secret key:** Leave `SECRET_KEY` empty to auto-generate a persistent random key atomically at `/data/.secret-key` (`chmod 0600`) on first start, or provide `SECRET_KEY` / `SECRET_KEY_FILE` explicitly (never set both).
 
-4. **Build, migrate, create the first account, and start:**
+3. **Start and complete first-run setup:**
 
    ```sh
    docker compose config --quiet
-   docker compose build
-   docker compose run --rm --no-deps web python manage.py migrate --noinput
-   docker compose run --rm --no-deps web python manage.py check
-   docker compose run --rm --no-deps web python manage.py createsuperuser
    docker compose up -d
    docker compose ps
    ```
 
-   *(Add `-f compose.yaml -f deployment/compose-pi.example.yaml` to each `docker compose` command if using the Raspberry Pi override.)*
+   *(Optional overrides: add `-f deployment/compose-pi.example.yaml` for Raspberry Pi CPU/PID limits and `./secrets:/run/secrets:ro` mounts, or `-f deployment/compose-build.yaml` to build locally from source.)*
 
-   Do **not** run `seed_demo` on a production database.
-
----
-
-## 3. Optional Integrations
-
-- **Paperless-ngx:** Set `PAPERLESS_URL` (reachable from the `worker` container) and `PAPERLESS_TOKEN` (or `PAPERLESS_TOKEN_FILE`). Paperless remains an independent system with its own database and backup lifecycle.
-- **Google Gemini:** Set `AI_ENABLED=1`, `GEMINI_MODEL`, `GEMINI_API_KEY` (or `GEMINI_API_KEY_FILE`), and review the token pricing/budget guardrails (`AI_MONTHLY_WARN`, `AI_MONTHLY_LIMIT`, `AI_INPUT_USD_PER_M`, `AI_OUTPUT_USD_PER_M`, `AI_REQUEST_RESERVE`, `GEMINI_ORIGINAL_MAX_MB`). Set `AI_ENABLED=0` to run completely without AI.
-- **IMAP Mail Import:** Configure `MAIL_IMAP_HOST`, `MAIL_IMAP_USER`, `MAIL_IMAP_PASSWORD`, `MAIL_ALLOWED_SENDER`, and `MAIL_CAPTURE_USER`. Leave empty to disable mail polling.
-- **Repair Library:** Operator-owned workshop manuals and media stay strictly in runtime data outside version control.
+   Open your URL in a browser: when 0 users exist, `/login/` redirects to `/setup/`, where you create your first admin account (enforcing Django's password validators atomically). Once the first user exists, `/setup/` permanently returns `404`. Alternatively, you can still create an account via CLI (`docker compose exec web python manage.py createsuperuser`).
 
 ---
 
-## 4. Security Model
+## 3. Enabling Optional Integrations Anytime Later
 
-- **Default-deny auth boundary:** All routes except `/login/`, `/manifest.json`, `/sw.js` (and the isolated `/demo/` boundary when enabled) require authentication. `/admin/` returns `404` for non-staff users.
-- **Pre-auth protection:** Oversized (> 64 KiB) or chunked login bodies are rejected before session parsing; IP-based login rate limiting runs in memory without sleeping worker threads.
-- **Transport & cookie hardening:** `HttpOnly`, `Secure`, `SameSite=Lax` cookies, HSTS (`1 year`, `includeSubDomains`, `preload`), `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: same-origin`, and `Cache-Control: no-store, private` on dynamic HTML.
-- **Safe file & Markdown handling:** Streamed user files receive a sandbox CSP (`sandbox; default-src 'none'`); active formats (`.html`, `.svg`, `.js`, etc.) are forced to `application/octet-stream` downloads. User Markdown is sanitized through `nh3` (Rust).
+All external integrations are disabled by default (`AI_ENABLED=0`, empty URLs/credentials) and can be enabled or changed at any time without reinstalling or risking existing data—simply edit `.env` and run `docker compose up -d`:
+
+- **Google Gemini AI:** Set `AI_ENABLED=1`, `GEMINI_MODEL`, `GEMINI_API_KEY` (or `GEMINI_API_KEY_FILE`), and configure your monthly budget guardrails (`AI_MONTHLY_WARN`, `AI_MONTHLY_LIMIT`, token prices, `GEMINI_ORIGINAL_MAX_MB`).
+- **Paperless-ngx:** Set `PAPERLESS_URL` (reachable from `worker`) and `PAPERLESS_TOKEN` (or `PAPERLESS_TOKEN_FILE`). Paperless stays a separate system with its own database and backup lifecycle.
+- **IMAP Mail Import:** Configure `MAIL_IMAP_HOST`, `MAIL_IMAP_USER`, `MAIL_IMAP_PASSWORD`, `MAIL_ALLOWED_SENDER`, and `MAIL_CAPTURE_USER`.
+- **Repair Library:** Operator-owned manuals and media live strictly in runtime `/data/` outside version control.
 
 ---
 
-## 5. Backups & Verified Restore
+## 4. Safe Updates, Pre-Migration Snapshots & Rollback
 
-### Creating a Consistent Backup
-- **In-app:** Trigger and download backups under *Einstellungen → System & Sicherung* (default retention keeps 10 managed backups; older backups are pruned only after a new backup succeeds).
-- **CLI:**
+### How Automatic Startup Safety Works (`scripts/entrypoint.py`)
+Every time `web` starts (with `AUTO_MIGRATE=1`, the default):
+1. **Integrity check:** Runs `PRAGMA integrity_check` on `/data/db.sqlite3`.
+2. **Downgrade guard:** Compares `/data/.app_version` (as real semantic version tuples) and checks `django_migrations` for migrations unknown to the running image. If the database is newer than the container image, startup aborts cleanly with a clear error message instead of corrupting data.
+3. **Pre-migration SQLite snapshot:** If—and only if—new Django migrations are pending on an existing database, Projektakte acquires the shared `operation_gate()`, creates a verified `sqlite3.Connection.backup()` snapshot under `/data/backups/pre-migrate/db-before-v<version>-<timestamp>.sqlite3`, and rotates older automatic snapshots (keeping the newest `PRE_MIGRATE_KEEP=5`). If the snapshot fails, migrations are not run.
+4. **Migration & version marker:** Runs `manage.py migrate --noinput` under `operation_gate()` and atomically updates `/data/.app_version`.
+
+*(Set `AUTO_MIGRATE=0` in `.env` if you prefer running migrations manually during a maintenance window.)*
+
+### Updating to a New Version
+Pinning explicit version tags in `compose.yaml` (e.g. `ghcr.io/nbf207/projektakte:1.0.1`) gives deterministic updates:
+
+```sh
+# 1. Update the image tag in compose.yaml (or .env PROJEKTAKTE_IMAGE)
+docker compose pull
+docker compose up -d
+docker compose ps
+```
+
+### Rolling Back After an Update
+If an update causes issues and you want to return to the previous version:
+
+1. Stop `web` and `worker`:
+   ```sh
+   docker compose stop web worker
+   ```
+2. Pin the previous image tag in `compose.yaml`.
+3. If the newer version had applied database migrations, list and restore the automatic pre-migration snapshot:
+   ```sh
+   docker compose run --rm --no-deps web python manage.py rollback_db --list
+   docker compose run --rm --no-deps web python manage.py rollback_db --restore latest
+   ```
+   `rollback_db` verifies snapshot integrity, saves a safety copy of the current database (`db-before-rollback-*.sqlite3`), restores the snapshot atomically under `operation_gate()`, and clears `.app_version` so the older image boots cleanly.
+4. Start services again:
+   ```sh
+   docker compose up -d
+   docker compose ps
+   ```
+
+---
+
+## 5. Full Application Backups & Verified Restore
+
+Pre-migration snapshots protect `db.sqlite3` automatically during updates. For disaster recovery (including uploaded media and feedback), create full verified ZIP backups:
+
+- **In-app:** *Einstellungen → System & Sicherung* (keeps 10 managed backups by default).
+- **CLI (standalone without Paperless):**
   ```sh
   docker compose exec web python manage.py backup /data/backups/projektakte-backup.zip
   ```
-  If Paperless-ngx is connected, you can bundle a verified Paperless archive via `--paperless-bundle /path/to/paperless-bundle.zip`.
+- **CLI (with Paperless-ngx configured):** Pass `--paperless-bundle /path/to/paperless-bundle.zip` so both archives stay coordinated.
 
-Each backup acquires the shared OS write gate, runs `sqlite3.Connection.backup()` + `PRAGMA integrity_check`, stores already-compressed media with `ZIP_STORED` (low CPU/RAM overhead on Pi 4), writes a SHA-256 `manifest.json`, and verifies the archive before replacing the destination atomically.
-
-> **Important:** Back up your `.env`, secret files, Compose overrides, and external services (e.g. Paperless-ngx) separately, and copy archives off the host disk to protect against storage failure.
-
-### Verifying & Restoring a Backup
-Always test restores into a **separate empty directory** first—never directly over your live data directory:
+Test restores into a **separate empty directory** first—never directly over your live data directory:
 
 ```sh
 docker compose run --rm --no-deps web python manage.py restore /data/backups/projektakte-backup.zip /tmp/restore-test
 ```
 
-The command validates paths, SHA-256 checksums, and SQLite integrity. Point a test instance's `DATA_DIR` at the restored directory and verify projects, media, receipt originals, and costs before cutting over.
+> Back up `.env`, secret files, Compose overrides, and external services separately, and copy backup archives off the host disk.
 
 ---
 
-## 6. Routine Operations & Updates
+## 6. Security Model & Maintenance Commands
 
-- **Check service health & logs:**
-  ```sh
-  docker compose ps
-  docker compose logs --tail 50 web worker
-  ```
-- **Update procedure:**
-  1. Note your current version and ensure you have a fresh verified backup (plus external service backups if applicable).
-  2. Pull/copy the new release code.
-  3. Rebuild the image (`docker compose build`)—this automatically runs `collectstatic` inside the image.
-  4. Apply schema migrations if needed:
-     ```sh
-     docker compose run --rm --no-deps web python manage.py migrate --noinput
-     docker compose run --rm --no-deps web python manage.py check
-     ```
-  5. Recreate and start services (`docker compose up -d`) and verify `docker compose ps` reports both `web` and `worker` as `healthy`.
+- **Default-deny auth boundary:** All routes except `/login/`, `/setup/` (only while 0 users exist), `/manifest.json`, `/sw.js`, and the isolated `/demo/` boundary require authentication. `/admin/` returns `404` for non-staff users.
+- **Safe file & Markdown handling:** Streamed files get `Content-Security-Policy: sandbox; default-src 'none'`; active formats (`.html`, `.svg`, `.js`, etc.) are forced to download; Markdown is sanitized with `nh3` (Rust).
 - **Maintenance commands:**
+  - `python manage.py check` — configuration sanity check.
   - `python manage.py cleanup` — previews orphan/temporary cleanup before applying.
-  - `python manage.py rebuild_search` — rebuilds the SQLite FTS search index if needed.
-- **Public Demo (`/demo/`):** Isolated via `DemoBoundaryMiddleware` and `DemoRouter` onto a separate `demo.sqlite3` database with memory-only uploads (max 2 MiB), no external API calls, and automatic cleanup of expired visitor sessions.
+  - `python manage.py rebuild_search` — rebuilds the SQLite FTS search index.
+  - `python manage.py rollback_db --list` — lists automatic pre-migration SQLite snapshots.

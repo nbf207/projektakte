@@ -1,0 +1,122 @@
+name: Publish Multi-Arch Docker Image & Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Optional extra image tag (e.g. 0.7.30 or 1.0.0-rc1)'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU (for linux/arm64)
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract Docker metadata and tags
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/nbf207/projektakte
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+            type=raw,value=latest,enable=${{ startsWith(github.ref, 'refs/tags/v') && !startsWith(github.ref, 'refs/tags/v0.') && !contains(github.ref, '-') }}
+            type=raw,value=${{ github.event.inputs.tag }},enable=${{ github.event_name == 'workflow_dispatch' && github.event.inputs.tag != '' }}
+
+      - name: Build and push multi-arch image (amd64 + arm64)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  github-release:
+    needs: build-and-push
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Extract release notes from CHANGELOG.md
+        id: notes
+        env:
+          TAG_NAME: ${{ github.ref_name }}
+        run: |
+          python3 - <<'PY'
+          import os, re
+          from pathlib import Path
+
+          tag = os.environ['TAG_NAME']
+          ver = tag.lstrip('vV')
+          is_pre = ver.startswith('0.') or ('-' in ver)
+
+          notes = ''
+          changelog = Path('CHANGELOG.md')
+          if changelog.is_file():
+              text = changelog.read_text(encoding='utf-8')
+              pattern = rf'^## \[{re.escape(ver)}\][^\n]*\n(.*?)(?=^## \[|\Z)'
+              m = re.search(pattern, text, flags=re.MULTILINE | re.DOTALL)
+              if m:
+                  notes = m.group(1).strip()
+
+          docker_note = (
+              f"\n\n---\n\n### Docker Image\n\n"
+              f"```sh\ndocker pull ghcr.io/nbf207/projektakte:{ver}\n```\n"
+          )
+
+          Path('release-notes.md').write_text((notes + docker_note).strip() + '\n', encoding='utf-8')
+          with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as out:
+              out.write(f"has_changelog={'true' if notes else 'false'}\n")
+              out.write(f"is_prerelease={'true' if is_pre else 'false'}\n")
+          PY
+
+      - name: Create or update GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG_NAME: ${{ github.ref_name }}
+          IS_PRE: ${{ steps.notes.outputs.is_prerelease }}
+          HAS_CL: ${{ steps.notes.outputs.has_changelog }}
+        run: |
+          ARGS=("$TAG_NAME" --title "Projektakte $TAG_NAME")
+          if [ "$IS_PRE" = "true" ]; then
+            ARGS+=(--prerelease)
+          fi
+          if [ "$HAS_CL" = "true" ]; then
+            ARGS+=(--notes-file release-notes.md)
+          else
+            ARGS+=(--generate-notes)
+          fi
+          if gh release view "$TAG_NAME" >/dev/null 2>&1; then
+            gh release edit "$TAG_NAME" --notes-file release-notes.md
+          else
+            gh release create "${ARGS[@]}"
+          fi

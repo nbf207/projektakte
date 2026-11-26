@@ -24,18 +24,20 @@ SECRET_KEY = server_secret('SECRET_KEY')
 DEBUG = os.environ.get('DEBUG', '0') == '1'
 DEMO_MODE = os.environ.get('DEMO_MODE', '0') == '1'
 if not SECRET_KEY:
-    if not DEMO_MODE:
-        raise RuntimeError('SECRET_KEY ist im Livebetrieb erforderlich.')
-    # Persistent random key, local demo only. Never a hard-coded production key.
-    import secrets
-    keyfile = DATA_DIR / '.demo-key'
-    if not keyfile.exists():
-        try:
-            with keyfile.open('x', encoding='ascii') as f:
-                f.write(secrets.token_urlsafe(64))
-        except FileExistsError:
-            pass
-    SECRET_KEY = keyfile.read_text(encoding='ascii')
+    if DEMO_MODE:
+        # Persistent random key, local demo only. Never a hard-coded production key.
+        import secrets
+        keyfile = DATA_DIR / '.demo-key'
+        if not keyfile.exists():
+            try:
+                with keyfile.open('x', encoding='ascii') as f:
+                    f.write(secrets.token_urlsafe(64))
+            except FileExistsError:
+                pass
+        SECRET_KEY = keyfile.read_text(encoding='ascii').strip()
+    else:
+        from akte.updates import ensure_secret_key
+        SECRET_KEY = ensure_secret_key(DATA_DIR)
 configured_hosts = os.environ.get('ALLOWED_HOSTS', '').split(',')
 PUBLIC_HOST = os.environ.get('PUBLIC_HOST', '').strip() or next((
     host.strip() for host in configured_hosts
@@ -93,8 +95,11 @@ LOGOUT_REDIRECT_URL = '/login/'
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = 'Lax'
 SESSION_COOKIE_SECURE = os.environ.get('HTTPS', '0' if DEMO_MODE else '1') == '1'
-if not DEMO_MODE and (DEBUG or not SESSION_COOKIE_SECURE):
-    raise RuntimeError('Livebetrieb benötigt DEBUG=0 und HTTPS=1.')
+ALLOW_INSECURE_HTTP = os.environ.get('ALLOW_INSECURE_HTTP', '0') == '1'
+if not DEMO_MODE and DEBUG:
+    raise RuntimeError('Livebetrieb benötigt DEBUG=0.')
+if not DEMO_MODE and not SESSION_COOKIE_SECURE and not ALLOW_INSECURE_HTTP:
+    raise RuntimeError('Livebetrieb benötigt HTTPS=1 (oder ausdrücklich ALLOW_INSECURE_HTTP=1 für reines Heimnetz).')
 CSRF_COOKIE_SECURE = SESSION_COOKIE_SECURE
 CSRF_COOKIE_HTTPONLY = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO','https') if SESSION_COOKIE_SECURE else None
