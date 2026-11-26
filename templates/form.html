@@ -1,0 +1,19 @@
+{% extends 'base.html' %}{% load static %}{% block content %}
+<div class="pagehead"><div><p class="eyebrow">PROJEKTAKTE / ERFASSEN</p><h1>{{ title }}</h1>{% if project %}<p class="muted">{{ project.name }}</p>{% endif %}</div></div>
+<form method="post" class="panel" {% if form.entry_title_editor %}data-entry-editor="1"{% endif %} {% if autosave %}data-autosave="{% url 'draft_save' project.pk %}" data-draft-version="{{ draft_version }}" data-entry-id="{{ entry.pk|default:'' }}"{% endif %}>
+{% csrf_token %}{{ form.non_field_errors }}
+{% if form.entry_title_editor %}{% include 'entry_fields.html' %}{% else %}
+<div class="formgrid">{% for field in form %}
+{% if field.is_hidden %}{{ field }}{% elif not form.entry_title_editor or field.name not in form.dynamic_names %}
+{% if not form.primary_fields or field.name in form.primary_fields %}
+<label data-entry-field="{{ field.name }}" {% if field.name == 'description' or field.name == 'field_json' or field.name == 'text' %}class="full"{% endif %}>{{ field.label }}{% if field.name in form.inferred_fields %}<span class="ai-inferred" data-ai-field="{{ field.name }}" title="Von der KI interpretiert; bitte prüfen">*</span>{% endif %}{{ field }}{% if field.help_text %}<span class="helptext">{{ field.help_text }}</span>{% endif %}{{ field.errors }}</label>
+{% endif %}{% endif %}{% endfor %}</div>
+{% if form.primary_fields %}<details class="entry-extra" {% if form.errors %}open{% endif %}><summary>Weitere Angaben · Beschreibung, Zähler und Tags</summary><div class="formgrid" style="margin-top:18px">
+{% for field in form %}{% if not field.is_hidden and field.name not in form.primary_fields %}{% if not form.entry_title_editor or field.name not in form.dynamic_names %}
+<label data-entry-field="{{ field.name }}" {% if field.name == 'description' %}class="full"{% endif %}>{{ field.label }}{% if field.name in form.inferred_fields %}<span class="ai-inferred" data-ai-field="{{ field.name }}" title="Von der KI interpretiert; bitte prüfen">*</span>{% endif %}{{ field }}{{ field.errors }}{% if field.help_text %}<span class="helptext">{{ field.help_text }}</span>{% endif %}</label>
+{% endif %}{% endif %}{% endfor %}</div></details>{% endif %}
+{% endif %}
+{% if version %}<input type="hidden" name="version" value="{{ version }}">{% endif %}
+<div class="notice">{% if autosave %}Automatisches Speichern hält deine Eingabe als Entwurf fest. Erst „Speichern“ bestätigt den Vorgang.{% else %}Änderungen werden mit „Speichern“ übernommen.{% endif %}</div>
+<div class="actions"><span role="status" id="save-status" class="muted">{% if autosave %}Noch keine neue Änderung{% endif %}</span>{% if entry %}<a class="btn secondary" href="{% url 'entry' entry.pk %}">Zurück</a>{% elif project %}<a class="btn secondary" href="{% url 'project' project.pk %}">Zurück</a>{% endif %}<button>Speichern</button></div>
+</form>{% endblock %}

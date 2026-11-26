@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="pagehead"><div><p class="eyebrow">WAS ALS NÄCHSTES ANSTEHT</p><h1>Aufgaben</h1></div><a class="btn secondary" href="{% url 'settings' %}?project={% firstof project.pk selected_project.pk '' %}">Kategorien bearbeiten</a></div>
+{% if choose_project %}<form method="get" class="panel"><label>Aufgabe für Projekt<select name="project">{% for p in projects %}<option value="{{ p.pk }}" {% if p.pk == selected_project.pk %}selected{% endif %}>{{ p.name }}</option>{% endfor %}</select></label><button>Projekt wählen</button></form>{% endif %}{% for task in tasks %}
+<div class="panel"><h3><a href="{% url 'task_edit' task.pk %}">{{ task.title }}</a> <span class="status {% if task.overdue %}warn{% endif %}">{% if task.done %}Erledigt{% elif task.overdue %}Überfällig{% else %}Offen{% endif %}</span></h3>
+<small>{{ task.project.name }} · {{ task.category.name|default:'Ohne Kategorie' }} · {{ task.due|date:'d.m.Y'|default:'Ohne Termin' }}</small>{% if task.entry %} · <a href="{% url 'entry' task.entry.pk %}">{{ task.entry.title }}</a>{% endif %}</div>
+{% endfor %}
+<form method="post" class="panel">
+  <h2>Aufgabe erfassen / bearbeiten</h2>{% csrf_token %}{{ form.non_field_errors }}
+  {% for field in form %}{% if field.is_hidden %}{{ field }}{% elif field.name != 'entry' %}<p><label>{{ field.label }}{{ field }}</label>{{ field.errors }}</p>{% endif %}{% endfor %}
+  <input type="hidden" name="project" value="{{ selected_project.pk }}">
+  <details><summary>Weitere Zuordnung · konkreter Chronikeintrag</summary><p><label>{{ form.entry.label }}{{ form.entry }}</label>{{ form.entry.errors }}</p><p class="helptext">Nur auswählen, wenn diese Aufgabe zu einem einzelnen Eintrag gehört. Für die allgemeine Einordnung reicht die Kategorie.</p></details>
+  <div class="actions"><button>Speichern</button><a href="{% url 'settings' %}?project={% firstof project.pk selected_project.pk '' %}">Kategorien hinzufügen / entfernen</a></div>
+</form>
+{% endblock %}

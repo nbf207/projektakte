@@ -1,0 +1,9 @@
+{% load static %}
+<button type="button" id="feedback-open" class="secondary">{% include 'icon.html' with name='feedback' %} Feedback</button>
+<dialog id="feedback-dialog"><form method="post" enctype="multipart/form-data" action="{% url 'feedback' %}" id="feedback-form" data-feedback-images>
+{% csrf_token %}<h2>Kurzes Feedback</h2><label>Was ist dir aufgefallen?<textarea name="text" rows="4" maxlength="4000" required></textarea></label>
+<label>Bild hinzufügen (Datei oder Strg+V)<input type="file" name="image" accept="image/jpeg,image/png,image/webp"></label><div data-image-preview></div>
+<input type="hidden" name="url"><input type="hidden" name="title"><input type="hidden" name="project" value="{% firstof project.pk selected_project.pk '' %}"><input type="hidden" name="entry" value="{% firstof entry.pk doc.entry_id '' %}">
+<p class="helptext">Die aktuelle Seite und das Projekt werden mitgespeichert.</p><p role="status" id="feedback-status"></p>
+<div class="actions"><button type="submit">Absenden</button><button type="button" id="feedback-close" class="secondary">Schließen</button></div>
+</form></dialog><link rel="stylesheet" href="{% static 'feedback.css' %}?v=0720"><script src="{% static 'feedback.js' %}?v=caret-3" defer></script><script src="{% static 'settings.js' %}?feedback-remove=1&v=074-p1" defer></script>

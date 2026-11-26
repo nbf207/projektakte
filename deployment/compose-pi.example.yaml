@@ -1,0 +1,13 @@
+# Optional override for a low-memory Linux host using mounted secret files.
+# Use together with the repository-root compose.yaml from the repository root.
+services:
+  web:
+    cpus: 0.75
+    pids_limit: 96
+    volumes:
+      - ./secrets:/run/secrets:ro
+  worker:
+    cpus: 0.75
+    pids_limit: 96
+    volumes:
+      - ./secrets:/run/secrets:ro

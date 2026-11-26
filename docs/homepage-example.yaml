@@ -1,0 +1,7 @@
+# Replace placeholders only after verifying your existing Homepage dashboard configuration.
+# Never commit real internal addresses or API keys.
+- Projects:
+    - Projektakte:
+        href: https://YOUR-VERIFIED-HOST
+        description: Project chronicle, builds, and receipt review
+        siteMonitor: https://YOUR-VERIFIED-HOST/health/

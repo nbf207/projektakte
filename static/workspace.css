@@ -1,0 +1,148 @@
+/* iOS 27 Liquid Glass workspace: optical translucent floating glass, specular rims, liquid refraction. */
+.has-workspace{
+ --workspace-pane:var(--lg-pane);
+ --workspace-chrome:var(--lg-chrome);
+ --workspace-line:var(--lg-border);
+ --workspace-radius:calc(var(--radius) + 4px);
+ --workspace-gap:14px;--workspace-inset:12px;
+ background:var(--bg);padding:0;position:relative;isolation:isolate
+}
+.has-workspace::before,.has-workspace::after{display:none}
+
+/* Luminous Apple-style liquid wallpaper mesh (static for 0% idle GPU & locked 120/144fps transitions) */
+.workspace-atmosphere{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:-1;opacity:1;contain:strict}
+.workspace-atmosphere::before{content:"";position:absolute;inset:-12%;background:radial-gradient(ellipse 46% 42% at 14% 12%,color-mix(in srgb,var(--beam) 64%,transparent),transparent 60%),radial-gradient(ellipse 44% 40% at 86% 18%,color-mix(in srgb,var(--accent) 52%,transparent),transparent 62%),radial-gradient(ellipse 54% 44% at 54% 88%,color-mix(in srgb,var(--beam-hot) 48%,transparent),transparent 60%),radial-gradient(ellipse 38% 34% at 42% 44%,color-mix(in srgb,var(--beam) 28%,transparent),transparent 66%)}
+.workspace-atmosphere::after{content:"";position:absolute;inset:-8%;background:radial-gradient(circle at 22% 66%,color-mix(in srgb,var(--accent) 36%,transparent),transparent 42%),radial-gradient(circle at 78% 62%,color-mix(in srgb,var(--beam-hot) 32%,transparent),transparent 44%),radial-gradient(ellipse 60% 24% at 50% 6%,color-mix(in srgb,var(--beam-hot) 24%,transparent),transparent 65%);opacity:.92}
+html[data-theme=dark] .workspace-atmosphere::before{opacity:.96}
+html[data-theme=dark] .workspace-atmosphere::after{opacity:.82}
+.light-blade{display:none}
+
+.product-wordmark{display:inline-flex;align-items:center;gap:9px;color:var(--ink);font-size:19px;font-weight:700;line-height:1.15;letter-spacing:-.035em}
+.product-wordmark:hover{text-decoration:none}.product-symbol{display:grid;place-items:center;width:27px;height:29px;color:var(--accent)}.product-symbol svg{width:100%;height:100%}.wordmark-dot{color:var(--accent);margin-left:-7px}
+
+.workspace-hero{position:relative;margin:0 0 24px;padding:0}
+.app-window .workspace-hero h1{font-size:clamp(28px,2.9vw,38px);font-weight:700;line-height:1.12;letter-spacing:-.04em;margin:0;color:var(--ink);text-wrap:balance}
+.workspace-hero h1 span{color:var(--muted);font-weight:560}
+.workspace-hero p{font-size:14px;color:var(--muted);line-height:1.5;margin:7px 0 0}
+
+.app-window{position:relative;display:flex;flex-direction:column;width:100%;max-width:none;min-height:100vh;min-height:100dvh;margin:0;border:0;border-radius:0;background:transparent;box-shadow:none;overflow-x:clip}
+
+/* Floating Liquid Glass Capsule Top Bar */
+.window-toolbar{position:sticky;top:var(--workspace-inset);z-index:25;display:flex;align-items:center;justify-content:space-between;gap:20px;min-height:58px;margin:var(--workspace-inset) var(--workspace-inset) 0;padding:8px 18px 8px 22px;border:1px solid var(--lg-border);background:var(--lg-sheen),var(--workspace-chrome);backdrop-filter:blur(22px) saturate(260%) brightness(1.07);-webkit-backdrop-filter:blur(22px) saturate(260%) brightness(1.07);border-radius:999px;box-shadow:var(--shadow)}
+.window-heading{display:flex;align-items:center;gap:18px;min-width:0}.window-heading .product-wordmark{font-size:19px;flex-shrink:0;min-height:38px}.window-heading .product-symbol{width:25px;height:27px}.window-location{min-width:0;padding-left:18px;border-left:1px solid var(--line);color:var(--muted);font-size:13px;font-weight:540}.window-location>span{overflow-wrap:anywhere}.window-location a{color:inherit}
+
+.window-tools{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.window-search{position:relative;display:inline-flex;gap:8px;align-items:center;color:var(--muted);min-height:38px;height:38px;padding:0 14px;border:1px solid var(--lg-border);border-radius:999px;background:radial-gradient(160px circle at var(--lx,-999px) var(--ly,-999px),var(--lg-prox-fill),transparent 72%),var(--lg-sheen),var(--lg-surface);box-shadow:inset 0 1px 0 var(--lg-rim),inset 0 -1px 0 var(--lg-rim-bottom),0 2px 10px rgba(0,0,0,.06);font-size:13px;font-weight:520;transition:background-color var(--speed-fast) var(--ease),border-color var(--speed-fast) var(--ease),color var(--speed-fast) var(--ease),transform var(--speed-ui) var(--ease-spring)}
+.window-search .icon{width:16px;height:16px;flex-basis:16px}
+.window-search:hover{color:var(--ink);border-color:var(--line-strong);background:radial-gradient(170px circle at var(--lx,-999px) var(--ly,-999px),var(--lg-prox-fill),transparent 72%),var(--lg-sheen),var(--lg-surface-elevated);text-decoration:none;transform:translateY(-1px)}
+.kbd-hint{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 5px;margin-left:2px;font:600 10px/1 system-ui,sans-serif;color:var(--muted);background:color-mix(in srgb,var(--ink) 8%,transparent);border-radius:6px}
+
+.window-tools .theme-control{position:relative;inset:auto;margin:0;width:auto;display:inline-flex;align-items:center}
+.window-tools .theme-control>svg{position:absolute;left:13px;top:50%;z-index:2;transform:translateY(-50%);width:16px;height:16px;color:var(--accent);pointer-events:none;transition:transform var(--speed-ui) var(--ease-spring)}
+.window-tools .theme-control:hover>svg{transform:translateY(-50%) rotate(15deg) scale(1.1)}
+.window-tools #theme-toggle{position:relative;width:auto;min-height:38px;height:38px;padding:0 16px 0 36px;display:inline-flex;align-items:center;justify-content:center;border-radius:999px;border:1px solid var(--lg-border);background:radial-gradient(160px circle at var(--lx,-999px) var(--ly,-999px),var(--lg-prox-fill),transparent 72%),var(--lg-sheen),var(--lg-surface);color:var(--ink);box-shadow:inset 0 1px 0 var(--lg-rim),inset 0 -1px 0 var(--lg-rim-bottom),0 2px 10px rgba(0,0,0,.06);font-weight:540;white-space:nowrap}
+.window-tools #theme-toggle:hover{background:radial-gradient(170px circle at var(--lx,-999px) var(--ly,-999px),var(--lg-prox-fill),transparent 72%),var(--lg-sheen),var(--lg-surface-elevated);border-color:var(--line-strong);color:var(--ink);box-shadow:inset 0 1px 0 var(--lg-rim),0 4px 14px rgba(0,0,0,.1)}
+.window-tools #theme-toggle::after{font-size:13px;line-height:1}
+.mobile-nav-toggle{display:none}
+.mobile-nav-toggle .nav-icon-close{display:none}
+.mobile-nav-toggle[aria-expanded=true] .nav-icon-open{display:none}
+.mobile-nav-toggle[aria-expanded=true] .nav-icon-close{display:inline-flex}
+
+.window-layout{display:grid;flex:1;grid-template-columns:236px minmax(0,1fr);align-items:stretch;min-height:0;gap:var(--workspace-gap);padding:var(--workspace-gap) var(--workspace-inset)}
+
+/* Floating Liquid Glass Sidebar */
+.app-window .sidebar{position:relative;inset:auto;width:auto;min-width:0;min-height:0;padding:16px 10px 14px;margin:0;display:flex;border:1px solid var(--lg-border);border-radius:var(--workspace-radius);background:var(--lg-sheen),var(--workspace-chrome);backdrop-filter:blur(22px) saturate(260%) brightness(1.07);-webkit-backdrop-filter:blur(22px) saturate(260%) brightness(1.07);box-shadow:var(--shadow);overflow:visible;z-index:auto}
+.sidebar-caption{margin:4px 14px 10px;color:var(--muted);font-size:10px;letter-spacing:.75px;font-weight:650;text-transform:uppercase;opacity:.78}
+.app-window .sidebar nav{display:grid;grid-template-columns:minmax(0,1fr);gap:3px;margin:0}
+.app-window .sidebar nav a{display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:10px;font-size:13px;font-weight:520;text-align:left;padding:9px 14px;min-height:40px;border:1px solid transparent;border-radius:999px;box-shadow:none;color:var(--ink);opacity:.84;transition:background-color var(--speed-fast) var(--ease),border-color var(--speed-fast) var(--ease),color var(--speed-fast) var(--ease),opacity var(--speed-fast) var(--ease),box-shadow var(--speed-fast) var(--ease),transform var(--speed-fast) var(--ease)}
+.app-window .sidebar nav a .icon{color:var(--muted);width:18px;height:18px;flex-basis:18px}
+.app-window .sidebar nav a.active{background:var(--lg-sheen),color-mix(in srgb,var(--accent) 18%,var(--lg-surface-elevated));border-color:color-mix(in srgb,var(--accent) 30%,var(--lg-border));color:var(--accent);font-weight:640;opacity:1;box-shadow:inset 0 1px 0 var(--lg-rim),0 4px 14px color-mix(in srgb,var(--accent) 18%,rgba(0,0,0,.14))}
+.app-window .sidebar nav a.active .icon{color:var(--accent)}
+.app-window .sidebar nav a:hover:not(.active){background:var(--lg-surface);border-color:color-mix(in srgb,var(--lg-border) 70%,transparent);color:var(--ink);opacity:1}
+.app-window .side-project{display:block;margin:18px 0 0;padding:16px 14px 8px;border-top:1px solid var(--line)}.app-window .side-project a{color:var(--ink)}
+.app-window .sidebar footer{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:4px 8px;margin-top:auto;padding:18px 14px 0;border-top:1px solid var(--line)}.app-window .sidebar footer>span{font-size:12px;font-weight:600;color:var(--ink);overflow-wrap:anywhere}.app-window .sidebar footer>small{font-size:11px;font-variant-numeric:tabular-nums}.app-window .sidebar footer form{grid-column:1/-1;margin:4px 0 0}.app-window .sidebar footer button{font-size:12px;padding:6px 10px;min-height:34px;border-radius:999px;box-shadow:none}
+
+/* Translucent Liquid Glass Main Stage */
+.window-layout>main{position:relative;margin:0;min-width:0;width:100%;border:1px solid var(--lg-border);border-radius:var(--workspace-radius);background:var(--lg-sheen),var(--workspace-pane);backdrop-filter:blur(20px) saturate(230%) brightness(1.05);-webkit-backdrop-filter:blur(20px) saturate(230%) brightness(1.05);box-shadow:var(--shadow)}
+.window-layout>main::before{display:none}
+.app-window .content{margin:0;max-width:none;padding:30px 36px 92px;overflow-wrap:anywhere;min-width:0}
+.window-status{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:2px 150px 14px 22px;min-height:36px;border:0;color:var(--muted);font-size:11px;line-height:1.5}
+
+.app-window .pagehead{margin-bottom:22px}.app-window h1{font-size:clamp(26px,2.7vw,34px);font-weight:700;letter-spacing:-.035em}.app-window h2{font-size:19px;font-weight:650;letter-spacing:-.02em}.app-window .eyebrow{letter-spacing:.7px;font-size:11px;font-weight:620;color:var(--accent)}
+
+/* Translucent Liquid Glass Cards */
+.app-window .content>.panel,.app-window .settings-page>.panel,.app-window .settings-grid>.panel,.app-window .configuration-content>.panel,.app-window .journal-view>.panel{border:1px solid var(--lg-border);background:var(--lg-sheen),var(--lg-surface);box-shadow:var(--shadow);border-radius:var(--radius);padding:24px 26px;margin:0 0 18px}
+.app-window .settings-page>.appearance-panel{padding:26px}
+.app-window .panel .panel{padding:16px 0;box-shadow:none;background:transparent;border:0;border-top:1px solid var(--line);border-radius:0}
+.app-window .configuration-nav{box-shadow:var(--shadow);background:var(--lg-sheen),var(--lg-surface);border:1px solid var(--lg-border);border-radius:var(--radius);padding:10px}
+
+/* Liquid Glass Capsule Segmented Controls & Tabs */
+.app-window .tabs{padding:4px;background:var(--lg-well);border:1px solid var(--lg-border);border-radius:22px;box-shadow:inset 0 1px 3px rgba(0,0,0,.08)}.app-window .tabs a{padding:7px 16px;font-size:13px;min-height:36px;border-radius:18px;border:1px solid transparent}.app-window .tabs a.active{background:var(--lg-sheen),var(--lg-surface-elevated);border-color:var(--lg-border);box-shadow:inset 0 1px 0 var(--lg-rim),0 3px 12px rgba(0,0,0,.14);color:var(--ink)}
+.app-window .tabs a:hover:not(.active),.app-window .configuration-nav a:hover{background:color-mix(in srgb,var(--white) 22%,transparent);color:var(--ink)}
+
+/* Liquid Glass Grouped Chronicle */
+.app-window .chronicle{padding:0!important;border:1px solid var(--lg-border)!important;border-radius:var(--radius)!important;background:var(--lg-sheen),var(--lg-surface)!important;box-shadow:var(--shadow)!important;overflow:hidden}
+.app-window .row{padding-inline:20px;cursor:pointer;transition:background-color var(--speed-fast) var(--ease)}.app-window .row:hover{background:color-mix(in srgb,var(--white) 24%,transparent);box-shadow:none}
+.app-window .chronicle details[open]>.row{background:color-mix(in srgb,var(--accent) 10%,var(--lg-surface-elevated));box-shadow:none}
+.app-window .chronicle-category h2{font-size:11px;font-weight:650;padding:13px 20px 8px;color:var(--muted);background:var(--lg-well);border-bottom:1px solid var(--line)}
+.app-window .rowhead{padding:12px 20px;border-bottom:1px solid var(--line);font-size:11px}
+.app-window .preview{background:var(--lg-well);padding:18px 22px;margin:0;border:0;border-top:1px solid var(--line);border-radius:0;box-shadow:none}
+
+.app-window .stats{margin:18px 0 24px}.app-window .stats strong{font-size:26px}
+.app-window .notice{background:var(--lg-sheen),color-mix(in srgb,var(--accent) 10%,var(--lg-surface-elevated));border:1px solid color-mix(in srgb,var(--accent) 24%,var(--lg-border));border-radius:var(--radius-sm);box-shadow:inset 0 1px 0 var(--lg-rim),0 4px 16px rgba(0,0,0,.08)}.app-window .warning{background:var(--warning-bg);border-color:var(--warning-line)}
+.app-window .review{gap:24px}.app-window .review>.panel{padding:24px;border:1px solid var(--lg-border);background:var(--lg-sheen),var(--lg-surface);box-shadow:var(--shadow);border-radius:var(--radius)}.app-window .paper{background:var(--lg-sheen),var(--lg-surface-elevated);border-radius:var(--radius);box-shadow:var(--shadow);border-color:var(--lg-border);padding:20px}.app-window .entry-extra-values{background:transparent}
+
+/* Liquid Glass Quick Capture */
+.app-window .snap-box{background:var(--lg-sheen),var(--lg-surface-elevated);box-shadow:var(--shadow);border:1px solid var(--lg-border);border-radius:var(--radius);padding:24px 26px;margin:0 0 26px}
+.app-window .capture-heading{margin-bottom:14px}.app-window .capture-heading h2{font-size:22px;font-weight:700;letter-spacing:-.03em}.app-window .capture-heading>svg{width:22px;height:22px;color:var(--accent)}
+.app-window .snap-box textarea{background:var(--lg-well);border:1px solid var(--lg-border);border-radius:18px;padding:14px 16px;font-size:15px;min-height:92px;box-shadow:inset 0 1px 3px rgba(0,0,0,.08);transition:border-color var(--speed-fast) var(--ease),box-shadow var(--speed-ui) var(--ease),background-color var(--speed-fast) var(--ease)}
+.app-window .snap-box textarea:focus{background:var(--lg-surface-elevated);border-color:var(--accent);box-shadow:0 0 0 4px var(--primary-glow);outline:none}
+.app-window .snap-tools{border:0;padding-top:0;margin-top:14px;gap:9px}.app-window .snap-tools .secondary{background:radial-gradient(170px circle at var(--lx,-999px) var(--ly,-999px),var(--lg-prox-fill),transparent 72%),var(--lg-sheen),var(--lg-surface);border-color:var(--lg-border);color:var(--ink);box-shadow:inset 0 1px 0 var(--lg-rim),inset 0 -1px 0 var(--lg-rim-bottom),0 2px 8px rgba(0,0,0,.06)}.app-window .snap-tools .secondary:hover{background:radial-gradient(180px circle at var(--lx,-999px) var(--ly,-999px),var(--lg-prox-fill),transparent 72%),var(--lg-sheen),color-mix(in srgb,var(--accent) 12%,var(--lg-surface-elevated));border-color:var(--primary-line);color:var(--accent)}.app-window .snap-tools select{border-radius:999px;background-color:var(--lg-well);box-shadow:inset 0 1px 2px rgba(0,0,0,.08);padding:0 38px 0 16px;height:42px;line-height:normal;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.app-window .snap-box>p:last-child{margin-top:12px;font-size:12px}
+
+/* Liquid Glass Grouped Project Directory */
+.project-section-head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:12px}.project-section-head h2{margin:0}.project-section-head .btn{font-size:13px}
+.project-filter-links{gap:4px;margin:0 0 14px;display:inline-flex;padding:4px;background:var(--lg-well);border:1px solid var(--lg-border);border-radius:999px;box-shadow:inset 0 1px 3px rgba(0,0,0,.08)}
+.project-filter-links a{position:relative;color:var(--muted);font-size:12px;font-weight:560;min-height:32px;padding:4px 16px;border-radius:999px;border:1px solid transparent;transition:background-color var(--speed-fast) var(--ease),color var(--speed-fast) var(--ease),box-shadow var(--speed-fast) var(--ease)}
+.project-filter-links a[aria-current=page]{color:var(--ink);background:radial-gradient(140px circle at var(--lx,-999px) var(--ly,-999px),var(--lg-prox-fill),transparent 72%),var(--lg-sheen),var(--lg-surface-elevated);border-color:var(--lg-border);box-shadow:inset 0 1px 0 var(--lg-rim),0 2px 10px rgba(0,0,0,.14);font-weight:640}
+.project-directory{background:var(--lg-sheen),var(--lg-surface);border:1px solid var(--lg-border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+.project-record{position:relative;display:grid;grid-template-columns:46px minmax(0,1fr) auto 18px;gap:15px;align-items:center;padding:17px 20px;border-bottom:0;border-radius:0;color:var(--ink);background:radial-gradient(280px circle at var(--lx,-999px) var(--ly,-999px),var(--lg-prox-fill),transparent 72%);transition:background-color var(--speed-fast) var(--ease)}
+.project-record:not(:last-child)::after{content:"";position:absolute;left:81px;right:20px;bottom:0;height:1px;background:var(--line);pointer-events:none}
+.project-record:hover{background-color:color-mix(in srgb,var(--white) 10%,transparent);text-decoration:none;box-shadow:none}
+.project-record:hover .record-icon{transform:scale(1.05)}
+.project-record:hover .record-arrow{color:var(--accent);transform:translateX(4px)}
+.project-record:active{transform:scale(.992);transition-duration:90ms}
+.project-record:focus-visible{outline-offset:-2px}
+.record-icon{display:grid;place-items:center;width:46px;height:46px;color:var(--accent);background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 22%,var(--lg-surface-elevated)),color-mix(in srgb,var(--accent) 12%,var(--lg-surface)));border:1px solid color-mix(in srgb,var(--accent) 30%,var(--lg-border));border-radius:14px;box-shadow:inset 0 1px 0 var(--lg-rim),0 4px 12px rgba(0,0,0,.12);transition:transform 180ms var(--ease-spring)}.record-icon .icon{width:22px;height:22px}
+.record-main{display:grid;gap:2px;min-width:0}.record-main>strong{font-size:15.5px;font-weight:640;letter-spacing:-.018em}.record-main>span{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.record-cost{display:grid;gap:2px;text-align:right;font-variant-numeric:tabular-nums lining-nums;flex-shrink:0}.record-cost strong{font-size:15.5px;font-weight:640;letter-spacing:-.015em;white-space:nowrap}.record-cost small{font-size:11px;color:var(--muted);white-space:nowrap}
+.record-arrow{color:var(--muted);opacity:.72;transition:transform var(--speed-fast) var(--ease),color var(--speed-fast) var(--ease)}
+
+.app-window :is(button,.btn).secondary:not(.danger){background:radial-gradient(180px circle at var(--lx,-999px) var(--ly,-999px),var(--lg-prox-fill),transparent 72%),var(--lg-sheen),var(--lg-surface-elevated);border-color:var(--lg-border);color:var(--ink);box-shadow:inset 0 1px 0 var(--lg-rim),inset 0 -1px 0 var(--lg-rim-bottom),0 2px 10px rgba(0,0,0,.07)}
+.app-window :is(button,.btn).secondary:not(.danger):hover{background:radial-gradient(190px circle at var(--lx,-999px) var(--ly,-999px),var(--lg-prox-fill),transparent 72%),var(--lg-sheen),color-mix(in srgb,var(--accent) 12%,var(--lg-surface-elevated));border-color:color-mix(in srgb,var(--accent) 32%,var(--lg-border));color:var(--accent);box-shadow:inset 0 1px 0 var(--lg-rim),0 5px 16px var(--primary-glow)}
+.app-window .segmented-options input:checked+span{background:var(--lg-sheen),var(--lg-surface-elevated);color:var(--ink);border-color:var(--lg-border);box-shadow:inset 0 1px 0 var(--lg-rim),0 2px 10px rgba(0,0,0,.14)}
+
+/* Continuous optical bevel-rim refraction: catches approaching cursor light before hover */
+.app-window .sidebar nav a,.app-window .tabs a{position:relative}
+:is(button,.btn,.window-search,.app-window .sidebar nav a,.app-window .tabs a,.project-filter-links a,.project-record)::before{content:"";position:absolute;inset:-1px;border-radius:inherit;padding:1.25px;pointer-events:none;background:radial-gradient(180px circle at var(--lx,-999px) var(--ly,-999px),var(--lg-prox-rim),transparent 70%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude;opacity:var(--lo,0);transition:opacity 260ms var(--ease)}
+.ghost::before{display:none}
+
+@media(min-width:1500px){.window-layout{grid-template-columns:256px minmax(0,1fr)}.app-window .content{padding:36px 44px 92px}.window-toolbar{padding-inline:26px}}
+@media(max-width:1150px){.window-layout{grid-template-columns:208px minmax(0,1fr)}.app-window .content{padding:24px 24px 88px}.app-window .configuration-nav{padding:10px}.window-tools{gap:8px}}
+@media(max-width:800px){.workspace-home .workspace-hero{display:none}.workspace-hero{margin-bottom:16px}.app-window .workspace-hero h1{font-size:25px;letter-spacing:-.03em}.workspace-hero p{font-size:13px;margin-top:5px}.window-heading .product-wordmark{font-size:18px;gap:8px}.window-toolbar{position:sticky;top:6px;z-index:29;border-radius:999px;padding:7px 10px 7px 14px;min-height:52px;gap:8px}.window-location{display:none}.window-tools{gap:7px}.window-search{width:38px;height:38px;min-height:38px;padding:0;justify-content:center}.window-search>span,.window-search .kbd-hint{display:none}.window-tools .theme-control{width:38px}.window-tools .theme-control>svg{left:11px;top:50%}.window-tools #theme-toggle{padding:0;width:38px;height:38px;min-height:38px}.window-tools #theme-toggle::after{display:none}.mobile-nav-toggle{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;min-height:38px;padding:0;border-radius:999px;border:1px solid var(--lg-border);background:var(--lg-sheen),var(--lg-surface);color:var(--ink);box-shadow:inset 0 1px 0 var(--lg-rim),0 2px 10px rgba(0,0,0,.08)}.mobile-nav-toggle .icon{width:18px;height:18px}.mobile-nav-toggle[aria-expanded=true]{background:var(--lg-sheen),color-mix(in srgb,var(--accent) 18%,var(--lg-surface-elevated));border-color:color-mix(in srgb,var(--accent) 34%,var(--lg-border));color:var(--accent)}.has-workspace{--workspace-gap:8px;--workspace-inset:6px}.window-layout{display:flex;flex-direction:column;min-height:0;padding-top:8px}.window-layout>main{flex:1}.app-window .sidebar{display:none;position:fixed;top:66px;left:8px;right:8px;z-index:28;padding:12px;max-height:calc(100dvh - 82px);overflow-y:auto;box-shadow:var(--shadow-raised)}.nav-open .app-window .sidebar{display:block;animation:lg-sheet-in 200ms var(--ease-spring)}.sidebar-caption{display:none}.app-window .sidebar nav{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.app-window .sidebar nav a{flex-direction:column;justify-content:center;text-align:center;font-size:11px;font-weight:560;letter-spacing:-.01em;min-height:60px;padding:9px 4px;gap:5px;line-height:1.25;border-radius:18px;background:color-mix(in srgb,var(--white) 6%,transparent);border-color:color-mix(in srgb,var(--lg-border) 55%,transparent)}.app-window .side-project{display:none}.app-window .sidebar footer{display:flex;gap:10px;padding:10px 8px 0;margin:8px 0 0;flex-wrap:wrap}.app-window .sidebar footer form{margin:0 0 0 auto}.app-window .sidebar footer button{padding:5px 10px}.app-window .content{padding:14px 12px 96px}.app-window .tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%;gap:6px;padding:6px;border-radius:20px}.app-window .tabs a{min-height:42px;padding:8px 10px;border-radius:14px;font-size:12px;text-align:center}.app-window .tabs a:last-child:nth-child(odd){grid-column:1/-1}.window-status{padding:0 14px 66px;font-size:10px;flex-wrap:wrap;gap:4px 12px}.record-main>strong{font-size:15px}.app-window .snap-box{padding:16px 16px 14px;margin-bottom:20px}.app-window .capture-heading{margin-bottom:10px}.app-window .capture-heading h2{font-size:19px}.app-window .snap-box textarea{font-size:16px;min-height:84px;padding:12px 14px}.app-window .snap-tools{margin-top:10px;gap:8px}.app-window .snap-tools .secondary{flex:1 1 0;padding:8px 8px;min-height:42px;font-size:12.5px}.app-window .snap-tools select{flex:1 0 100%;order:2;font-size:16px}.app-window .snap-tools [data-capture-submit]{flex:1 0 100%;order:3;min-height:44px;font-size:14px}.app-window :is(button,.btn){backdrop-filter:none;-webkit-backdrop-filter:none}}
+@media(max-width:480px){.window-toolbar{padding-inline:12px}.app-window .content{padding:16px 12px 96px}.app-window .content>.panel,.app-window .settings-page>.panel,.app-window .settings-grid>.panel,.app-window .journal-view>.panel,.app-window .snap-box{padding:16px!important}.project-section-head{gap:8px}.project-section-head .btn{padding:8px 12px;font-size:12px}.project-record{grid-template-columns:38px minmax(0,1fr) auto;gap:10px;padding:14px}.record-icon{width:38px;height:38px;border-radius:12px}.record-arrow{display:none}.record-main>span{font-size:12px}.record-cost strong{font-size:13.5px}.record-cost small{font-size:10.5px}.app-window .sidebar footer{font-size:10px}.app-window .sidebar footer>span{font-size:11px}.window-search{width:38px;height:38px;justify-content:center;padding:0}.app-window .paper{padding:14px}.app-window .review{gap:18px}.app-window .row{padding-inline:12px}.app-window .stats strong{font-size:22px}.record-main .icon{width:12px;height:12px}}
+@media(prefers-reduced-transparency:reduce){.workspace-atmosphere{display:none}.window-toolbar,.app-window .sidebar,.window-layout>main{backdrop-filter:none;-webkit-backdrop-filter:none;background:var(--white)}.has-workspace{--workspace-pane:var(--white);--workspace-chrome:var(--white)}}
+.app-window .sidebar nav a:active,.app-window .tabs a:active,.project-filter-links a:active,.window-search:active{transform:scale(.965);transition-duration:90ms}
+.app-window .sidebar nav a .icon,.window-search .icon{transition:transform 160ms var(--ease-spring),color var(--speed-fast) var(--ease)}
+.app-window .sidebar nav a:hover .icon,.window-search:hover .icon{transform:scale(1.08)}
+@media(prefers-reduced-motion:no-preference){
+ .app-window .content{view-transition-name:lg-content}
+ .window-layout>main.lg-expanding .content{animation:lg-expand-in 420ms cubic-bezier(.16,1,.3,1) both}
+}
+@media(prefers-reduced-motion:reduce){.project-record,.project-record:hover .record-arrow,.project-record:hover .record-icon,.record-arrow,.record-icon,.window-search,.app-window .sidebar nav a,.app-window .row{transition:none;transform:none;animation:none}}
+@media print{.workspace-atmosphere,.workspace-hero,.window-toolbar,.window-status,.app-window .sidebar{display:none!important}.app-window{display:block;width:100%;max-width:none;min-height:0;margin:0;border:0;border-radius:0;box-shadow:none;background:#fff}.window-layout{display:block;padding:0}.window-layout>main{border:0;border-radius:0;background:#fff;box-shadow:none;backdrop-filter:none}.app-window .content{padding:0}.has-workspace{padding:0}}
+
+.auth-workspace .auth-shell{position:relative;max-width:440px;margin:8vh auto;padding:24px}
+.auth-workspace .product-wordmark{display:flex;justify-content:center;margin-bottom:28px;font-size:28px}
+.auth-workspace .auth-shell>.panel{position:relative;padding:30px;background:var(--lg-sheen),var(--lg-surface-elevated);backdrop-filter:saturate(220%) blur(34px);-webkit-backdrop-filter:saturate(220%) blur(34px);border:1px solid var(--lg-border);border-radius:calc(var(--radius) + 4px);box-shadow:var(--shadow-raised)}
+.auth-workspace .auth-shell h1{font-size:28px;letter-spacing:-.035em}
+@media(max-width:600px){.auth-workspace .auth-shell{padding:16px;margin:4vh auto}.auth-workspace .auth-shell>.panel{padding:22px}}

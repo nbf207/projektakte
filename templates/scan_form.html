@@ -1,0 +1,12 @@
+<form method="post" action="{% url 'document_upload' %}" enctype="multipart/form-data" data-upload class="home-scan-form">
+  {% csrf_token %}
+  <div class="formgrid">
+    <label>Foto mit der Kamera aufnehmen<input type="file" name="camera" accept="image/jpeg,image/png,image/webp" capture="environment"></label>
+    <label>Oder Dateien / Galerie auswählen<input type="file" name="document" multiple accept="image/jpeg,image/png,image/webp,application/pdf"></label>
+    <label class="full">{{ scan_form.scan_note.label }}{{ scan_form.scan_note }}{{ scan_form.scan_note.errors }}</label>
+  </div>
+  <label class="check-label">{{ scan_form.auto_route }} {{ scan_form.auto_route.label }}</label>
+  <p class="helptext">Rechnung oder Kassenzettel fotografieren, bei Bedarf kurz erklären und senden. Die KI erhält Belegtext, Zusatztext und Namen/Beschreibungen deiner aktiven Projekte. Sofort nach dem Upload gibt es einen Eintrag für Arbeitsbilder. Du kannst das Handy dann weglegen. Die KI ordnet ihn im Hintergrund zu; unklare Fälle stehen unter „Noch zuzuordnen“. Rechnung und Kosten prüfst du später am PC. Originale bis {{ ai_original_limit_mb }} MB werden zusätzlich an Gemini gesendet; größere Belege werden über den OCR-Text ausgewertet.</p>
+  <progress hidden max="100" value="0"></progress><p class="upload-status" role="status"></p>
+  <button>Beleg scannen und zuordnen</button>
+</form>

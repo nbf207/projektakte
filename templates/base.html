@@ -1,0 +1,29 @@
+{% load static akte %}<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="{% static 'theme.js' %}?v=exact-primary-1"></script>
+<title>{% block title %}Projektakte{% endblock %}</title>
+<link rel="stylesheet" href="{% static 'style.css' %}?v=0730">
+<link rel="stylesheet" href="{% static 'editors.css' %}?v=material-1">
+<link rel="stylesheet" href="{% static 'theme.css' %}?v=0720">
+<link rel="stylesheet" href="{% static 'workspace.css' %}?v=0730">
+<script src="{% static 'htmx.min.js' %}" defer></script><script src="{% static 'app.js' %}?v=0730" defer></script><script src="{% static 'instant-shell.js' %}?v=0728" defer></script><script src="{% static 'editors.js' %}" defer></script>
+{% include 'pwa_head.html' %}</head>
+<body class="has-workspace {% if request.resolver_match.url_name == 'home' %}workspace-home{% endif %}">
+<a class="skip-link" href="#main-content">Zum Inhalt</a>
+{% include 'workspace_backdrop.html' %}
+<div class="app-window">
+<header class="window-toolbar"><div class="window-heading">{% include 'wordmark.html' %}<div class="window-location"><span>{% if project %}<a href="{% url 'project' project.pk %}">{{ project.name }}</a>{% elif nav_section == 'settings' %}Einstellungen{% elif nav_section == 'inbox' %}Belegeingang{% elif nav_section == 'maintenance' %}Wartungsplan{% elif nav_section == 'tasks' %}Aufgaben{% elif nav_section == 'search' %}Suche{% elif nav_section == 'system' %}Betrieb & Export{% elif nav_section == 'trash' %}Papierkorb{% else %}Dein Workspace{% endif %}</span></div></div>
+<div class="window-tools"><a class="window-search" href="{% url 'search' %}" title="Suche öffnen (/ oder Strg+K)">{% include 'icon.html' with name='search' %}<span>Durchsuchen</span><kbd class="kbd-hint" aria-hidden="true">/</kbd></a><div class="theme-control">{% include 'icon.html' with name='theme' %}<button type="button" id="theme-toggle" aria-label="Farbschema wechseln" aria-pressed="false">Dunkelmodus</button></div><button type="button" id="mobile-nav-toggle" class="mobile-nav-toggle" aria-label="Navigation öffnen" aria-expanded="false" aria-controls="app-sidebar"><span class="nav-icon-open">{% include 'icon.html' with name='menu' %}</span><span class="nav-icon-close">{% include 'icon.html' with name='close' %}</span></button></div></header>
+<div class="window-layout">
+<aside class="sidebar" id="app-sidebar"><p class="sidebar-caption">WORKSPACE</p><nav id="main-navigation" aria-label="Hauptnavigation"><a href="{% url 'home' %}" {% if nav_section == 'projects' %}class="active" aria-current="page"{% endif %}>{% include 'icon.html' with name='folder' %} Projekte</a><a href="{% url 'inbox' %}" {% if nav_section == 'inbox' %}class="active" aria-current="page"{% endif %}>{% include 'icon.html' with name='inbox' %} Belegeingang</a><a href="{% url 'maintenance' %}" {% if nav_section == 'maintenance' %}class="active" aria-current="page"{% endif %}>{% include 'icon.html' with name='calendar' %} Wartungsplan</a><a href="{% url 'tasks' %}" {% if nav_section == 'tasks' %}class="active" aria-current="page"{% endif %}>{% include 'icon.html' with name='check' %} Aufgaben</a><a href="{% url 'knowledge' %}" {% if nav_section == 'knowledge' %}class="active" aria-current="page"{% endif %}>{% include 'icon.html' with name='book' %} Wissen</a><a href="{% url 'search' %}" {% if nav_section == 'search' %}class="active" aria-current="page"{% endif %}>{% include 'icon.html' with name='search' %} Suche</a><a href="{% url 'system' %}" {% if nav_section == 'system' %}class="active" aria-current="page"{% endif %}>{% include 'icon.html' with name='system' %} Betrieb & Export</a><a href="{% url 'trash' %}" {% if nav_section == 'trash' %}class="active" aria-current="page"{% endif %}>{% include 'icon.html' with name='trash' %} Papierkorb</a><a href="{% url 'settings' %}" {% if nav_section == 'settings' %}class="active" aria-current="page"{% endif %}>{% include 'icon.html' with name='settings' %} Einstellungen</a></nav>
+{% if project %}<div class="side-project"><small>AKTUELLES PROJEKT</small><p><a href="{% url 'project' project.pk %}">{{ project.name }}</a></p><span>{{ project.get_kind_display }}{% if project.archived %} · Archiviert{% endif %}</span></div>{% endif %}
+<footer><span>{{ user.username }}</span><small>{% if demo_mode %}Testdaten · {% endif %}{{ app_version }}</small><form action="{% url 'logout' %}" method="post">{% csrf_token %}<button class="ghost">Abmelden</button></form></footer></aside>
+<main id="main-content" tabindex="-1"><div class="content">
+{% for message in messages %}<div role="status" class="notice {% if message.tags == 'error' or message.tags == 'warning' %}warning{% endif %}">{{ message }}</div>{% endfor %}
+{% if request.resolver_match.url_name == 'home' %}<section class="workspace-hero" aria-label="Dein Workspace"><h1>Deine Projekte. <span>Alles an einem Ort.</span></h1><p>Gedanken festhalten. Fortschritt dokumentieren. Den Überblick behalten.</p></section>{% endif %}
+{% block content %}{% endblock %}
+</div></main></div>
+<footer class="window-status"><span>{% if demo_mode %}Synthetische Testdaten{% else %}Dein persönlicher Workspace{% endif %}</span><span>KI-Vorschläge bleiben prüfbar.</span></footer>
+</div>
+{% include 'feedback.html' %}
+</body></html>

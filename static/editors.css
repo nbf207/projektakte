@@ -1,0 +1,6 @@
+/* Repeating, versioned form rows; keep all data-editor hooks unchanged. */
+.editor-row{min-width:0;margin:16px 0;padding:20px 0;border:0;border-top:1px solid var(--line);border-radius:0;background:transparent}
+.editor-row legend{font-size:11px;font-weight:600;color:var(--muted);padding:0 8px;letter-spacing:.5px}
+.editor-row input,.editor-row select,.editor-row textarea{max-width:100%;min-width:0}.editor-row .editor-delete{display:flex;flex-direction:row;align-items:center;gap:8px;font-size:12px;color:var(--muted)}
+.editor-row button,[data-editor-add]{min-height:44px;margin-top:14px}.expert-editor{margin:24px 0;padding:12px 0;border-block:1px solid var(--line)}.expert-editor summary{color:var(--muted);font-size:12px}.expert-editor label{margin:16px 0}.expert-editor textarea{font:12px/1.7 ui-monospace,monospace;min-height:180px}
+@media(max-width:600px){.editor-row{padding:16px 0}.editor-row .full{grid-column:1/-1}}

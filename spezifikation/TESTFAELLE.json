@@ -1,0 +1,73 @@
+{
+  "specification_version": "1.1",
+  "created_date": "2026-11-12",
+  "synthetic_data_only": true,
+  "instructions": "Frameworkunabhängige Fallspezifikation, kein direkt importierbares Django-Fixture. Jeder Fall läuft mit isoliertem Ausgangsdatenbestand. Geldstrings exakt als Dezimalwerte interpretieren. Nicht mitgelieferte Bilder für Darstellungstests selbst synthetisch erzeugen.",
+  "currency": "EUR",
+  "cases": [
+    {
+      "id": "F01_OELWECHSEL",
+      "project": {"id": "demo-auto", "name": "BMW – Demonstration", "type": "auto"},
+      "entry": {
+        "id": "demo-oil",
+        "type": "wartung",
+        "title": "Ölwechsel",
+        "chronicle_date": "2026-11-12",
+        "odometer_km": 165200,
+        "oil_specification": "Demo 5W-40",
+        "oil_quantity_l": "5.0",
+        "filter_part_number": "DEMO-FILTER-01",
+        "manual_cost": "75.00"
+      },
+      "actions": ["Speichern", "Identische Übermittlung wiederholen", "Aktuelle Öl-Stammdaten auf Demo 0W-30 ändern"],
+      "expected": {"chronicle_entry_count": 1, "entry_cost": "75.00", "historical_oil_specification": "Demo 5W-40"}
+    },
+    {
+      "id": "F02_UMBAU",
+      "entry": {"id": "demo-audio", "type": "umbau", "title": "Soundsystem-Umbau", "start_date": "2026-11-01", "end_date": "2026-11-12", "budget": "1400.00"},
+      "work_step_count": 5,
+      "synthetic_photo_count_to_create": 12,
+      "invoice_amounts": ["500.00", "450.00", "300.00"],
+      "actions": ["Schritte und Bilder anlegen", "Belege vollständig zuordnen", "Abschließen", "Späteres Bild ergänzen und wieder entfernen"],
+      "expected": {"main_chronicle_entry_count": 1, "chronicle_date": "2026-11-01", "work_step_count": 5, "photo_count": 12, "invoice_count": 3, "actual_cost": "1250.00", "remaining_budget": "150.00"}
+    },
+    {
+      "id": "F03_BELEG_MIT_AUSGABE_VERBINDEN",
+      "source_file": "beispiele/BELEG_DEMO_OEL.txt",
+      "existing_entry": {"id": "demo-oil", "chronicle_date": "2026-11-12", "manual_cost": "75.00", "odometer_km": 165200},
+      "expected_extraction": {"invoice_number": "DEMO-OEL-001", "invoice_date": "2026-11-10", "service_date": null, "odometer_km": null, "gross_total": "75.00", "net_total": "63.03", "tax_total": "11.97", "currency": "EUR", "filter_part_number": "DEMO-FILTER-01"},
+      "actions": ["Vorschau öffnen", "Mit vorhandener Ausgabe verbinden", "Übernehmen", "Übernehmen wiederholen", "Gleichen Beleg erneut hinzufügen"],
+      "expected": {"invoice_count": 1, "confirmed_cost_source_count": 1, "entry_cost": "75.00", "chronicle_date": "2026-11-12", "invoice_date": "2026-11-10"}
+    },
+    {
+      "id": "F04_AUFTEILUNG_MIT_GUTSCHRIFT",
+      "source_file": "beispiele/BELEG_DEMO_SPLIT.txt",
+      "invoice": {"number": "DEMO-SPLIT-001", "auto_item": "60.00", "aquarium_item": "40.00", "shipping": "10.00", "discount": "-5.00", "gross_total": "105.00"},
+      "chosen_allocation": {"auto": "63.00", "aquarium": "42.00"},
+      "separate_credit_note": {"target": "auto", "gross_total": "-5.00"},
+      "expected": {"allocated_invoice_total": "105.00", "auto_cost_after_credit": "58.00", "aquarium_cost": "42.00", "combined_cost_after_credit": "100.00", "unallocated_remainder": "0.00"}
+    },
+    {
+      "id": "F05_TEILZUORDNUNG_UND_UEBERZUORDNUNG",
+      "invoice_gross_total": "105.00",
+      "partial_allocation": "60.00",
+      "attempted_total_allocation": "106.00",
+      "expected": {"partial_unallocated_remainder": "45.00", "over_allocation_rejected": true, "over_allocation_amount": "1.00"}
+    },
+    {
+      "id": "F06_KOSTENZUSTAENDE",
+      "entries": [{"id": "unknown", "cost_state": "unknown", "amount": null}, {"id": "free", "cost_state": "free", "amount": "0.00"}, {"id": "known", "cost_state": "known", "amount": "75.00"}],
+      "expected": {"unknown_is_not_zero": true, "displayed_known_cost_sum": "75.00", "unknown_cost_entry_count": 1}
+    },
+    {
+      "id": "F07_DATUM_UND_SORTIERUNG",
+      "entries": [{"id": "precise", "date_precision": "day", "date": "2026-11-12"}, {"id": "month", "date_precision": "month", "date": "2026-11"}, {"id": "year", "date_precision": "year", "date": "2026"}, {"id": "unknown", "date_precision": "unknown", "date": null}],
+      "expected": {"descending_order": ["precise", "month", "year", "unknown"], "month_display": "11/2026", "year_display": "2026", "invoice_date_unchanged_by_timezone": true}
+    },
+    {
+      "id": "F08_AUSFALL_UND_NEUSTART",
+      "actions": ["Foto dauerhaft annehmen", "Paperless unerreichbar simulieren", "Worker neu starten", "Paperless wieder erreichbar machen", "KI unerreichbar simulieren", "Manuell prüfen und übernehmen"],
+      "expected": {"accepted_upload_preserved": true, "manual_entry_still_usable": true, "confirmed_invoice_count": 1, "duplicate_cost_count": 0}
+    }
+  ]
+}

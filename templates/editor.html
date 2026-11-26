@@ -1,0 +1,9 @@
+<section data-formset="{{ editor.prefix }}" data-max-forms="{{ editor.absolute_max }}">
+  {{ editor.management_form }}
+  {{ editor.non_form_errors }}
+  <div data-editor-rows>
+  {% for row in editor %}{% include 'editor_row.html' %}{% endfor %}
+  </div>
+  <template data-editor-template>{% include 'editor_row.html' with row=editor.empty_form %}</template>
+  <button class="secondary" type="button" data-editor-add>+ {{ add_label }}</button>
+</section>

@@ -1,0 +1,32 @@
+--- a/server.py
++++ b/server.py
+@@ -260,6 +260,11 @@
+     if not all(c['State']['Running'] for c in containers):
+         raise RuntimeError('Eine zugehoerige Anwendung ist bereits gestoppt; Abbruch')
+     files, project, service = compose_info(inspect(name))
++    # Cross-project backup groups must include every Compose/env configuration.
++    for container in containers:
++        for filename in compose_info(container)[0]:
++            if filename not in files:
++                files.append(filename)
+     sources = data_sources(containers, files)
+     required = estimate_size(sources)
+     prune(required)
+@@ -343,6 +348,8 @@
+     if name not in POLICIES:
+         raise RuntimeError('Anwendung nicht freigegeben')
+     policy = POLICIES[name]
++    if policy.get('local_build'):
++        raise RuntimeError('Projektakte benötigt einen geprüften lokalen Build mit Sicherung und Migration via pi_ops.py.')
+     current = inspect(name)
+     if current['Image'] != body.get('image', {}).get('id'):
+         raise RuntimeError('Veraltete Update-Anfrage; zuerst neu pruefen')
+@@ -444,6 +451,8 @@
+     labels = dict(labels or {})
+     labels.update({'wud.watch.digest': 'true', 'wud.tag.include': '^' + p['tags'] + '$',
+                    'wud.display.name': p['display'], 'wud.trigger.include': 'http.sicheraktualisieren'})
++    if p.get('local_build'):
++        labels['wud.watch'] = 'false'
+     # Supply explicit tracks for bare digest references. Actual containers stay untouched.
+     ref = (c.get('Config') or {}).get('Image') or c.get('Image', '')
+     if '@' in ref and ':' not in ref.split('@')[0].rsplit('/', 1)[-1]:

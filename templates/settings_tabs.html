@@ -1,0 +1,10 @@
+{% load static %}<link rel="stylesheet" href="{% static 'settings.css' %}?v=0714">
+<nav class="tabs settings-tabs" aria-label="Einstellungsbereiche">
+<a href="{% url 'settings' %}" {% if not section or section == 'projekte' %}class="active" aria-current="page"{% endif %}>Projekte</a>
+<a href="{% url 'settings_center' 'konto' %}" {% if section == 'konto' %}class="active" aria-current="page"{% endif %}>Konto & Sicherheit</a>
+<a href="{% url 'settings_center' 'anbindungen' %}" {% if section == 'anbindungen' %}class="active" aria-current="page"{% endif %}>KI & Schnittstellen</a>
+<a href="{% url 'settings_center' 'medien' %}" {% if section == 'medien' %}class="active" aria-current="page"{% endif %}>Medien & Papierkorb</a>
+<a href="{% url 'settings_center' 'feedback' %}" {% if section == 'feedback' %}class="active" aria-current="page"{% endif %}>Feedback</a>
+<a href="{% url 'settings_center' 'system' %}" {% if section == 'system' %}class="active" aria-current="page"{% endif %}>System & Sicherung</a>
+<a href="{% url 'settings_center' 'darstellung' %}" {% if section == 'darstellung' %}class="active" aria-current="page"{% endif %}>Darstellung</a>
+</nav>

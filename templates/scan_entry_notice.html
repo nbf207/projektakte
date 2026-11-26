@@ -1,0 +1,13 @@
+{% load static %}{% if scan_doc %}
+<script src="{% static 'review-refresh.js' %}" defer></script>
+<section class="panel" aria-label="Gespeicherter Scan">
+<p class="eyebrow">GESPEICHERT · SPÄTER PRÜFEN</p>
+<h2>Dein Eintrag ist schon da.</h2>
+<p>Du kannst das Handy jetzt weglegen oder sofort Arbeitsbilder und Schritte ergänzen. Die Verarbeitung läuft auf dem Server weiter, auch wenn du die Seite schließt.</p>
+{% if scan_doc.deleted_at %}<p class="notice warning">Der Beleg liegt im Papierkorb. Dieser Eintrag und seine Arbeitsbilder bleiben erhalten.</p>{% endif %}
+<p><span class="status warn" data-doc-status="{% url 'document_status' scan_doc.pk %}" data-processing="{{ review_processing|yesno:'1,0' }}" data-preserve-input="0">{% if scan_doc.deleted_at %}Beleg im Papierkorb{% elif review_processing %}Wird verarbeitet{% else %}{{ scan_doc.get_status_display }}{% endif %}</span> · {% if scan_doc.capture_type == 'snap' %}Schnellerfassung{% elif scan_doc.capture_type == 'voice' %}Sprachnachricht noch ungeprüft{% else %}Rechnung noch ungeprüft{% endif %} · Keine automatische Kostenbuchung</p>
+{% if scan_doc.error %}<p class="notice warning">{{ scan_doc.error }} Deine Bilder und der Eintrag bleiben verfügbar.</p>{% endif %}
+{% if project.is_scan_inbox %}<p class="notice">Noch keinem Projekt zugeordnet. Die KI versucht die Zuordnung im Hintergrund; du kannst sie später selbst auswählen.</p>{% endif %}
+<div class="actions"><a class="btn" href="#bilder">+ Arbeitsbilder</a><a class="btn secondary" href="{% url 'step_new' entry.pk %}">+ Arbeitsschritt</a><a href="{% url 'review' scan_doc.pk %}">{% if scan_doc.capture_type == 'snap' %}Erfassung öffnen{% elif scan_doc.capture_type == 'voice' %}Sprachnachricht später prüfen →{% else %}Rechnung später prüfen →{% endif %}</a></div>
+{% if not scan_doc.deleted_at %}<details><summary>Projekt auswählen / korrigieren</summary><form method="post" action="{% url 'document_route' scan_doc.pk %}">{% csrf_token %}{% include 'fields.html' with form=route_form %}<button class="secondary">Projekt bestätigen</button></form></details>{% endif %}
+</section>{% endif %}

@@ -1,0 +1,6 @@
+<div class="custom-color-row">
+<label class="custom-color-choice"><input type="radio" name="{{ input_name }}" value="custom" data-appearance="{{ appearance_key }}"><span>{{ label }}</span></label>
+<label class="custom-color-picker">Farbwähler<input type="color" value="{{ default_color }}" data-appearance="{{ color_key }}" aria-label="{{ label }} auswählen"></label>
+<label class="custom-color-hex">Hex-Farbe<input type="text" value="{{ default_color }}" data-appearance="{{ color_key }}" maxlength="7" pattern="#[0-9a-fA-F]{6}" spellcheck="false" autocomplete="off" placeholder="#12abef" aria-label="{{ label }} als Hex-Wert" aria-describedby="{{ color_key }}-hint"></label>
+<p id="{{ color_key }}-hint" class="helptext">Auswahl oder Hex-Wert wird sofort übernommen. {% if color_key == 'primaryColor' %}Dein Farbwert bleibt unverändert, auch im Hell- und Dunkelmodus.{% else %}Die Glas- und Hintergrundtöne werden daraus für Hell- und Dunkelmodus abgeleitet.{% endif %}</p>
+</div>

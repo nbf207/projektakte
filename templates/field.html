@@ -1,0 +1,4 @@
+<div class="field {% if field.field.widget.input_type == 'number' or field.field.widget.input_type == 'date' or field.name == 'unit' or field.name == 'meter_unit' or field.name == 'currency' or field.name == 'position' or field.name == 'photo_width' or field.name == 'photo_quality' or field.name == 'trash_days' or field.name == 'backup_keep' %}field-small{% endif %} {% if field.field.widget.input_type == 'checkbox' %}field-check{% endif %}">
+{% if field.field.widget.input_type == 'checkbox' %}<label class="check-label" for="{{ field.id_for_label }}">{{ field }} {{ field.label }}</label>{% else %}<label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% endif %}
+{{ field.errors }}{% if field.help_text %}<div class="helptext">{{ field.help_text }}</div>{% endif %}
+</div>

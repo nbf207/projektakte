@@ -1,0 +1,17 @@
+SYNTHETISCHER TESTBELEG – KEINE ECHTE RECHNUNG
+
+Musterteile Demo
+Rechnung DEMO-OEL-001
+Rechnungsdatum: 10.11.2026
+Währung: EUR
+
+Position  Beschreibung                         Menge   Bruttopreis   Gesamt
+1         Motoröl Demo 5W-40, Kanister 5 Liter    1       40,00        40,00
+2         Ölfilter DEMO-FILTER-01                 1       20,00        20,00
+3         Versand                                1       15,00        15,00
+
+Nettosumme:                                  63,03 EUR
+Umsatzsteuer 19 %:                           11,97 EUR
+Rechnungsbetrag brutto:                      75,00 EUR
+
+Dieser synthetische Beleg enthält kein Leistungsdatum und keinen Kilometerstand.

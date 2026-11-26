@@ -1,0 +1,17 @@
+SYNTHETISCHER TESTBELEG – KEINE ECHTE RECHNUNG
+
+Hobbybedarf Demo
+Rechnung DEMO-SPLIT-001
+Rechnungsdatum: 09.11.2026
+Währung: EUR
+
+Position  Beschreibung                         Menge   Bruttopreis   Gesamt
+1         Auto-Demoteil DEMO-AUTO-01              1       60,00        60,00
+2         Aquarium-Demoteil DEMO-AQUA-01          1       40,00        40,00
+
+Warenwert brutto:                           100,00 EUR
+Versand brutto:                              10,00 EUR
+Rabatt brutto:                               -5,00 EUR
+Rechnungsbetrag brutto:                     105,00 EUR
+
+Keine Aufteilung auf Projekte oder Tätigkeitsdaten ist auf diesem Testbeleg angegeben.

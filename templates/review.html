@@ -1,0 +1,66 @@
+{% extends 'base.html' %}{% load akte static %}
+{% block content %}<script src="{% static 'review-refresh.js' %}" defer></script>{% if review_processing %}<p class="notice" role="status">Dein Beleg wird verarbeitet. Die Prüfansicht aktualisiert sich automatisch, sobald die Daten fertig sind. Eigene Eingaben bleiben erhalten.</p>{% endif %}
+<div class="pagehead"><div><p class="eyebrow">BELEGEINGANG / PRÜFANSICHT</p><h1>Rechnung prüfen</h1><p class="muted">{{ doc.asset.name|default:'Vorhandenes Paperless-Dokument' }}</p></div><span class="status {% if doc.status != 'accepted' %}warn{% endif %}" data-doc-status="{% url 'document_status' doc.pk %}" data-initial="{{ doc.status }}" data-processing="{{ review_processing|yesno:'1,0' }}" data-preserve-input="{% if request.method == 'POST' %}1{% else %}0{% endif %}">{% if review_processing %}Wird verarbeitet{% else %}{{ doc.get_status_display }}{% endif %}</span></div>
+{% if doc.entry_id %}<p><a class="btn secondary" href="{% url 'entry' doc.entry_id %}">Eintrag und Arbeitsbilder öffnen →</a></p>{% endif %}
+
+
+{% if doc.error %}<div class="notice warning">{{ doc.error }}</div>{% endif %}{% if doc.remote_state == 'changed' %}<section class="panel"><p><a href="{% url 'document_original' doc.pk %}?remote=1" target="_blank" rel="noopener">Aktuelles Paperless-Original zum Vergleich öffnen</a></p><form method="post" action="{% url 'document_action' doc.pk %}">{% csrf_token %}<label class="check-label"><input type="checkbox" name="identity_checked" value="1" required>Aktuelles Original verglichen: weiterhin dieselbe geprüfte Rechnung. Bestätigte Kosten bleiben unverändert.</label><button name="action" value="ack_remote">Verglichenen Dokumentstand bestätigen</button></form><p>Bei geändertem Betrag oder anderer Rechnung keinen identischen Beleg bestätigen; Korrektur/Gutschrift gesondert erfassen.</p></section>{% endif %}
+<div class="review"><div>
+  <section class="paper"><small>BELEG</small>{% if doc.scan_note %}<details><summary>Deine ursprüngliche Notiz</summary><p>{{ doc.scan_note|linebreaksbr }}</p></details>{% endif %}<h3>{{ doc.proposal.vendor|default:'Beleg' }}</h3>
+  {% if doc.asset %}
+    {% if doc.asset.mime == 'application/pdf' %}<iframe class="document-frame" src="{% url 'media' doc.asset_id %}" title="Rechnungsoriginal"></iframe>
+    {% else %}<a href="{% url 'media' doc.asset_id %}" target="_blank" rel="noopener"><img style="width:100%" src="{% url 'media' doc.asset_id %}" alt="Originalrechnung"></a>{% endif %}
+    <a href="{% url 'media' doc.asset_id %}?download=1">Original herunterladen →</a>
+  {% elif doc.paperless_id %}<p>Paperless-Dokument #{{ doc.paperless_id }}</p><a href="{% url 'document_original' doc.pk %}" target="_blank" rel="noopener">Geschütztes Original öffnen →</a>{% endif %}
+  <details style="margin-top:20px"><summary>OCR-Text vergleichen</summary><pre style="white-space:pre-wrap;font:12px/1.8 monospace;overflow-wrap:anywhere">{{ doc.ocr|default:'OCR noch nicht verfügbar.' }}</pre></details>
+  </section>
+  {% if doc.pages.exists %}<details><summary>Unveränderte Originalseiten</summary>{% for page in doc.pages.all %}<p><a href="{% url 'media' page.asset_id %}?download=1">{{ page.asset.name }}</a></p>{% endfor %}</details>{% endif %}
+  <div class="notice">{% if doc.verified_at %}Paperless-ID {{ doc.paperless_id }} · bestätigt {{ doc.verified_at|date:'d.m.Y H:i' }}{% else %}Übergabe an Paperless noch nicht bestätigt.{% endif %}</div>
+</div><section class="panel">
+{% if doc.status == 'accepted' %}{% include 'line_item_table.html' with positions=doc.source.positions currency=doc.source.currency %}
+  <h2>Einmal übernommen</h2>
+  {% if doc.entry_id %}<p class="notice">Chronik: <a href="{% url 'entry' doc.entry_id %}">{{ doc.entry.title|default:'Titel unbekannt' }}</a></p>{% else %}<details class="panel" {% if form.errors %}open{% endif %}><summary>Chronikeintrag nachträglich ergänzen</summary><form method="post">{% csrf_token %}{{ form.version }}{{ form.non_field_errors }}{% include 'chronicle_fields.html' %}<p class="helptext">Ältere Belege können hier verknüpft werden. Keine erneute KI-Auswertung und keine neue Kostenbuchung; fehlende Chronikangaben bitte ergänzen.</p><button name="action" value="chronicle">Chronik ergänzen</button></form></details>{% endif %}<details><summary>Teile aus geprüften Positionen vorbereiten</summary><form method="post">{% csrf_token %}<input type="hidden" name="action" value="parts"><label>Zielprojekt<select name="parts_project" required>{% for p in projects %}<option value="{{ p.pk }}">{{ p.name }}</option>{% endfor %}</select></label>{% for position in doc.source.positions %}<label class="check-label"><input type="checkbox" name="parts_position" value="{{ forloop.counter0 }}">{{ position.description }} · {{ position.part_number }}</label>{% endfor %}<p>Kauf ist kein Einbau. Nur ausgewählte Teile werden vorbereitet; Wiederholung erzeugt keine weiteren Teile.</p><button>Ausgewählte Teile anlegen</button></form></details><p class="notice">Bestätigte Kostenquelle: {{ doc.source.amount }} {{ doc.source.currency }}. Erneutes Öffnen erzeugt keine Buchung.</p>
+  <p>Rechnungsdatum: {{ doc.source.invoice_date|date:'d.m.Y'|default:'Unbekannt' }}</p><p>Leistungsdatum: {{ doc.source.service_date|date:'d.m.Y'|default:'Nicht belegt' }}</p>
+  <p>Offener Rest: {{ doc.source.remainder }} {{ doc.source.currency }}</p><a class="btn secondary" href="{% url 'cost' doc.source.pk %}">Zuordnungen bearbeiten</a>
+{% else %}
+  <h2>Eintrag prüfen</h2><p class="muted">Erkannte Angaben prüfen. Fehlende Informationen bleiben leer; Kosten werden erst beim Übernehmen gebucht.</p>
+  <form method="post" id="review-form" data-editor-form data-review-autosave="{% url 'review_draft' doc.pk %}">
+  {% csrf_token %}{{ form.non_field_errors }}
+  <input type="hidden" name="simple_review" value="1">{{ form.version }}{{ form.draft_version }}
+  <label>Projekt{{ form.chronicle_project }}{{ form.chronicle_project.errors }}</label>
+  <input type="hidden" name="chronicle_mode" value="{% if doc.entry_id %}existing{% else %}create{% endif %}"><input type="hidden" name="chronicle_entry" value="{{ doc.entry_id|default:'' }}">
+  {% if doc.entry_id and not provisional_entry %}<p><a href="{% url 'entry_edit' doc.entry_id %}">Verknüpften Eintrag bearbeiten →</a></p>{% else %}<div id="review-entry-fields">{% include 'entry_fields.html' with form=entry_form compact_review=True %}</div>{% endif %}
+  <div class="formgrid"><label>Händler{{ form.vendor }}{{ form.vendor.errors }}</label><label>Bruttobetrag{{ form.gross_total }}{{ form.gross_total.errors }}</label><label>Rechnungsdatum{{ form.invoice_date }}{{ form.invoice_date.errors }}</label></div>
+  <details class="review-details" {% if form.errors or position_set.total_error_count %}open{% endif %}><summary>Weitere Rechnungsdetails & Positionen</summary>
+  <div class="formgrid">{% for field in form %}{% if not field.is_hidden and field.name not in form.chronicle_names and field.name != 'vendor' and field.name != 'gross_total' and field.name != 'invoice_date' and field.name != 'positions' and field.name != 'positions_editor' and field.name != 'keep_unallocated' %}<label>{{ field.label }}{{ field }}{{ field.errors }}</label>{% endif %}{% endfor %}</div>
+  <h3 class="section-title">Rechnungspositionen</h3>
+  <p class="helptext">Positionsbeträge brutto eingeben, einschließlich Versand. Menge, Einheit und Einzelpreis sind optional; dessen Netto-/Bruttobasis ausdrücklich wählen. Rabatt und Gutschrift mit Minuszeichen.</p>
+  <div data-mode-panel="rows">{% include 'editor.html' with editor=position_set row_title='Rechnungsposition' add_label='Position hinzufügen' %}<p class="notice" data-position-total>Die Positionen werden vor Übernahme mit dem Gesamtbetrag abgestimmt.</p></div>
+  <details class="expert-editor" {% if form.positions.errors or form.positions_editor.value == 'expert' %}open{% endif %}>
+    <summary>Expertenansicht (optional)</summary><label>{{ form.positions_editor.label }}{{ form.positions_editor }}</label>
+    <div data-mode-panel="expert"><label>{{ form.positions.label }}{{ form.positions }}{{ form.positions.errors }}</label></div>
+    <p class="helptext">Es gilt ausschließlich die ausgewählte Bearbeitungsart. Beim Umschalten wird die JSON-Ansicht nicht automatisch aus ungespeicherten Zeilen neu erzeugt.</p>
+  </details>
+  </details><details id="review-allocation"><summary>Kosten aufteilen oder vorhandene Ausgabe verbinden</summary>
+  {% if suggestion %}<p class="notice">{{ suggestion }}</p>{% endif %}
+  <label>Mit vorhandener Ausgabe verbinden<select name="connect"><option value="">Neue Kostenquelle</option>{% for source in manual %}<option value="{{ source.pk }}" data-allocated="{{ source.allocated_amount }}" data-currency="{{ source.currency }}" {% if saved_connect == source.pk|stringformat:'s' %}selected{% endif %}>{{ source.label }} · {{ source.amount }} {{ source.currency }}</option>{% endfor %}</select></label>
+  <p class="helptext">Beim Verbinden bleiben bisherige Zuordnungen erhalten, wenn unten keine Beträge eingetragen werden. Die vorhandene Ausgabe wird um den Beleg ergänzt.</p>
+  {% include 'allocation.html' %}
+  <label class="check-label">{{ form.keep_unallocated }} {{ form.keep_unallocated.label }}</label>{{ form.keep_unallocated.errors }}
+  <p class="notice" data-allocation-summary role="status" aria-live="polite">Teilzuordnung ist erlaubt. Ein vollständig offener Betrag muss ausdrücklich bestätigt werden.</p>
+  </details><div class="actions"><button name="action" value="save" class="secondary">Korrekturen speichern</button><button name="action" value="accept">Geprüft übernehmen</button></div><span role="status" id="review-save-status"></span>
+  </form>
+{% endif %}
+</section></div>
+<details class="review-tools"><summary>Verarbeitung & Verbindung</summary><form method="post" action="{% url 'document_action' doc.pk %}" class="panel">
+  {% csrf_token %}
+  <div class="actions" style="justify-content:flex-start;margin:0">
+    <button class="secondary" name="action" value="sync">Dokumentstand prüfen</button>
+    {% if doc.status != 'accepted' %}<button class="secondary" name="action" value="refresh">OCR aktualisieren</button>
+    <button class="secondary" name="action" value="retry">Erneut versuchen</button>
+    <button class="secondary" name="action" value="reconcile">Paperless abgleichen</button>
+    {% if doc.verified_at %}<button class="secondary" name="action" value="ai">Neu auswerten</button><button class="ghost" name="action" value="manual">Ohne KI manuell prüfen</button>{% endif %}{% endif %}
+  </div>
+  {% if doc.verified_at and doc.status != 'accepted' %}<label class="check-label" style="margin-top:14px"><input type="checkbox" name="ai_with_original" value="1" {% if doc.ai_with_original %}checked{% endif %}> Originalbild/PDF zusätzlich auswerten</label><p class="helptext">Neue Datei-Scans senden Originale bis {{ ai_original_limit_mb }} MB zusätzlich zum OCR-Text an Gemini; größere Belege verwenden OCR. Bei „Neu auswerten“ gilt die hier gewählte Option. Eine ausdrücklich angeforderte Originalauswertung oberhalb der Dateigrenze wird mit einer Meldung zurückgewiesen.</p>{% endif %}
+</form>{% if doc.status == 'uncertain' or doc.status == 'failed' %}<details class="panel"><summary>Upload mit vorhandener Paperless-ID auflösen</summary><form method="post" action="{% url 'document_action' doc.pk %}">{% csrf_token %}<label>Paperless-ID<input type="number" min="1" name="existing_id" required></label><label class="check-label"><input type="checkbox" name="identity_checked" value="1" required>Lokales Original mit diesem Paperless-Dokument verglichen; Identität stimmt.</label><button name="action" value="link">Vorhandene ID zuordnen</button></form></details>{% endif %}
+</details><p><a href="{% url 'document_delete' doc.pk %}">Dokument löschen</a></p>{% include 'draft_delete_button.html' %}<link rel="stylesheet" href="{% static 'review-simple.css' %}?v=1"><script src="{% static 'review-simple.js' %}?v=1" defer></script>{% endblock %}

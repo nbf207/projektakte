@@ -1,0 +1,7 @@
+/* Quick capture layout structure; visual glass styling lives in workspace.css. */
+.capture-heading{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:12px}.capture-heading h2{font-size:22px;letter-spacing:-.03em;margin:0}.capture-heading>svg{width:22px;height:22px;color:var(--accent)}
+.snap-box textarea{width:100%;min-height:84px;max-height:42vh;resize:none;field-sizing:content}
+.snap-tools{display:flex;align-items:center;flex-wrap:wrap;gap:9px;margin-top:14px}.snap-tools .btn{margin:0;white-space:nowrap}.snap-tools select{flex:1;min-width:180px;width:auto}
+.snap-box details{margin-top:12px}.snap-box details[open] label{margin-top:12px}.snap-box .muted{font-size:12px;margin:8px 0}.snap-box .muted:empty{display:none}.snap-box progress{width:100%}
+.snap-box:focus-within{border-color:var(--line-strong);box-shadow:var(--shadow-raised)}
+@media(max-width:600px){.capture-heading h2{font-size:19px}.snap-tools button,.snap-tools .btn{min-height:42px;padding:8px 12px;font-size:12.5px}}

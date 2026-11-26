@@ -1,0 +1,11 @@
+{% extends 'base.html' %}{% load static %}{% block content %}
+<p class="eyebrow">{{ item.get_kind_display }} · {% if repair_url %}Eigene Ergänzung{% else %}{{ item.get_state_display }}{% endif %}</p><h1>{{ item.title }}</h1>
+{% if repair_url %}<p class="notice">Persönliche Ergänzung · <a href="{{ repair_url }}">Zur BMW-Unterlage</a></p>{% elif item.state != 'approved' %}<p class="notice">Noch nicht freigegeben. Bitte Quelle und Geltungsbereich prüfen.</p>{% endif %}
+<p><strong>{{ item.subject }}</strong> · {{ item.value }} {{ item.unit }}</p><div class="panel">{{ item.content|linebreaks }}</div>
+<p>Quelle: {{ item.source_reference|default:'Keine Herstellerquelle angegeben' }}</p>{% if item.source_quote %}<blockquote>{{ item.source_quote|linebreaksbr }}</blockquote>{% endif %}
+{% if item.source_url %}<p><a href="{{ item.source_url }}" target="_blank" rel="noopener noreferrer">Quellenlink öffnen ↗</a></p>{% endif %}
+{% if item.youtube_id %}<section data-youtube="{{ item.youtube_id }}"><p>YouTube wird erst nach deinem Klick geladen. Dabei verbindet sich dein Browser mit YouTube.</p><button type="button" data-load-youtube>Video laden</button></section>{% endif %}
+<a class="btn" href="{% url 'knowledge_edit' item.pk %}">Prüfen / bearbeiten</a>
+{% if source_entry %}<h2>Ursprünglicher Arbeitseintrag</h2><a href="{% url 'entry' source_entry.pk %}">{{ source_entry.title }} →</a><div class="gallery">{% for photo in source_entry.photo_links %}<figure><a href="{% url 'media' photo.asset_id %}"><img src="{% url 'media' photo.asset_id %}?thumb=1" alt="{{ photo.caption }}" loading="lazy"></a><figcaption>{{ photo.caption }}</figcaption></figure>{% endfor %}</div>
+{% include 'knowledge_videos.html' with video_entry=source_entry %}{% endif %}
+<script src="{% static 'knowledge.js' %}" defer></script>{% endblock %}

@@ -1,0 +1,1 @@
+{% if entry.snapshot.extra_fields %}<dl class="entry-extra-values">{% for value in entry.snapshot.extra_fields %}<dt>{{ value.label }}{% if value.inferred %}<span class="ai-inferred" title="Von der KI interpretiert; bitte prüfen">*</span>{% endif %}</dt><dd>{{ value.value }}{% if value.unit %} {{ value.unit }}{% endif %}</dd>{% endfor %}</dl>{% endif %}

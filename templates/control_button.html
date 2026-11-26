@@ -1,0 +1,1 @@
+<form method="post" class="control-action" action="{% url 'control_action' %}">{% csrf_token %}<input type="hidden" name="kind" value="{{ kind }}"><input type="hidden" name="request_key" value="{{ request_key|default:action_key }}"><button>{{ label }}</button></form>

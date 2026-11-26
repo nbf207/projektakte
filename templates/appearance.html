@@ -1,0 +1,20 @@
+<section class="panel appearance-panel" aria-labelledby="appearance-heading">
+<div class="section-heading"><div><p class="eyebrow">DEIN BROWSER · DEIN STIL</p><h2 id="appearance-heading">Darstellung & Farbpaletten</h2></div>{% include 'icon.html' with name='theme' %}</div>
+<p class="muted">Kombiniere die Farbe deiner Konturen und Markierungen mit einer eigenen Farbstimmung für Hintergrund und Glasflächen. Beide Paletten wirken sofort und bleiben in diesem Browser gespeichert.</p>
+<noscript><p class="notice warning">Zum Umschalten der Darstellung bitte JavaScript aktivieren.</p></noscript>
+<fieldset class="appearance-group palette-role-primary" aria-describedby="primary-palette-hint">
+<legend>Primärfarbe</legend><p id="primary-palette-hint" class="helptext palette-hint">Konturen, Linien, Icons und aktive Markierungen. Keine Farbflächen über dem Hintergrund.</p>
+<div class="palette-grid">{% include 'palette_options.html' with input_name='appearance_palette' appearance_key='palette' %}</div>
+{% include 'custom_color.html' with input_name='appearance_palette' appearance_key='palette' color_key='primaryColor' label='Eigene Primärfarbe' default_color='#6be8b5' %}
+</fieldset>
+<fieldset class="appearance-group palette-role-secondary" aria-describedby="secondary-palette-hint">
+<legend>Sekundärfarbe</legend><p id="secondary-palette-hint" class="helptext palette-hint">Hintergrund, Neon-Lichtbahnen und Glas-Tönung. Für einen einfarbigen Look wähle dieselbe Palette wie oben.</p>
+<div class="palette-grid">{% include 'palette_options.html' with input_name='appearance_secondary_palette' appearance_key='secondaryPalette' %}</div>
+{% include 'custom_color.html' with input_name='appearance_secondary_palette' appearance_key='secondaryPalette' color_key='secondaryColor' label='Eigene Sekundärfarbe' default_color='#00a6de' %}
+</fieldset>
+<div class="appearance-options">
+<fieldset class="appearance-group"><legend>Hell- & Dunkelmodus</legend><div class="segmented-options"><label><input type="radio" name="appearance_theme" value="light" data-appearance="theme"><span>Hell</span></label><label><input type="radio" name="appearance_theme" value="dark" data-appearance="theme"><span>Dunkel</span></label></div></fieldset>
+<fieldset class="appearance-group"><legend>Anzeigedichte</legend><div class="segmented-options"><label><input type="radio" name="appearance_density" value="standard" data-appearance="density" checked><span>Standard</span></label><label><input type="radio" name="appearance_density" value="compact" data-appearance="density"><span>Kompakt</span></label></div><p class="helptext">Für Tabellen und Listen. Bedienelemente bleiben gut erreichbar.</p></fieldset>
+<fieldset class="appearance-group"><legend>Ecken-Rundung</legend><div class="segmented-options"><label><input type="radio" name="appearance_radius" value="subtle" data-appearance="radius"><span>Dezent</span></label><label><input type="radio" name="appearance_radius" value="standard" data-appearance="radius" checked><span>Standard</span></label><label><input type="radio" name="appearance_radius" value="soft" data-appearance="radius"><span>Weich</span></label></div></fieldset>
+</div><p id="appearance-status" class="helptext" role="status" aria-live="polite">Gilt für dieses Gerät und diesen Browser. Kein Speichern-Button nötig.</p>
+</section>
