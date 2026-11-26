@@ -233,7 +233,7 @@ class PurgeTests(TestCase):
             purge_item(self.user,doc,doc.version,remove_costs=True,cost_version=source.version,cost_fingerprint=before)
         self.assertTrue(CostSource.objects.filter(pk=source.pk).exists())
 
-    @override_settings(DEMO_MODE=False)
+    @override_settings(DEMO_MODE=False,PAPERLESS_URL='https://paperless.invalid',PAPERLESS_TOKEN='synthetic')
     def test_live_reuse_verifies_original_checksum_before_accepting_ocr(self):
         from .purging import purge_item
         from .services import receive_document

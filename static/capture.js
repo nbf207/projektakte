@@ -15,7 +15,7 @@ const initCapture=()=>{
  const add=list=>{for(const file of list){if(!selected.some(old=>old.name===file.name&&old.size===file.size&&old.lastModified===file.lastModified))selected.push(file);}update();};
  camera.addEventListener('change',()=>{add(camera.files);camera.value='';});
  files.addEventListener('change',()=>add([...files.files]));
- audio.addEventListener('change',()=>{document.getElementById('voice-record-status').textContent=audio.files.length?t('Audio ausgewählt: ')+audio.files[0].name:'';});
+ audio?.addEventListener('change',()=>{document.getElementById('voice-record-status').textContent=audio.files.length?t('Audio ausgewählt: ')+audio.files[0].name:'';});
  // Clearing all selected files stays a single, explicit action.
  const clear=document.createElement('button');clear.type='button';clear.className='ghost';clear.textContent=t('Dateiauswahl leeren');clear.hidden=true;chosen.after(clear);
  clear.addEventListener('click',()=>{selected=[];update();clear.hidden=true;});
@@ -29,15 +29,16 @@ const initCapture=()=>{
    form.elements.text.value=String(data.get('text')||'');
    const project=String(data.get('project')||'');if([...form.elements.project.options].some(option=>option.value===project))form.elements.project.value=project;
    add(data.getAll('files').filter(file=>typeof file!=='string'));
-   const recording=data.get('audio');if(recording&&typeof recording!=='string'&&recording.size){const transfer=new DataTransfer();transfer.items.add(recording);audio.files=transfer.files;}
-   form.elements.keep_audio.checked=data.get('keep_audio')==='1';status.textContent=t('Deine Erfassung wurde nach der Anmeldung wiederhergestellt. Du kannst jetzt speichern.');
+   const recording=data.get('audio');if(audio&&recording&&typeof recording!=='string'&&recording.size){const transfer=new DataTransfer();transfer.items.add(recording);audio.files=transfer.files;}
+   if(form.elements.keep_audio)form.elements.keep_audio.checked=data.get('keep_audio')==='1';status.textContent=t('Deine Erfassung wurde nach der Anmeldung wiederhergestellt. Du kannst jetzt speichern.');
   }catch{status.textContent=t('Browserentwurf nicht verfügbar. Bitte Dateien erneut auswählen.');}})();
  }
  form.addEventListener('submit',async event=>{
   event.preventDefault();
   if(uploading||form.dataset.voiceRecording==='1')return;
-  if(!form.elements.text.value.trim()&&!files.files.length&&!audio.files.length){status.textContent=t('Bitte Text, Aufnahme oder Dateien hinzufügen.');return;}
-  const all=[...files.files,...audio.files];
+  const audioFiles=audio?[...audio.files]:[];
+  if(!form.elements.text.value.trim()&&!files.files.length&&!audioFiles.length){status.textContent=t('Bitte Text, Aufnahme oder Dateien hinzufügen.');return;}
+  const all=[...files.files,...audioFiles];
   if(files.files.length>8||all.some(file=>file.size>8*1024*1024)||all.reduce((sum,file)=>sum+file.size,0)>12*1024*1024){status.textContent=t('Höchstens 8 Fotos/PDFs, je Datei 8 MB und zusammen mit Audio maximal 12 MB verwenden.');return;}
   uploading=true;
   const data=new FormData(form),buttons=[...form.querySelectorAll('button')].map(button=>[button,button.disabled]),progress=form.querySelector('progress');

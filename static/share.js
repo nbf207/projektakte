@@ -62,8 +62,8 @@ document.addEventListener('DOMContentLoaded',async()=>{
     form.elements.capture_token.value=batchId;
     form.elements.text.value=form.elements.text.value||String(data.get('text')||'');
     const project=String(data.get('project')||'');if(!form.elements.project.value&&[...form.elements.project.options].some(option=>option.value===project))form.elements.project.value=project;
-    const savedAudio=data.get('audio');if(savedAudio&&typeof savedAudio!=='string'&&savedAudio.size&&!audio.files.length){const transfer=new DataTransfer();transfer.items.add(savedAudio);audio.files=transfer.files;}
-    form.elements.keep_audio.checked=data.get('keep_audio')==='1';
+    const savedAudio=data.get('audio');if(audio&&savedAudio&&typeof savedAudio!=='string'&&savedAudio.size&&!audio.files.length){const transfer=new DataTransfer();transfer.items.add(savedAudio);audio.files=transfer.files;}
+    if(form.elements.keep_audio)form.elements.keep_audio.checked=data.get('keep_audio')==='1';
     await addFiles(data.getAll('files').filter(file=>typeof file!=='string'));
     status.textContent=selected.length+t(' Datei(en) übernommen. Projekt auswählen und bestätigen.')+(conversionCount?' '+conversionCount+t(' Bild(er) für die Verarbeitung im Browser in JPEG umgewandelt.'):'');
    }
@@ -83,7 +83,7 @@ document.addEventListener('DOMContentLoaded',async()=>{
  form.addEventListener('submit',async event=>{
   event.preventDefault();if(uploading||hydrating||form.dataset.voiceRecording==='1')return;
   if(unsupported.size){message.textContent=t('Bitte nicht lesbare Bildformate entfernen oder als JPEG, PNG bzw. WebP erneut auswählen.');return;}
-  const files=[...input.files,...audio.files];
+  const files=[...input.files,...(audio?[...audio.files]:[])];
   if(input.files.length<1||input.files.length>8||files.some(file=>file.size>8*1024*1024)||files.reduce((sum,file)=>sum+file.size,0)>12*1024*1024){message.textContent=t('1–8 Bilder/PDFs, je Datei 8 MB und zusammen mit Audio höchstens 12 MB verwenden.');return;}
   uploading=true;clearTimeout(timer);try{await saveDraft();}catch{}
   const data=new FormData(form),buttons=[...form.querySelectorAll('button')].map(button=>[button,button.disabled]),progress=form.querySelector('progress');

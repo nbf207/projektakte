@@ -4,7 +4,7 @@ x-app: &app
   # Prebuilt multi-arch image (linux/amd64 + linux/arm64 for Raspberry Pi).
   # Pin to a specific version tag for reproducible updates and clean rollbacks.
   # To build locally from source, combine with deployment/compose-build.yaml.
-  image: ${PROJEKTAKTE_IMAGE:-ghcr.io/nbf207/projektakte:1.0.0}
+  image: ${PROJEKTAKTE_IMAGE:-ghcr.io/nbf207/projektakte:1.0.1}
   env_file:
     - path: ${PROJEKTAKTE_ENV_FILE:-.env}
       required: false

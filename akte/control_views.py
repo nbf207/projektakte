@@ -188,11 +188,11 @@ def settings_center(request,section):
     if section == 'anbindungen':
         from .integration_secrets import gemini_key
         from .mail_config import mail_config
-        from .preferences import model_spec
+        from .preferences import ai_is_active, model_spec, paperless_is_active
         ai_key_present = bool(gemini_key())
-        ai_active = bool(settings.AI_ENABLED and (ai_key_present or settings.DEMO_MODE))
+        ai_active = ai_is_active()
         ai_model_name = model_spec(request.user)[0]
-        paperless_active = bool(settings.PAPERLESS_URL and settings.PAPERLESS_TOKEN) or settings.DEMO_MODE
+        paperless_active = paperless_is_active()
         try:
             mail_active = bool(mail_config()) or settings.DEMO_MODE
         except ValueError:

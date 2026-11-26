@@ -350,3 +350,128 @@ class Pre100PiAndSoftNavRegressionTests(TestCase):
         for name in ('theme.js', 'editors.js', 'app.js', 'handover.js', 'capture.js', 'voice.js'):
             text = (static_dir / name).read_text(encoding='utf-8')
             self.assertIn('lg:navigate', text, f'{name} must re-initialize on lg:navigate')
+
+
+class StandaloneAndIntegrationMatrixTests(TestCase):
+    def setUp(self):
+        self.user = get_user_model().objects.create_user('matrix-user', password='Sicheres-Passwort-2026!')
+        self.client.force_login(self.user)
+        from akte.models import Project
+        self.project = Project.objects.create(owner=self.user, name='Matrix Car', kind='auto')
+
+    @staticmethod
+    def _tiny_png_upload(name='receipt.png', color=(20, 120, 90)):
+        from io import BytesIO
+        from PIL import Image
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        buf = BytesIO()
+        Image.new('RGB', (16, 16), color=color).save(buf, format='PNG')
+        return SimpleUploadedFile(name, buf.getvalue(), content_type='image/png')
+
+    def test_demo_mode_stays_active_even_when_ai_enabled_false(self):
+        from akte.preferences import ai_is_active, paperless_is_active
+        with override_settings(DEMO_MODE=True, AI_ENABLED=False, GEMINI_API_KEY='', PAPERLESS_URL='', PAPERLESS_TOKEN=''):
+            self.assertTrue(ai_is_active())
+            self.assertTrue(paperless_is_active())
+        with override_settings(DEMO_MODE=False, AI_ENABLED=False, GEMINI_API_KEY='', PAPERLESS_URL='', PAPERLESS_TOKEN=''):
+            self.assertFalse(ai_is_active())
+            self.assertFalse(paperless_is_active())
+
+    def test_quick_capture_standalone_without_ai_saves_directly_without_job(self):
+        import uuid
+        from akte.capture import receive_capture
+        from akte.models import Job
+        with tempfile.TemporaryDirectory() as media_dir, override_settings(
+            DEMO_MODE=False, AI_ENABLED=False, GEMINI_API_KEY='', PAPERLESS_URL='', PAPERLESS_TOKEN='',
+            MEDIA_ROOT=Path(media_dir),
+        ):
+            doc = receive_capture(
+                self.user,
+                text='Replaced cabin air filter\nLooks clean now.',
+                uploads=[self._tiny_png_upload('filter.png')],
+                project=self.project,
+                token=uuid.uuid4(),
+            )
+            self.assertEqual(doc.status, 'accepted')
+            self.assertFalse(doc.ai_enabled)
+            self.assertEqual(doc.entry.title, 'Replaced cabin air filter')
+            self.assertFalse(doc.entry.is_provisional)
+            self.assertEqual(Job.objects.filter(document=doc, kind='capture').count(), 0)
+
+    def test_receipt_upload_matrix_all_four_combinations_and_zero_price_ai(self):
+        from decimal import Decimal
+        from akte.files import receive_document
+        from akte.models import Job
+        from akte.worker import run_one
+
+        # 1. AI OFF + Paperless OFF -> direct review, no document job
+        with tempfile.TemporaryDirectory() as m1, override_settings(
+            DEMO_MODE=False, AI_ENABLED=False, GEMINI_API_KEY='', PAPERLESS_URL='', PAPERLESS_TOKEN='',
+            MEDIA_ROOT=Path(m1),
+        ):
+            doc, _ = receive_document(self.user, self._tiny_png_upload('r1.png'), project=self.project)
+            self.assertEqual(doc.status, 'review')
+            self.assertFalse(doc.ai_enabled)
+            self.assertEqual(Job.objects.filter(document=doc).count(), 0)
+
+        # 2. AI ON + Paperless OFF + default 0 token rates -> direct stage='ai', worker succeeds without Paperless!
+        from akte.proposal_schema import empty_entry
+        fake_entry = {**empty_entry(), 'title': 'Brake fluid', 'kind': 'notiz', 'description': 'Brake fluid purchase'}
+        fake_proposal = {
+            'vendor': 'Local Auto Parts', 'invoice_number': 'INV-101', 'invoice_date': '2026-11-20',
+            'service_date': None, 'odometer_km': None, 'gross_total': '49.90', 'net_total': None,
+            'tax_total': None, 'currency': 'EUR', 'positions': [],
+            'entry': fake_entry, 'project_assignment': None, 'definition': None, 'inferred_fields': ['entry.title'],
+        }
+        fake_ai = mock.Mock()
+        fake_ai.extract.return_value = (fake_proposal, {'promptTokenCount': 200, 'totalTokenCount': 320})
+        with tempfile.TemporaryDirectory() as m2, override_settings(
+            DEMO_MODE=False, AI_ENABLED=True, GEMINI_API_KEY='synthetic-key',
+            AI_INPUT_USD_PER_M=Decimal('0'), AI_OUTPUT_USD_PER_M=Decimal('0'),
+            PAPERLESS_URL='', PAPERLESS_TOKEN='', MEDIA_ROOT=Path(m2),
+        ), mock.patch('akte.worker.ai', return_value=fake_ai), \
+             mock.patch('akte.worker.paperless', side_effect=AssertionError('Paperless must not be called')):
+            doc2, _ = receive_document(self.user, self._tiny_png_upload('r2.png', color=(60, 140, 90)), project=self.project)
+            self.assertEqual(doc2.status, 'ai')
+            self.assertTrue(doc2.ai_enabled)
+            self.assertTrue(doc2.ai_with_original)
+            job2 = Job.objects.get(document=doc2)
+            self.assertEqual(job2.stage, 'ai')
+            # Drain thumbnail + ai jobs
+            while run_one():
+                pass
+            doc2.refresh_from_db()
+            self.assertEqual(doc2.status, 'review')
+            self.assertEqual(doc2.proposal.get('vendor'), 'Local Auto Parts')
+            self.assertEqual(fake_ai.extract.call_count, 1)
+
+        # 3. AI OFF + Paperless ON -> stage='upload', ai_enabled=False
+        with tempfile.TemporaryDirectory() as m3, override_settings(
+            DEMO_MODE=False, AI_ENABLED=False, GEMINI_API_KEY='',
+            PAPERLESS_URL='https://paperless.invalid', PAPERLESS_TOKEN='tok', MEDIA_ROOT=Path(m3),
+        ):
+            doc3, _ = receive_document(self.user, self._tiny_png_upload('r3.png', color=(100, 160, 90)), project=self.project)
+            self.assertEqual(doc3.status, 'paperless')
+            self.assertFalse(doc3.ai_enabled)
+            self.assertEqual(Job.objects.get(document=doc3).stage, 'upload')
+
+        # 4. AI ON + Paperless ON -> stage='upload', ai_enabled=True
+        with tempfile.TemporaryDirectory() as m4, override_settings(
+            DEMO_MODE=False, AI_ENABLED=True, GEMINI_API_KEY='synthetic-key',
+            PAPERLESS_URL='https://paperless.invalid', PAPERLESS_TOKEN='tok', MEDIA_ROOT=Path(m4),
+        ):
+            doc4, _ = receive_document(self.user, self._tiny_png_upload('r4.png', color=(140, 180, 90)), project=self.project)
+            self.assertEqual(doc4.status, 'paperless')
+            self.assertTrue(doc4.ai_enabled)
+            self.assertEqual(Job.objects.get(document=doc4).stage, 'upload')
+
+    def test_standalone_ui_hides_paperless_and_shows_calm_ai_hint(self):
+        from django.urls import reverse
+        with override_settings(DEMO_MODE=False, AI_ENABLED=False, GEMINI_API_KEY='', PAPERLESS_URL='', PAPERLESS_TOKEN=''):
+            home = self.client.get('/')
+            self.assertNotContains(home, 'id="voice-start"')
+            self.assertContains(home, 'GEMINI_API_KEY')
+            upload = self.client.get(reverse('document_upload'))
+            self.assertNotContains(upload, 'Bereits in Paperless?')
+            self.assertNotContains(upload, 'In Paperless suchen')
+            self.assertContains(upload, 'GEMINI_API_KEY')

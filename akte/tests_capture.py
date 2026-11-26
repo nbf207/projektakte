@@ -23,6 +23,7 @@ class CaptureFlowTest(TestCase):
     def test_snap_and_talk_flow(self):
         with tempfile.TemporaryDirectory() as folder,override_settings(DATA_DIR=Path(folder),MEDIA_ROOT=Path(folder)/'media',
             DEMO_MODE=False,ALLOWED_HOSTS=['testserver'],GEMINI_API_KEY='synthetic',AI_ENABLED=True,
+            PAPERLESS_URL='https://paperless.invalid',PAPERLESS_TOKEN='synthetic',
             AI_INPUT_USD_PER_M=Decimal('.30'),AI_OUTPUT_USD_PER_M=Decimal('2.50'),AI_MONTHLY_LIMIT=Decimal('1.50')):
             user=get_user_model().objects.create_user('snap-test');self.client.force_login(user)
             project=Project.objects.create(owner=user,name='BMW-Test',kind='auto',fields={'model':{'value':'SYN-BMW'}})

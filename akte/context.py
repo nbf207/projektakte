@@ -14,9 +14,9 @@ def common(request):
     nav_section = next((section for section, routes in groups.items() if route in routes), 'projects')
     keep_audio=False
     from .i18n import effective_currency, effective_language, currency_symbol
+    from .preferences import ai_is_active, paperless_is_active, preferences
     user = getattr(request, 'user', None)
     if user and user.is_authenticated:
-        from .preferences import preferences
         keep_audio=preferences(user).keep_audio
     curr = effective_currency(user)
     lang = effective_language(user, request)
@@ -27,6 +27,8 @@ def common(request):
         'app_version': settings.APP_VERSION,
         'ai_original_limit_mb': settings.GEMINI_ORIGINAL_MAX_BYTES // (1024 * 1024),
         'feedback_widget_enabled': settings.FEEDBACK_WIDGET_ENABLED,
+        'ai_active': ai_is_active(),
+        'paperless_active': paperless_is_active(),
         'current_language': lang,
         'default_currency': curr,
         'currency_symbol': currency_symbol(curr),

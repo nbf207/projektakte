@@ -6,6 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-11-26
+
+### Added
+- **Central integration status helpers (`akte/preferences.py`, `akte/context.py`):** Unified `ai_is_active()` and `paperless_is_active()` (properly keeping `DEMO_MODE` active even when `AI_ENABLED=0`) exposed across views, worker, and templates.
+- **4-combination integration test coverage (`akte/tests_release100.py`):** Verified all four combinations of Gemini AI and Paperless-ngx (off/off, on/off, off/on, on/on), built-in default token pricing, and standalone UI cleanliness.
+- **Copy-paste `curl` quickstart in `README.md`** for downloading `compose.yaml` and `.env.example`.
+
+### Fixed
+- **Standalone Quick Capture without Gemini AI (`akte/capture.py`):** Saving a note, photo, or PDF via Quick Capture when AI is disabled now creates a clean chronicle entry directly (no placeholder title, no failing background `capture` job).
+- **Standalone receipt upload & AI-only mode without Paperless-ngx (`akte/files.py`, `akte/worker.py`):**
+  - Uploading receipts without Paperless-ngx and without AI now lands directly in `review` for immediate manual booking with zero worker errors.
+  - Uploading receipts with **Gemini AI ON and Paperless-ngx OFF** now queues `stage='ai'` directly against the local file without calling the Paperless adapter (`paperless(doc)` is only invoked in Paperless stages).
+- **Zero-config Gemini pricing (`akte/preferences.py`, `akte/worker.py`):** Enabling `AI_ENABLED=1` + `GEMINI_API_KEY` now works immediately with built-in default token rates for `gemini-3.5-flash-lite` (`$0.10`/`$0.40` per 1M tokens) instead of failing when `AI_INPUT_USD_PER_M=0`.
+- **Clean standalone UI (`capture_form.html`, `share.html`, `upload.html`, `review.html`, `repair_library.html`, `inbox.html`, `purge_confirm.html`, `system.html`, `base.html`, `capture.js`, `share.js`):** Completely hid Paperless panels/buttons when Paperless-ngx is unconfigured, hid dead voice/AI action buttons when AI is disabled, and added calm bilingual hints explaining how to enable optional Gemini AI.
+
 ## [1.0.0] - 2026-11-26
 
 First stable release of **Projektakte** — self-hosted, bilingual (English & German) project logbook for repairs, maintenance, and receipts, ready for Raspberry Pi 4 (2 GB RAM) and `amd64`/`arm64` Docker hosts.

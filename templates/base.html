@@ -24,7 +24,7 @@
 {% if request.resolver_match.url_name == 'home' %}<section class="workspace-hero" aria-label="{% trans 'Dein Workspace' %}"><h1>{% trans 'Deine Projekte.' %} <span>{% trans 'Alles an einem Ort.' %}</span></h1><p>{% trans 'Gedanken festhalten. Fortschritt dokumentieren. Den Überblick behalten.' %}</p></section>{% endif %}
 {% block content %}{% endblock %}
 </div></main></div>
-<footer class="window-status"><span>{% if demo_mode %}{% trans 'Synthetische Testdaten' %}{% else %}{% trans 'Dein persönlicher Workspace' %}{% endif %}</span><span>{% trans 'KI-Vorschläge bleiben prüfbar.' %}</span></footer>
+<footer class="window-status"><span>{% if demo_mode %}{% trans 'Synthetische Testdaten' %}{% else %}{% trans 'Dein persönlicher Workspace' %}{% endif %}</span><span>{% if ai_active %}{% trans 'KI-Vorschläge bleiben prüfbar.' %}{% else %}{% trans 'Alle Daten bleiben lokal.' %}{% endif %}</span></footer>
 </div>
 {% if feedback_widget_enabled %}{% include 'feedback.html' %}{% endif %}
 </body></html>

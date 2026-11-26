@@ -28,6 +28,19 @@ def monthly_budget():
     return min(configured, settings.AI_MONTHLY_LIMIT) if configured is not None else settings.AI_MONTHLY_LIMIT
 
 
+def ai_is_active():
+    if settings.DEMO_MODE:
+        return True
+    from .integration_secrets import gemini_key
+    return bool(settings.AI_ENABLED and gemini_key())
+
+
+def paperless_is_active():
+    if settings.DEMO_MODE:
+        return True
+    return bool(settings.PAPERLESS_URL and settings.PAPERLESS_TOKEN)
+
+
 def model_spec(owner):
     allowed = getattr(settings, 'ALLOWED_GEMINI_MODELS', ('gemini-3.5-flash-lite', 'gemini-3.8-flash'))
     default_model = settings.GEMINI_MODEL if settings.GEMINI_MODEL in allowed else allowed[0]
@@ -35,4 +48,6 @@ def model_spec(owner):
         # Published standard rates; the announced 2027 increase is included.
         future = date.today() >= date(2027, 1, 1)
         return 'gemini-3.8-flash', Decimal('1.50' if future else '.75'), Decimal('7.50' if future else '3.75')
-    return default_model, settings.AI_INPUT_USD_PER_M, settings.AI_OUTPUT_USD_PER_M
+    in_rate = settings.AI_INPUT_USD_PER_M if settings.AI_INPUT_USD_PER_M > 0 else Decimal('0.10')
+    out_rate = settings.AI_OUTPUT_USD_PER_M if settings.AI_OUTPUT_USD_PER_M > 0 else Decimal('0.40')
+    return default_model, in_rate, out_rate

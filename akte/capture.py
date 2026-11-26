@@ -55,24 +55,38 @@ def receive_capture(owner, *, text='', uploads=(), audio=None, project=None, tok
                 from .purging import _remove_unused_files
                 _remove_unused_files(owner,[asset.pk for asset in assets if getattr(asset,'_created_now',False)],[])
                 return prior
+        from .preferences import ai_is_active
+        from django.utils.translation import gettext as _
+        use_ai = ai_is_active()
+        has_pdf = any(asset.mime == 'application/pdf' for asset in assets)
+        first_line = next((line.strip() for line in text.splitlines() if line.strip()), '')
+        manual_title = (first_line or (assets[0].name if assets else '') or _('Schnellerfassung'))[:180]
         with transaction.atomic():
             doc=Document.objects.create(owner=owner,submission_key=key,capture_type='snap',project=project,
-                keep_audio=keep_audio,auto_route=not bool(project),ai_with_original=bool(assets),instance='capture',
-                status='ai',scan_note=text[:1000],ocr=text,voice_data={'text':text,'fingerprint':fingerprint,**({'mail':mail_source} if mail_source else {})})
+                keep_audio=keep_audio,auto_route=bool(use_ai and not project),ai_enabled=use_ai,
+                ai_with_original=bool(use_ai and assets),instance='capture',
+                status='ai' if use_ai else 'review',
+                scan_note=text[:1000],ocr=text,voice_data={'text':text,'fingerprint':fingerprint,**({'mail':mail_source} if mail_source else {})})
             doc=ensure_scan_entry(doc)
+            if not use_ai and not has_pdf:
+                doc.status='accepted'
+                doc.save(update_fields=['status'])
             entry=doc.entry
-            entry.title='Schnellerfassung · wird ausgewertet'
+            entry.title=_('Schnellerfassung · wird ausgewertet') if use_ai else manual_title
             entry.description=text
+            if not use_ai and project:
+                entry.is_provisional=False
             entry.snapshot['_scan_last_ai'].update(title=entry.title,description=text or None)
             entry.snapshot['capture_document']=str(doc.pk)
-            entry.save(update_fields=['title','description','snapshot'])
+            entry.save(update_fields=['title','description','is_provisional','snapshot'])
             for position,asset in enumerate(assets):
                 DocumentPage.objects.create(document=doc,asset=asset,position=position)
                 if asset.mime.startswith('image/'):
                     PhotoLink.objects.get_or_create(request_key=uuid.uuid5(doc.pk,str(asset.pk)),
                         defaults={'asset':asset,'entry':entry,'position':position})
             link_document(doc,project,entry)
-            Job.objects.create(document=doc,kind='capture',stage='capture')
+            if use_ai:
+                Job.objects.create(document=doc,kind='capture',stage='capture')
             return doc
     except BaseException:
         from .purging import _remove_unused_files

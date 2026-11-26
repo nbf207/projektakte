@@ -3261,3 +3261,36 @@ msgstr "Original documents from your local export"
 
 msgid "Werkstatthandbuch-Export · Quellen-ID %(res_id)s · %(doc_id)s"
 msgstr "Workshop manual export · Source ID %(res_id)s · %(doc_id)s"
+
+msgid "Alle Daten bleiben lokal."
+msgstr "All data stays local."
+
+msgid "Bis 8 Bilder/PDFs, je Datei 8 MB, insgesamt 12 MB. Dateien und Notiz werden direkt im ausgewählten Projekt gespeichert. Kosten werden nicht automatisch gebucht."
+msgstr "Up to 8 images/PDFs, max 8 MB each, 12 MB total. Files and note are saved directly in the selected project. Costs are not booked automatically."
+
+msgid "Datei überschreitet das direkte KI-Limit ohne OCR. Bitte manuell prüfen."
+msgstr "File exceeds the direct AI limit without OCR. Please review manually."
+
+msgid "Die Datei wird dauerhaft lokal gespeichert und steht sofort zur manuellen Prüfung und Kostenzuordnung bereit. Optionale KI-Auswertung lässt sich per AI_ENABLED=1 und GEMINI_API_KEY aktivieren."
+msgstr "The file is saved durably on disk and is immediately ready for manual review and cost allocation. Optional AI extraction can be enabled via AI_ENABLED=1 and GEMINI_API_KEY."
+
+msgid "Direkte Speicherung ohne KI. Optionale KI-Auswertung und Spracheingabe lassen sich jederzeit per AI_ENABLED=1 und GEMINI_API_KEY aktivieren."
+msgstr "Direct save without AI. Optional AI extraction and voice input can be enabled anytime via AI_ENABLED=1 and GEMINI_API_KEY."
+
+msgid "Fotografiere eine Rechnung oder lade ein PDF bzw. Bild hoch."
+msgstr "Take a photo of a receipt or upload a PDF or image."
+
+msgid "Optional per AI_ENABLED=1 & GEMINI_API_KEY"
+msgstr "Optional via AI_ENABLED=1 & GEMINI_API_KEY"
+
+msgid "Optionale KI-Suchhilfe ist deaktiviert (aktivierbar per AI_ENABLED=1 und GEMINI_API_KEY). Die Volltextsuche funktioniert vollständig lokal."
+msgstr "Optional AI search helper is disabled (enable via AI_ENABLED=1 and GEMINI_API_KEY). Full-text search works completely locally."
+
+msgid "Projekt auswählen (optional)"
+msgstr "Select project (optional)"
+
+msgid "Schnellerfassung · wird ausgewertet"
+msgstr "Quick capture · analyzing"
+
+msgid "Was hast du gemacht oder vor? Notiz, Fotos oder PDFs direkt festhalten."
+msgstr "What did you do or plan? Save a note, photos, or PDFs directly."

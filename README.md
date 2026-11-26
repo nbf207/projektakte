@@ -49,6 +49,8 @@ Prebuilt multi-architecture images (`linux/amd64` and `linux/arm64` for Raspberr
 Download `compose.yaml` and `.env.example`, copy `.env.example` to `.env`, and start:
 
 ```sh
+curl -LO https://raw.githubusercontent.com/nbf207/projektakte/main/compose.yaml
+curl -LO https://raw.githubusercontent.com/nbf207/projektakte/main/.env.example
 cp .env.example .env
 docker compose up -d
 ```

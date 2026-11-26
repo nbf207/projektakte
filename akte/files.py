@@ -88,20 +88,29 @@ def receive_document(owner,upload,project=None,entry=None,*,note='',auto_route=F
         check_owner(owner,entry)
         if project and entry.project_id!=project.pk: raise ValidationError('Unpassender Vorgang.')
     asset=ingest_asset(owner,upload,document=True)
+    from .preferences import ai_is_active, paperless_is_active
+    has_paperless = paperless_is_active()
+    has_ai = ai_is_active()
+    initial_status = 'paperless' if has_paperless else ('ai' if has_ai else 'review')
+    use_original_for_ai = bool((create_entry or not has_paperless) and asset.size <= settings.GEMINI_ORIGINAL_MAX_BYTES)
+    asset_instance = 'demo' if settings.DEMO_MODE else (settings.PAPERLESS_URL if has_paperless else 'local')
     try:
       with transaction.atomic():
-        doc,new=Document.objects.get_or_create(owner=owner,asset=asset,defaults={'project':project,'entry':entry,'ai_with_original':bool(create_entry and asset.size<=settings.GEMINI_ORIGINAL_MAX_BYTES),'scan_note':note,'auto_route':bool(auto_route and not project and not entry),'instance':'demo' if settings.DEMO_MODE else settings.PAPERLESS_URL,'status':'paperless'})
+        doc,new=Document.objects.get_or_create(owner=owner,asset=asset,defaults={'project':project,'entry':entry,'ai_enabled':has_ai,'ai_with_original':use_original_for_ai,'scan_note':note,'auto_route':bool(auto_route and has_ai and not project and not entry),'instance':asset_instance,'status':initial_status})
         if doc.deleted_at: raise ValidationError('Dieser Beleg liegt im Papierkorb. Dort wiederherstellen; kein zweiter Upload und keine zweite Kostenquelle.')
         if new:
-            previous=ArchiveReference.objects.filter(owner=owner,instance=doc.instance,sha256=asset.sha256).first()
-            if previous:
-                doc.paperless_id=previous.paperless_id
-                doc.submission_key=previous.submission_key
-                doc.task_id=previous.task_id
-                doc.submitted_at=previous.submitted_at
-                doc.status='ocr'
-                doc.save(update_fields=['paperless_id','submission_key','task_id','submitted_at','status'])
-            Job.objects.create(document=doc,stage='reuse' if previous else 'upload')
+            if has_paperless:
+                previous=ArchiveReference.objects.filter(owner=owner,instance=doc.instance,sha256=asset.sha256).first()
+                if previous:
+                    doc.paperless_id=previous.paperless_id
+                    doc.submission_key=previous.submission_key
+                    doc.task_id=previous.task_id
+                    doc.submitted_at=previous.submitted_at
+                    doc.status='ocr'
+                    doc.save(update_fields=['paperless_id','submission_key','task_id','submitted_at','status'])
+                Job.objects.create(document=doc,stage='reuse' if previous else 'upload')
+            elif has_ai:
+                Job.objects.create(document=doc,stage='ai')
         if create_entry:
             from .scan_entries import ensure_scan_entry
             doc=ensure_scan_entry(doc)

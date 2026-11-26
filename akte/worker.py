@@ -83,12 +83,10 @@ def reserve_ai(doc,*,context=None):
         return None
     from .preferences import model_spec
     model,input_rate,output_rate=model_spec(doc.owner)
-    if input_rate <= 0 or output_rate <= 0:
-        raise IntegrationError('KI-Preise vor Livebetrieb verifizieren und konfigurieren.')
     input_reserve = len(doc.ocr[:60000].encode('utf8')) + len(json.dumps(context or {},ensure_ascii=False).encode('utf8')) + 12000
     if doc.ai_with_original:
         input_reserve = max(input_reserve, settings.AI_VISION_INPUT_RESERVE)
-    ceiling = (Decimal(input_reserve) * input_rate + Decimal(settings.AI_MAX_OUTPUT) * output_rate) / Decimal(1_000_000)
+    ceiling = (Decimal(input_reserve) * max(input_rate, Decimal(0)) + Decimal(settings.AI_MAX_OUTPUT) * max(output_rate, Decimal(0))) / Decimal(1_000_000)
     ceiling = max(ceiling, settings.AI_REQUEST_RESERVE).quantize(Decimal('.000001'), rounding=ROUND_CEILING)
     from .preferences import monthly_budget
     if spent + ceiling > monthly_budget():
@@ -114,8 +112,8 @@ def record_usage(usage, meta):
 
 
 def process_document(job, doc):
-    adapter = paperless(doc)
     if job.stage == 'reuse':
+        adapter = paperless(doc)
         from .documents import remote_signature
         document_id=doc.paperless_id or adapter.reconcile(doc,pending_if_missing=True)
         before=paperless(doc).read(document_id,doc)
@@ -131,6 +129,7 @@ def process_document(job, doc):
             'remote_state':'current','error':'','status':'ai' if doc.ai_enabled else 'review'},
             stage='ai',status='pending' if doc.ai_enabled else 'done',attempts=0,leased_until=None)
     elif job.stage == 'upload':
+        adapter = paperless(doc)
         if doc.paperless_id:
             commit_job(job, stage='ocr', status='pending', attempts=0)
         elif doc.submitted_at and not doc.task_id:
@@ -146,9 +145,11 @@ def process_document(job, doc):
             else:
                 commit_job(job, stage='poll', status='pending', attempts=0, leased_until=None)
     elif job.stage == 'poll':
+        adapter = paperless(doc)
         document_id = adapter.poll(doc)
         commit_job(job, {'paperless_id': document_id, 'status': 'ocr'}, stage='ocr', status='pending', attempts=0)
     elif job.stage == 'ocr':
+        adapter = paperless(doc)
         result = adapter.read(doc.paperless_id, doc)
         if int(result.get('id', 0)) != doc.paperless_id:
             raise IntegrationError('Paperless-Dokumentidentität stimmt nicht überein.')
@@ -162,11 +163,16 @@ def process_document(job, doc):
                    stage='ai', status='pending' if doc.ai_enabled else 'done', attempts=0, leased_until=None)
     elif job.stage == 'ai':
         if not doc.ai_enabled:
-            commit_job(job, status='done', leased_until=None)
+            commit_job(job, {'status': 'review'}, status='done', leased_until=None)
             return
         from .project_routing import ai_context
         context=ai_context(doc)
         original, mime = original_for_ai(doc) if doc.ai_with_original else (None, None)
+        if not doc.ocr and original is None and not doc.paperless_id and not settings.DEMO_MODE:
+            from django.utils.translation import gettext as _
+            commit_job(job, {'status': 'review', 'error': _('Datei überschreitet das direkte KI-Limit ohne OCR. Bitte manuell prüfen.')},
+                       status='done', attempts=0, error='', leased_until=None)
+            return
         usage = reserve_ai(doc,context=context)
         try:
             if doc.ai_with_original:
@@ -209,7 +215,7 @@ def fail(job, exc):
             doc = Document.objects.filter(pk=job.document_id).first()
             if doc is None:
                 return
-            document_values = {'error': text, 'status': 'review' if doc.verified_at else 'failed'}
+            document_values = {'error': text, 'status': 'review' if (doc.verified_at or job.stage == 'ai') else 'failed'}
             if isinstance(exc,UploadRejected) and job.stage=='upload' and not doc.task_id:
                 document_values['submitted_at']=None
         if commit_job(job, document_values, status='failed' if count >= 3 else 'pending', attempts=count,
