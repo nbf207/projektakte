@@ -18,7 +18,8 @@ document.addEventListener('DOMContentLoaded',()=>{
           data.set('entry_id',form.dataset.entryId);
           form.querySelectorAll('input[type=checkbox]').forEach(e=>data.set(e.name,e.checked?'1':''));
         }
-        status.textContent=review?'Prüfentwurf wird gespeichert …':'Entwurf wird gespeichert …';
+        const t=window.t||(s=>s);
+        status.textContent=review?t('Prüfentwurf wird gespeichert …'):t('Entwurf wird gespeichert …');
         try{
           const response=await postDraft(review?form.dataset.reviewAutosave:form.dataset.autosave,data);
           if(submitting)break;
@@ -31,11 +32,11 @@ document.addEventListener('DOMContentLoaded',()=>{
               history.replaceState(null,'',url);
             }
             status.textContent=result.message;
-          }else status.textContent=result.error||'Entwurf nicht gespeichert. Eingabe bleibt im Formular.';
+          }else status.textContent=result.error||t('Entwurf nicht gespeichert. Eingabe bleibt im Formular.');
         }catch(error){
           if(!submitting){
-            status.textContent='Entwurf nicht bestätigt. Eingabe bleibt im Formular; Speichern prüft den Versionsstand.';
-            if(error.name==='LoginRequired')ProjektakteNet.loginNotice(status,location.href,'Anmeldung abgelaufen. Vor dem Erneuern bitte noch nicht gespeicherte Texte kopieren. ');
+            status.textContent=t('Entwurf nicht bestätigt. Eingabe bleibt im Formular; Speichern prüft den Versionsstand.');
+            if(error.name==='LoginRequired')ProjektakteNet.loginNotice(status,location.href,t('Anmeldung abgelaufen. Vor dem Erneuern bitte noch nicht gespeicherte Texte kopieren. '));
           }
         }
       }
@@ -43,7 +44,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     };
     form.addEventListener('input',()=>{
       if(submitting)return;
-      clearTimeout(timer);status.textContent='Ungespeicherte Änderung …';
+      clearTimeout(timer);status.textContent=(window.t||(s=>s))('Ungespeicherte Änderung …');
       timer=setTimeout(send,650);
     });
     // Native submission is reliable even during autosave. Server-side draft
@@ -54,10 +55,11 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.querySelectorAll('form[data-review-autosave]').forEach(form=>autosave(form,true));
   document.querySelectorAll('[data-add-allocation]').forEach(btn=>btn.addEventListener('click',()=>{const rows=document.querySelector('#allocation-rows'),copy=rows.lastElementChild.cloneNode(true);copy.querySelectorAll('input').forEach(e=>e.value='');copy.querySelectorAll('select').forEach(e=>e.selectedIndex=0);rows.append(copy)}));
   document.querySelectorAll('form[data-upload]').forEach(form=>form.addEventListener('submit',event=>{
-    event.preventDefault();const xhr=new XMLHttpRequest(),progress=form.querySelector('progress'),status=form.querySelector('.upload-status'),button=form.querySelector('button');button.disabled=true;progress.hidden=false;status.textContent='Upload läuft. Annahme wird nach dauerhafter Speicherung bestätigt.';
+    const t=window.t||(s=>s);
+    event.preventDefault();const xhr=new XMLHttpRequest(),progress=form.querySelector('progress'),status=form.querySelector('.upload-status'),button=form.querySelector('button');button.disabled=true;progress.hidden=false;status.textContent=t('Upload läuft. Annahme wird nach dauerhafter Speicherung bestätigt.');
     xhr.open('POST',form.action||location.href);xhr.setRequestHeader('X-Requested-With','XMLHttpRequest');xhr.upload.onprogress=e=>{if(e.lengthComputable)progress.value=e.loaded/e.total*100};
-    xhr.onload=()=>{button.disabled=false;if(xhr.status>=200&&xhr.status<400){location.assign(xhr.responseURL)}else {let message='Upload nicht bestätigt. Eingabe bleibt erhalten; Status im Eingang prüfen.';try{message=JSON.parse(xhr.responseText).error||message}catch{}status.textContent=message}};
-    xhr.onerror=()=>{button.disabled=false;status.textContent='Verbindung unklar. Eingang prüfen; identische Datei wird anhand ihres Hashes wiedererkannt.'};xhr.send(new FormData(form));
+    xhr.onload=()=>{button.disabled=false;if(xhr.status>=200&&xhr.status<400){location.assign(xhr.responseURL)}else {let message=t('Upload nicht bestätigt. Eingabe bleibt erhalten; Status im Eingang prüfen.');try{message=JSON.parse(xhr.responseText).error||message}catch{}status.textContent=message}};
+    xhr.onerror=()=>{button.disabled=false;status.textContent=t('Verbindung unklar. Eingang prüfen; identische Datei wird anhand ihres Hashes wiedererkannt.')};xhr.send(new FormData(form));
   }));
   const chronicleKey=()=> 'chronik:'+location.pathname+location.search;
   const chronicleRows=()=>[...document.querySelectorAll('details[data-chronicle-id]')];
@@ -249,8 +251,9 @@ document.addEventListener('DOMContentLoaded',()=>{
     root.classList.toggle('nav-open', open);
     const btn = getBtn();
     if (btn) {
+      const t = window.t || (s => s);
       btn.setAttribute('aria-expanded', open ? 'true' : 'false');
-      btn.setAttribute('aria-label', open ? 'Navigation schließen' : 'Navigation öffnen');
+      btn.setAttribute('aria-label', open ? t('Navigation schließen') : t('Navigation öffnen'));
     }
   };
   document.addEventListener('click', e => {

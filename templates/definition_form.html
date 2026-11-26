@@ -1,6 +1,6 @@
-<form method="post" class="definition-form">
+{% load i18n %}<form method="post" class="definition-form">
 {% csrf_token %}<input type="hidden" name="project" value="{{ project.pk }}"><input type="hidden" name="scope" value="{{ scope }}">
 {{ form.non_field_errors }}{% for field in form.hidden_fields %}{{ field }}{{ field.errors }}{% endfor %}
 <div class="fields-grid">{% for field in form.visible_fields %}{% if field.name != 'category' and field.name != 'template' %}{% include 'field.html' %}{% endif %}{% endfor %}</div>
-{% if scope == 'template' or scope == 'field' %}<details class="assignment-options" {% if form.category.errors or form.template.errors %}open{% endif %}><summary>Zuordnung ändern</summary><div class="fields-grid">{% for field in form.visible_fields %}{% if field.name == 'category' or field.name == 'template' %}{% include 'field.html' %}{% endif %}{% endfor %}</div></details>{% endif %}
-<div class="actions"><button name="action" value="save">{% if obj %}Speichern{% else %}Hinzufügen{% endif %}</button>{% if obj %}<button name="action" value="delete" class="ghost" formnovalidate>Entfernen</button>{% endif %}</div></form>
+{% if scope == 'template' or scope == 'field' %}<details class="assignment-options" {% if form.category.errors or form.template.errors %}open{% endif %}><summary>{% trans 'Zuordnung ändern' %}</summary><div class="fields-grid">{% for field in form.visible_fields %}{% if field.name == 'category' or field.name == 'template' %}{% include 'field.html' %}{% endif %}{% endfor %}</div></details>{% endif %}
+<div class="actions"><button name="action" value="save">{% if obj %}{% trans 'Speichern' %}{% else %}{% trans 'Hinzufügen' %}{% endif %}</button>{% if obj %}<button name="action" value="delete" class="ghost" formnovalidate>{% trans 'Entfernen' %}</button>{% endif %}</div></form>

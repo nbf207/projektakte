@@ -11,9 +11,10 @@ function initEntryEditor(){
  const fieldKey=id=>'extra_'+id.replaceAll('-','');
  const hidden=name=>root.querySelector(`input[name="${prefix+name}"]`);
  function render(){
+  const t=window.t||(s=>s);
   grid.querySelectorAll('input:not([type=hidden])').forEach(input=>values.set(input.name,input.value));
   const group=groups.find(g=>g.id===category.value),wanted=template.value;
-  template.replaceChildren(new Option('Eigenen Titel eingeben',''));
+  template.replaceChildren(new Option(t('Eigenen Titel eingeben'),''));
   for(const item of group?.titles||[])template.add(new Option(item.name,item.id));
   template.value=(group?.titles||[]).some(t=>t.id===wanted)?wanted:'';
   const selected=templates.get(template.value),fields=[...projectFields,...(selected?.fields||[])];
@@ -27,7 +28,7 @@ function initEntryEditor(){
    const input=document.createElement('input');input.name=prefix+fieldKey(field.id);input.maxLength=2000;
    input.value=values.get(input.name)??marks.get(field.id)?.value??'';input.placeholder=field.placeholder||'';
    const original=marks.get(field.id);
-   if(original?.inferred){const mark=document.createElement('span');mark.className='ai-inferred';mark.textContent='*';mark.title='Von der KI interpretiert; bitte prüfen';const update=()=>mark.hidden=input.value!==original.value;update();input.addEventListener('input',update);label.append(mark);}
+   if(original?.inferred){const mark=document.createElement('span');mark.className='ai-inferred';mark.textContent='*';mark.title=t('Von der KI interpretiert; bitte prüfen');const update=()=>mark.hidden=input.value!==original.value;update();input.addEventListener('input',update);label.append(mark);}
    if(field.type==='number')input.inputMode='decimal';
    if(field.suggestions?.length){
     const list=document.createElement('datalist');list.id='recent-'+field.id;

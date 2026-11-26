@@ -41,19 +41,22 @@ def maintenance_pdf(destination,project,entry=None):
             if used>settings.PDF_MAX_TEXT_CHARS:
                 raise IntegrationError('Wartungstabelle überschreitet die konfigurierte Textgrenze.')
             return Paragraph(escape(value).replace('\n','<br/>'),style)
+        from django.utils.translation import gettext as _
+        from .i18n import effective_currency, format_number
+        curr = effective_currency(project.owner)
         def number(value,*,money=False):
-            raw=f'{value:,.2f}' if money else f'{value:,.3f}'.rstrip('0').rstrip('.')
-            return raw.replace(',','X').replace('.',',').replace('X','.')
-        rows=[[text(x) for x in ['Datum','Kilometer','Wartung / Reparatur / Umbau','Kosten in EUR']]]
+            return format_number(f'{value:.2f}' if money else value)
+        rows=[[text(x) for x in [_('Datum'),_('Zähler'),_('Wartung / Reparatur / Umbau'),_('Kosten') + f' ({curr})']]]
         total=Decimal('0'); unknown=0
         for item in entries:
             amount=item.cost;total+=amount
-            cost='Unbekannt' if item.cost_state=='unknown' and not item.allocations.exists() else ('Kostenlos' if item.cost_state=='free' and amount==0 else number(amount,money=True))
-            if cost=='Unbekannt':unknown+=1
-            foreign=list(item.allocations.exclude(source__currency='EUR').values_list('amount','source__currency'))
+            unknown_label = _('Unbekannt')
+            cost=unknown_label if item.cost_state=='unknown' and not item.allocations.exists() else (_('Kostenlos') if item.cost_state=='free' and amount==0 else number(amount,money=True))
+            if cost==unknown_label:unknown+=1
+            foreign=list(item.allocations.exclude(source__currency=curr).values_list('amount','source__currency'))
             if foreign:
-                cost+='\n'+'; '.join(f'{number(n,money=True)} {currency}' for n,currency in foreign)+' (separat)'
-            description=marked(item,'title',item.title or 'Titel unbekannt')
+                cost+='\n'+'; '.join(f'{number(n,money=True)} {currency}' for n,currency in foreign)+f' ({_("separat")})'
+            description=marked(item,'title',item.title or _('Titel unbekannt'))
             if item.description:
                 description+='\n'+marked(item,'description',item.description)
             details=[f'{label}: {marked(item,key,item.snapshot[key])}' for label,key in [('Öl','oil'),('Liter','quantity_l'),('Filter','filter')] if item.snapshot.get(key)]

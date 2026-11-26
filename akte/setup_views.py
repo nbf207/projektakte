@@ -7,26 +7,29 @@ from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import transaction
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
+from django.utils.translation import gettext as _, gettext_lazy
 from django.views.decorators.http import require_http_methods
 
+from .i18n import effective_language
+from .models import Preferences
 from .operations import operation_gate
 
 
 class FirstRunSetupForm(forms.Form):
     username = forms.CharField(
-        label='Benutzername',
+        label=gettext_lazy('Benutzername'),
         max_length=150,
         validators=[UnicodeUsernameValidator()],
         widget=forms.TextInput(attrs={'autocomplete': 'username', 'autofocus': True}),
     )
     password1 = forms.CharField(
-        label='Passwort',
+        label=gettext_lazy('Passwort'),
         strip=False,
         widget=forms.PasswordInput(attrs={'autocomplete': 'new-password'}),
-        help_text='Mindestens 12 Zeichen, kein häufiges Standardpasswort.',
+        help_text=gettext_lazy('Mindestens 12 Zeichen, kein häufiges Standardpasswort.'),
     )
     password2 = forms.CharField(
-        label='Passwort wiederholen',
+        label=gettext_lazy('Passwort wiederholen'),
         strip=False,
         widget=forms.PasswordInput(attrs={'autocomplete': 'new-password'}),
     )
@@ -37,7 +40,7 @@ class FirstRunSetupForm(forms.Form):
         p1 = cleaned.get('password1')
         p2 = cleaned.get('password2')
         if p1 and p2 and p1 != p2:
-            self.add_error('password2', 'Die beiden Passwörter stimmen nicht überein.')
+            self.add_error('password2', _('Die beiden Passwörter stimmen nicht überein.'))
         elif p1:
             candidate = get_user_model()(username=username)
             try:
@@ -52,18 +55,20 @@ class FirstRunSetupForm(forms.Form):
 def first_run_setup(request):
     User = get_user_model()
     if settings.DEMO_MODE or User.objects.exists():
-        return HttpResponse('Nicht gefunden.', status=404)
+        return HttpResponse(_('Nicht gefunden.'), status=404)
 
     form = FirstRunSetupForm(request.POST or None)
     if request.method == 'POST' and form.is_valid():
+        active_lang = effective_language(request=request)
         with operation_gate(), transaction.atomic():
             if User.objects.exists():
-                return HttpResponse('Nicht gefunden.', status=404)
+                return HttpResponse(_('Nicht gefunden.'), status=404)
             user = User.objects.create_superuser(
                 username=form.cleaned_data['username'],
                 email='',
                 password=form.cleaned_data['password1'],
             )
+            Preferences.objects.get_or_create(owner=user, defaults={'language': active_lang})
             login(request, user, backend='django.contrib.auth.backends.ModelBackend')
         return redirect('home')
 

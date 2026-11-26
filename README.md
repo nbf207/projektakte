@@ -4,7 +4,7 @@
 
 Projektakte is a self-hosted project logbook for vehicles, home projects, repairs, and long-running builds. On your phone, you throw in a quick text note, photo, PDF, or voice memo without stopping what you are doing; optional AI and OCR pre-structure the draft in the background, and later on desktop you review and confirm every cost or entry following a strict **suggestions instead of blind auto-booking** (human-in-the-loop) workflow.
 
-> **Language note:** The web interface is currently in **German**. Full English localization (i18n) is planned for a future release. All repository documentation, Docker templates, and configuration guides are in English.
+> **Languages, Currency & Timezone:** Projektakte is fully bilingual (**English & German**) with automatic browser language detection, an in-app switcher, and language-aware AI suggestions. Currency (`DEFAULT_CURRENCY`) and timezone (`TIME_ZONE` / `TZ`) are configurable for international self-hosters.
 
 ---
 

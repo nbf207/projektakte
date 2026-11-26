@@ -87,9 +87,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const review = document.querySelector('#review-form');
   if (!review) return;
   function totals() {
+    const t = window.t || (s => s);
+    const locale = (document.documentElement.lang || 'de').toLowerCase().startsWith('en') ? 'en-US' : 'de-DE';
     const gross = cents(review.elements.gross_total.value);
     const currency = /^[A-Z]{3}$/.test(review.elements.currency.value) ? review.elements.currency.value : 'EUR';
-    const money = n => new Intl.NumberFormat('de-DE', { style: 'currency', currency }).format(n / 100);
+    const money = n => new Intl.NumberFormat(locale, { style: 'currency', currency }).format(n / 100);
     const positions = review.querySelectorAll('[data-formset="positions"] [data-editor-row]');
     let positionTotal = 0, invalidPosition = false;
     for (const row of positions) {
@@ -99,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (amount === null) invalidPosition = true; else positionTotal += amount;
     }
     const positionStatus = review.querySelector('[data-position-total]');
-    positionStatus.textContent = invalidPosition ? 'Positionen noch unvollständig.' : `Positionssumme: ${money(positionTotal)}${gross === null ? '' : ' · Abweichung zu Brutto: ' + money(gross - positionTotal)}`;
+    positionStatus.textContent = invalidPosition ? t('Positionen noch unvollständig.') : `${t('Positionssumme: ')}${money(positionTotal)}${gross === null ? '' : t(' · Abweichung zu Brutto: ') + money(gross - positionTotal)}`;
     let allocated = 0, invalidAllocation = false, hasRows = false;
     for (const input of review.querySelectorAll('[name="alloc_amount"]')) {
       if (!input.value.trim()) continue;
@@ -109,9 +111,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const connect = review.elements.connect;
     if (connect.value && !hasRows) allocated = cents(connect.selectedOptions[0].dataset.allocated) || 0;
     const status = review.querySelector('[data-allocation-summary]');
-    if (gross === null || invalidAllocation) status.textContent = 'Gesamtbetrag und Zuordnungen bitte vervollständigen.';
-    else if (review.elements.keep_unallocated.checked) status.textContent = `Ausdrücklich vollständig unzugeordnet: ${money(gross)}. Eingetragene Zuordnungen werden bei dieser Auswahl nicht gebucht.`;
-    else status.textContent = `Zugeordnet: ${money(allocated)} · Offener Rest: ${money(gross - allocated)}${connect.value ? ' · Vorhandene Ausgabe wird verbunden.' : ''}`;
+    if (gross === null || invalidAllocation) status.textContent = t('Gesamtbetrag und Zuordnungen bitte vervollständigen.');
+    else if (review.elements.keep_unallocated.checked) status.textContent = t('Ausdrücklich vollständig unzugeordnet: {amount}. Eingetragene Zuordnungen werden bei dieser Auswahl nicht gebucht.', { amount: money(gross) });
+    else status.textContent = t('Zugeordnet: {allocated} · Offener Rest: {remainder}', { allocated: money(allocated), remainder: money(gross - allocated) }) + (connect.value ? t(' · Vorhandene Ausgabe wird verbunden.') : '');
   }
   review.addEventListener('input', totals); review.addEventListener('change', totals); totals();
 });

@@ -35,7 +35,9 @@ def form_page(request,title,form,**context): return render(request,'form.html',{
 def home(request):
     from django.db.models import OuterRef, Subquery
     from .fields import ExactDecimalField
-    eur_cost=Subquery(Allocation.objects.filter(project=OuterRef('pk'),source__currency='EUR').values('project').annotate(s=Sum('amount')).values('s')[:1],output_field=ExactDecimalField(max_digits=14,decimal_places=2))
+    from .i18n import effective_currency
+    curr=effective_currency(request.user)
+    eur_cost=Subquery(Allocation.objects.filter(project=OuterRef('pk'),source__currency=curr).values('project').annotate(s=Sum('amount')).values('s')[:1],output_field=ExactDecimalField(max_digits=14,decimal_places=2))
     projects=Project.objects.filter(owner=request.user).filter(Q(is_scan_inbox=False)|Q(entries__isnull=False,entries__deleted_at__isnull=True)).distinct().annotate(_annotated_cost=eur_cost).order_by('archived','position','-favorite','name')
     if request.GET.get('archiv')!='1':projects=projects.filter(archived=False)
     scans=Document.objects.filter(owner=request.user,deleted_at__isnull=True,entry__is_provisional=True,entry__deleted_at__isnull=True).exclude(capture_type='snap',status='accepted').select_related('entry','asset','project').order_by('-created')[:50]
@@ -131,7 +133,8 @@ def entry_edit(request,project_id=None,pk=None):
         date_text=entry.display_date if entry.precision in ('year','month') else (entry.date.isoformat() if entry.date else '')
         initial.update(title=entry.title,kind=entry.kind,date_text=date_text,end_text=entry.end_date.isoformat() if entry.end_date else '',status=entry.status,meter_text=str(entry.meter if entry.meter is not None else '').replace('.',','),meter_name=entry.meter_name,meter_unit=entry.meter_unit,meter_replaced=entry.meter_replaced,description=entry.description,cost_state=entry.cost_state,amount=str(entry.cost).replace('.',',') if entry.cost_state=='known' else '',budget_text=str(entry.budget).replace('.',',') if entry.budget is not None else '',oil=entry.snapshot.get('oil',''),quantity=entry.snapshot.get('quantity_l','').replace('.',','),filter=entry.snapshot.get('filter',''),tags=entry.tags,version=entry.version)
     if entry:
-        manual=entry.allocations.filter(source__document__isnull=True,source__currency='EUR').select_related('source').first()
+        from .i18n import effective_currency
+        manual=entry.allocations.filter(source__document__isnull=True,source__currency=effective_currency(request.user)).select_related('source').first()
         if manual:initial['amount']=str(manual.source.amount).replace('.',',')
         initial.update(title_template=entry.title_template_id,title_suffix=entry.title_suffix)
     if draft: initial.update(draft.payload);initial['token']=draft.token
@@ -562,7 +565,8 @@ def review(request,pk):
     if request.method=='POST':
         saved=raw_allocations(request.POST);selected_connect=request.POST.get('connect','')
     elif not doc.review_draft and doc.status!='accepted':
-        amount=values.get('gross_total');currency=values.get('currency','EUR')
+        from .i18n import effective_currency
+        amount=values.get('gross_total');currency=values.get('currency') or effective_currency(request.user)
         candidates=[source for source in manual if source.currency==currency and amount is not None and source.amount==Decimal(amount)]
         if len(candidates)==1 and doc.entry_id:
             selected_connect=str(candidates[0].pk)
@@ -619,7 +623,8 @@ def cost_edit(request,pk=None,project_id=None):
         try:
             amount=decimal_input(request.POST.get('amount'),money=True)
             if amount is None: raise ValidationError('Betrag fehlt.')
-            currency=request.POST.get('currency','EUR').upper()
+            from .i18n import effective_currency
+            currency=request.POST.get('currency',effective_currency(request.user)).upper()
             if not re.fullmatch('[A-Z]{3}',currency): raise ValidationError('Ungültige Währung.')
             with transaction.atomic():
                 if source:

@@ -16,7 +16,8 @@ class Owned(Base):
     class Meta: abstract = True
 
 class Project(Owned):
-    TYPES = [('auto','Auto'),('aquarium','Aquarium'),('drohne','Drohne'),('frei','Freies Projekt')]
+    from django.utils.translation import gettext_lazy as _l
+    TYPES = [('auto',_l('Auto')),('aquarium',_l('Aquarium')),('drohne',_l('Drohne')),('frei',_l('Freies Projekt'))]
     name = models.CharField(max_length=150)
     kind = models.CharField(max_length=20,choices=TYPES,default='frei')
     description = models.TextField(blank=True)
@@ -39,7 +40,9 @@ class Project(Owned):
     def cost(self):
         if hasattr(self, '_annotated_cost'):
             return (Decimal(self._annotated_cost) if self._annotated_cost is not None else Decimal('0')).quantize(Decimal('.01'))
-        return (self.allocations.filter(source__currency='EUR').aggregate(s=Sum('amount'))['s'] or Decimal('0')).quantize(Decimal('.01'))
+        from .i18n import effective_currency
+        curr = effective_currency(self.owner) if self.owner_id else settings.DEFAULT_CURRENCY
+        return (self.allocations.filter(source__currency=curr).aggregate(s=Sum('amount'))['s'] or Decimal('0')).quantize(Decimal('.01'))
 
 class Category(Owned):
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='categories')
@@ -96,8 +99,9 @@ class TitleField(Base):
 
 
 class Entry(Base):
-    KINDS = [('wartung','Wartung'),('reparatur','Reparatur'),('notiz','Notiz'),('umbau','Umbau')]
-    STATES = [('geplant','Geplant'),('arbeit','In Arbeit'),('pausiert','Pausiert'),('erledigt','Erledigt')]
+    from django.utils.translation import gettext_lazy as _l
+    KINDS = [('wartung',_l('Wartung')),('reparatur',_l('Reparatur')),('notiz',_l('Notiz')),('umbau',_l('Umbau'))]
+    STATES = [('geplant',_l('Geplant')),('arbeit',_l('In Arbeit')),('pausiert',_l('Pausiert')),('erledigt',_l('Erledigt'))]
     project = models.ForeignKey(Project,on_delete=models.PROTECT,related_name='entries')
     category = models.ForeignKey(Category, null=True, blank=True, on_delete=models.SET_NULL, related_name='entries')
     title_template = models.ForeignKey(TitleTemplate, null=True, blank=True, on_delete=models.SET_NULL, related_name='entries')
@@ -131,7 +135,9 @@ class Entry(Base):
     def cost(self):
         if hasattr(self, '_annotated_cost'):
             return (Decimal(self._annotated_cost) if self._annotated_cost is not None else Decimal('0')).quantize(Decimal('.01'))
-        return (self.allocations.filter(source__currency='EUR').aggregate(s=Sum('amount'))['s'] or Decimal('0')).quantize(Decimal('.01'))
+        from .i18n import effective_currency
+        curr = effective_currency(self.project.owner) if self.project_id else settings.DEFAULT_CURRENCY
+        return (self.allocations.filter(source__currency=curr).aggregate(s=Sum('amount'))['s'] or Decimal('0')).quantize(Decimal('.01'))
     @property
     def remaining(self): return self.budget-self.cost if self.budget is not None else None
     @property
@@ -196,7 +202,8 @@ class PhotoLink(Base):
     deleted_at = models.DateTimeField(null=True,blank=True)
 
 class Document(Owned):
-    STATUS = [('uploaded','Hochgeladen'),('paperless','Wartet auf Paperless'),('ocr','OCR läuft'),('ai','Wartet auf KI'),('review','Prüfung erforderlich'),('accepted','Übernommen'),('failed','Fehlgeschlagen'),('uncertain','Upload unklar · Abgleich erforderlich')]
+    from django.utils.translation import gettext_lazy as _l
+    STATUS = [('uploaded',_l('Hochgeladen')),('paperless',_l('Wartet auf Paperless')),('ocr',_l('OCR läuft')),('ai',_l('Wartet auf KI')),('review',_l('Prüfung erforderlich')),('accepted',_l('Übernommen')),('failed',_l('Fehlgeschlagen')),('uncertain',_l('Upload unklar · Abgleich erforderlich'))]
     asset = models.ForeignKey(Asset,null=True,blank=True,on_delete=models.PROTECT)
     project = models.ForeignKey(Project,null=True,blank=True,on_delete=models.PROTECT)
     entry = models.ForeignKey(Entry,null=True,blank=True,on_delete=models.SET_NULL,related_name='documents')

@@ -41,7 +41,7 @@ def center_url(section):
 
 
 def preference_initial(pref):
-    return {'version':0 if pref._state.adding else pref.version,'session_days':pref.session_days,'ai_mode':pref.ai_mode,
+    return {'version':0 if pref._state.adding else pref.version,'session_days':pref.session_days,'language':pref.language,'currency':pref.currency,'ai_mode':pref.ai_mode,
         'keep_audio':pref.keep_audio,'paperless_tags':','.join(map(str,pref.paperless_tags)),
         'mail_senders':'\n'.join(pref.mail_senders),'photo_width':pref.photo_width,'photo_quality':pref.photo_quality,
         'trash_days':pref.trash_days,'trash_costs':pref.trash_costs,'backup_keep':pref.backup_keep}

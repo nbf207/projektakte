@@ -20,9 +20,9 @@ def handover(request):
         rows=[]
         def permitted(label):
             label=label.casefold()
-            if selected['hide_costs'] and any(key in label for key in ('preis','kosten','betrag','budget')):return False
-            if selected['hide_dealers'] and any(key in label for key in ('händler','haendler','lieferant','vendor','dealer')):return False
-            if selected['hide_notes'] and any(key in label for key in ('notiz','privat','kommentar')):return False
+            if selected['hide_costs'] and any(key in label for key in ('preis','kosten','betrag','budget','price','cost','amount')):return False
+            if selected['hide_dealers'] and any(key in label for key in ('händler','haendler','lieferant','vendor','dealer','shop')):return False
+            if selected['hide_notes'] and any(key in label for key in ('notiz','privat','kommentar','note','private','comment')):return False
             return True
         for entry in Entry.objects.filter(project=project,deleted_at__isnull=True,is_provisional=False).select_related('category').order_by('date','created'):
             rows.append({'title':entry.title,'date':entry.display_date,'category':entry.category.name if entry.category_id else '',

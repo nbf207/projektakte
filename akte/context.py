@@ -13,7 +13,21 @@ def common(request):
     }
     nav_section = next((section for section, routes in groups.items() if route in routes), 'projects')
     keep_audio=False
-    if getattr(request,'user',None) and request.user.is_authenticated:
+    from .i18n import effective_currency, effective_language, currency_symbol
+    user = getattr(request, 'user', None)
+    if user and user.is_authenticated:
         from .preferences import preferences
-        keep_audio=preferences(request.user).keep_audio
-    return {'keep_audio_default':keep_audio,'nav_section':nav_section,'demo_mode':settings.DEMO_MODE,'app_version':settings.APP_VERSION,'ai_original_limit_mb':settings.GEMINI_ORIGINAL_MAX_BYTES//(1024*1024),'feedback_widget_enabled':settings.FEEDBACK_WIDGET_ENABLED}
+        keep_audio=preferences(user).keep_audio
+    curr = effective_currency(user)
+    lang = effective_language(user, request)
+    return {
+        'keep_audio_default': keep_audio,
+        'nav_section': nav_section,
+        'demo_mode': settings.DEMO_MODE,
+        'app_version': settings.APP_VERSION,
+        'ai_original_limit_mb': settings.GEMINI_ORIGINAL_MAX_BYTES // (1024 * 1024),
+        'feedback_widget_enabled': settings.FEEDBACK_WIDGET_ENABLED,
+        'current_language': lang,
+        'default_currency': curr,
+        'currency_symbol': currency_symbol(curr),
+    }

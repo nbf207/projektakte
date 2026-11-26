@@ -1,6 +1,6 @@
-{% extends 'base.html' %}
+{% extends 'base.html' %}{% load i18n %}
 {% block content %}
-<div class="pagehead"><div><p class="eyebrow">PROJEKTAKTE / STAMMDATEN</p><h1>{{ title }}</h1></div></div>
+<div class="pagehead"><div><p class="eyebrow">{% trans 'PROJEKTAKTE / STAMMDATEN' %}</p><h1>{{ title }}</h1></div></div>
 <form method="post" class="panel" data-editor-form>
   {% csrf_token %}{{ form.non_field_errors }}
   <div class="formgrid">
@@ -9,15 +9,15 @@
     {% elif field.name != 'field_json' and field.name != 'field_editor' %}<label {% if field.name == 'description' %}class="full"{% endif %}>{{ field.label }}{{ field }}{{ field.errors }}</label>{% endif %}
   {% endfor %}
   </div>
-  <h2 class="section-title">Stammdaten</h2>
-  <p class="muted">Trage hier die Werte ein. Felder, Einheiten und Reihenfolge verwaltest du in den Projekteinstellungen.</p>
+  <h2 class="section-title">{% trans 'Stammdaten' %}</h2>
+  <p class="muted">{% trans 'Trage hier die Werte ein. Felder, Einheiten und Reihenfolge verwaltest du in den Projekteinstellungen.' %}</p>
   {{ fieldset.management_form }}{{ fieldset.non_form_errors }}
   <div class="formgrid">{% for row in fieldset %}<div {% if not row.active.value %}hidden{% endif %}>
   {% for field in row %}{% if field.name != 'value' %}{{ field.as_hidden }}{{ field.errors }}{% endif %}{% endfor %}
   <label>{{ row.name.value }}{% if row.unit.value %} ({{ row.unit.value }}){% endif %}{{ row.value }}{{ row.value.errors }}</label>
-  </div>{% empty %}<p>Noch keine Stammdatenfelder. Lege sie in den Projekteinstellungen an.</p>{% endfor %}</div>
+  </div>{% empty %}<p>{% trans 'Noch keine Stammdatenfelder. Lege sie in den Projekteinstellungen an.' %}</p>{% endfor %}</div>
   {{ form.field_editor.as_hidden }}
-  {% if project %}<a href="{% url 'settings' %}?project={{ project.pk }}">Felder in den Einstellungen verwalten →</a>{% endif %}
-  <div class="actions">{% if project %}<a class="btn secondary" href="{% url 'project' project.pk %}">Zurück</a>{% endif %}<button>Speichern</button></div>
+  {% if project %}<a href="{% url 'settings' %}?project={{ project.pk }}">{% trans 'Felder in den Einstellungen verwalten →' %}</a>{% endif %}
+  <div class="actions">{% if project %}<a class="btn secondary" href="{% url 'project' project.pk %}">{% trans 'Zurück' %}</a>{% endif %}<button>{% trans 'Speichern' %}</button></div>
 </form>
 {% endblock %}

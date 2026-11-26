@@ -77,20 +77,23 @@ def _render_pdf(destination,project,entries,image_folder):
             safe=re.sub(r'(?<!\*)\*([^*]+)\*(?!\*)',r'<i>\1</i>',safe)
             result.append(Paragraph(safe,styles[style]))
         return result
-    def eur(n): return f'{n:,.2f}'.replace(',','X').replace('.',',').replace('X','.')+' EUR'
+    from django.utils.translation import gettext as _
+    from .i18n import effective_currency, format_money
+    curr = effective_currency(project.owner)
+    def eur(n): return format_money(n, currency=curr, use_symbol=False)
     def table(rows,widths):
         t=Table([[p(c) for c in row] for row in rows],colWidths=widths,hAlign='LEFT',repeatRows=1)
         t.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,0),colors.HexColor('#e6f2ef')),('VALIGN',(0,0),(-1,-1),'TOP'),('LEFTPADDING',(0,0),(-1,-1),8),('RIGHTPADDING',(0,0),(-1,-1),8),('TOPPADDING',(0,0),(-1,-1),8),('BOTTOMPADDING',(0,0),(-1,-1),8),('LINEBELOW',(0,0),(-1,-1),.4,colors.HexColor('#dce5e2'))]));return t
-    content=[p('PROJEKTAKTE','Caption'),Spacer(1,10),p(project.name,'Heading1'),p('Synthetische Daten - lokale Abnahme' if settings.DEMO_MODE else 'Persönliche Dokumentation','Caption'),p('* = von der KI interpretiert; kann falsch sein.','Caption'),Spacer(1,18)]
+    content=[p('PROJEKTAKTE','Caption'),Spacer(1,10),p(project.name,'Heading1'),p(_('Synthetische Daten - lokale Abnahme') if settings.DEMO_MODE else _('Persönliche Dokumentation'),'Caption'),p(_('* = von der KI interpretiert; kann falsch sein.'),'Caption'),Spacer(1,18)]
     for idx,e in enumerate(entries.iterator(chunk_size=20)):
         if idx: content.append(PageBreak())
-        content.extend([p(marked(e,'title',e.title or 'Titel unbekannt'),'Heading2'),p(marked(e,'date',e.display_date)+(f' - {marked(e,"end_date",e.end_date.strftime("%d.%m.%Y"))}' if e.end_date else '')+f' | {marked(e,"kind",e.get_kind_display() or "Vorgangsart unbekannt")} | {marked(e,"status",e.get_status_display() or "Status unbekannt")}','Caption'),Spacer(1,12)])
-        rows=[['Angabe','Bestätigter Stand']]
-        if e.meter is not None: rows.append([marked(e,'meter_name',e.meter_name),marked(e,'meter',e.meter)+' '+marked(e,'meter_unit',e.meter_unit)+(' (Zählertausch)' if e.meter_replaced else '')])
-        for label,key in [('Motoröl','oil'),('Menge in Litern','quantity_l'),('Filter','filter')]:
+        content.extend([p(marked(e,'title',e.title or _('Titel unbekannt')),'Heading2'),p(marked(e,'date',e.display_date)+(f' - {marked(e,"end_date",e.end_date.strftime("%d.%m.%Y"))}' if e.end_date else '')+f' | {marked(e,"kind",e.get_kind_display() or _("Vorgangsart unbekannt"))} | {marked(e,"status",e.get_status_display() or _("Status unbekannt"))}','Caption'),Spacer(1,12)])
+        rows=[[_('Angabe'),_('Bestätigter Stand')]]
+        if e.meter is not None: rows.append([marked(e,'meter_name',e.meter_name),marked(e,'meter',e.meter)+' '+marked(e,'meter_unit',e.meter_unit)+(f' ({_("Zählertausch")})' if e.meter_replaced else '')])
+        for label,key in [(_('Motoröl'),'oil'),(_('Menge in Litern'),'quantity_l'),(_('Filter'),'filter')]:
             if e.snapshot.get(key): rows.append([label,marked(e,key,e.snapshot[key])])
-        rows.append(['Kosten in EUR','Unbekannt' if e.cost_state=='unknown' and not e.allocations.exists() else ('Kostenlos' if e.cost_state=='free' and not e.cost else eur(e.cost))])
-        if e.budget is not None: rows.extend([['Budget',eur(e.budget)],['Verbleibend',eur(e.remaining)]])
+        rows.append([_('Kosten') + f' ({curr})',_('Unbekannt') if e.cost_state=='unknown' and not e.allocations.exists() else (_('Kostenlos') if e.cost_state=='free' and not e.cost else eur(e.cost))])
+        if e.budget is not None: rows.extend([[_('Budget'),eur(e.budget)],[_('Verbleibend'),eur(e.remaining)]])
         content.extend([table(rows,[145,350]),Spacer(1,14),*blocks(marked(e,'description',e.description)),Spacer(1,16)])
         for step in e.steps.iterator(chunk_size=20): content.extend([p(step.title,'Heading3'),p(step.date.strftime('%d.%m.%Y') if step.date else 'Datum unbekannt','Caption'),*blocks(step.text),Spacer(1,12)])
         for photo in e.photo_links:
@@ -210,13 +213,17 @@ def portable_export(destination,owner,project=None,entry=None):
             with open(path,'rb') as f: checksums[name]=hashlib.file_digest(f,'sha256').hexdigest()
         write('daten.json',json.dumps(data,ensure_ascii=False,indent=2))
         write('LESEN.txt','Projektakte - portabler Export v2\nindex.html im Browser öffnen. daten.json enthält versionierte Beziehungen mit stabilen IDs. Keine Passwörter oder API-Schlüssel. Kein System-Restore. Ein Vorgangsausschnitt enthält nur zugehörige Vorgänge, Schritte, Bilder, Aufgaben, Entwürfe, Teilehistorie und benötigte Belege. Geteilte Rechnungen bleiben als vollständige Originalbelege mit Gesamtsumme/Positionen erhalten; source_context unterscheidet Zuordnung im Ausschnitt, Zuordnung außerhalb und tatsächlich offenen Rest. Fremde Zuordnungszeilen und unabhängige Belege werden nicht aufgenommen. Ausgelassene Dokumentverweise stehen unter scope.omitted_references.\n')
-        out=io.StringIO();writer=csv.writer(out,delimiter=';');writer.writerow(['ID','Projekt','Titel','Datum','Genauigkeit','Kostenstatus','EUR','KI-Interpretationen'])
-        index=['<!doctype html><html lang="de"><meta charset="utf-8"><title>Projektakte Export</title><style>body{max-width:960px;margin:40px auto;padding:20px;font:16px/1.6 system-ui;color:#172d34}article{border-top:1px solid #ccc;padding:24px 0}img{max-width:280px}pre{white-space:pre-wrap}</style><h1>Projektakte - Datenexport</h1>']
+        from django.utils.translation import gettext as _, get_language
+        from .i18n import effective_currency
+        curr = effective_currency(owner)
+        exp_lang = (get_language() or 'de').split('-', 1)[0]
+        out=io.StringIO();writer=csv.writer(out,delimiter=';');writer.writerow(['ID',_('Projekt'),_('Titel'),_('Datum'),_('Genauigkeit'),_('Kostenstatus'),curr,_('KI-Interpretationen')])
+        index=[f'<!doctype html><html lang="{exp_lang}"><meta charset="utf-8"><title>Projektakte Export</title><style>body{{max-width:960px;margin:40px auto;padding:20px;font:16px/1.6 system-ui;color:#172d34}}article{{border-top:1px solid #ccc;padding:24px 0}}img{{max-width:280px}}pre{{white-space:pre-wrap}}</style><h1>Projektakte - {_("Datenexport")}</h1>']
         for e in entries.select_related('project'):
             # Date is exported with precision; auxiliary first-of-month dates are not exact days.
             export_date=e.date.strftime('%Y-%m' if e.precision=='month' else '%Y') if e.date and e.precision in ('month','year') else (str(e.date) if e.date else '')
             writer.writerow([e.pk,e.project.name,e.title,export_date,e.precision,e.cost_state,e.cost,','.join(e.inferred_fields)])
-            index.append(f'<article><h2>{html.escape(e.project.name)} / {html.escape(marked(e,"title",e.title or "Titel unbekannt"))}</h2><p>{html.escape(marked(e,"date",e.display_date))} | {e.cost} EUR</p><pre>{html.escape(marked(e,"description",e.description))}</pre><p>KI-Interpretationen: {html.escape(", ".join(e.inferred_fields)) or "keine"}. * = von der KI interpretiert; kann falsch sein.</p>')
+            index.append(f'<article><h2>{html.escape(e.project.name)} / {html.escape(marked(e,"title",e.title or _("Titel unbekannt")))}</h2><p>{html.escape(marked(e,"date",e.display_date))} | {e.cost} {curr}</p><pre>{html.escape(marked(e,"description",e.description))}</pre><p>{_("KI-Interpretationen:")} {html.escape(", ".join(e.inferred_fields)) or _("keine")}. {_("* = von der KI interpretiert; kann falsch sein.")}</p>')
             for step in e.steps.all(): index.append(f'<h3>{html.escape(step.title)}</h3><pre>{html.escape(step.text)}</pre>')
             for link in e.photo_links: index.append(f'<figure><img src="medien/{link.asset.file.name}" alt="{html.escape(link.caption)}"><figcaption>{html.escape(link.caption)}</figcaption></figure>')
             index.append('</article>')

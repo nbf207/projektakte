@@ -10,7 +10,8 @@ document.addEventListener('DOMContentLoaded',()=>{
   if(!form.querySelector('[name=connect]')?.value){const amount=rows[0].querySelector('[name=alloc_amount]');if(!amount.value||normalize(amount.value)===normalize(initialGross))amount.value=form.querySelector('[name=gross_total]').value;}
  }
  project.addEventListener('change',async()=>{
-  if(!area){error.textContent='Das Projekt des bestehenden Eintrags bitte über „Eintrag bearbeiten“ ändern.';return;}
+  const t=window.t||(s=>s);
+  if(!area){error.textContent=t('Das Projekt des bestehenden Eintrags bitte über „Eintrag bearbeiten“ ändern.');return;}
   if(!project.value)return;
   const current=++sequence;pending=true;loadFailed=false;form.querySelectorAll('button[type=submit],button[name=action]').forEach(b=>b.disabled=true);
   const url=new URL(location.href);url.searchParams.set('entry_project',project.value);
@@ -20,8 +21,8 @@ document.addEventListener('DOMContentLoaded',()=>{
    const previous=new Map([...area.querySelectorAll('input,textarea,select')].filter(e=>!e.name.includes('extra_')&&!['chronicle-category','chronicle-title_template','chronicle-title_suffix','chronicle-category_version','chronicle-template_version'].includes(e.name)).map(e=>[e.name,e.value]));
    area.innerHTML=data.html;
    area.querySelectorAll('input,textarea,select').forEach(e=>{if(previous.has(e.name))e.value=previous.get(e.name);});
-   initEntryEditor();mainAllocation();error.textContent='Kategorie, Titel-Vorlagen und Zusatzfelder aktualisiert.';
-  }catch{if(current!==sequence)return;loadFailed=true;error.textContent='Felder konnten nicht geladen werden. Bitte Projekt erneut auswählen.';return;}
+   initEntryEditor();mainAllocation();error.textContent=t('Kategorie, Titel-Vorlagen und Zusatzfelder aktualisiert.');
+  }catch{if(current!==sequence)return;loadFailed=true;error.textContent=t('Felder konnten nicht geladen werden. Bitte Projekt erneut auswählen.');return;}
   finally{if(current===sequence){pending=false;form.querySelectorAll('button[name=action]').forEach(b=>b.disabled=loadFailed);}}
  });
  form.addEventListener('submit',event=>{if(pending||loadFailed){event.preventDefault();return;}if(!document.querySelector('#review-allocation')?.open)mainAllocation();});

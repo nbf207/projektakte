@@ -167,7 +167,8 @@ To rebuild Projektakte on a brand-new server or SD card from a full ZIP backup:
 
 ## 6. Security Model & Maintenance Commands
 
-- **Default-deny auth boundary:** All routes except `/login/`, `/setup/` (only while 0 users exist), `/manifest.json`, `/sw.js`, and the isolated `/demo/` boundary require authentication. `/admin/` returns `404` for non-staff users. Both `/login/` and `/setup/` are rate-limited per client IP.
+- **Default-deny auth boundary:** All routes except `/login/`, `/setup/` (only while 0 users exist), `/sprache/` (language switcher), `/manifest.json`, `/sw.js`, and the isolated `/demo/` boundary require authentication. `/admin/` returns `404` for non-staff users. `/login/`, `/setup/`, and `/sprache/` are rate-limited per client IP.
+- **Localization, currency & timezone:** Configure `DEFAULT_LANGUAGE` (`de` or `en`, fallback when the browser sends no matching `Accept-Language`), `DEFAULT_CURRENCY` (3-letter ISO-4217 code such as `EUR`, `USD`, `GBP`, `CHF`), and `TIME_ZONE` (IANA name such as `Europe/Berlin`, `UTC`, `America/New_York`; falls back to `TZ`). Users can also override language and currency per account in **Settings → Account & Security**; first-run `/setup/` automatically persists the browser's active language so background AI jobs run in the same language.
 - **Security headers & CSP:** Dynamic HTML responses send `Content-Security-Policy` (`default-src 'self'; script-src 'self'; ...; frame-ancestors 'none'`), `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: same-origin`, and `Cache-Control: no-store, private`. Streamed user files receive a stricter `sandbox; default-src 'none'` CSP; active formats (`.html`, `.svg`, `.js`, etc.) are forced to download; Markdown is sanitized with `nh3` (Rust).
 - **Reset a forgotten admin password:**
   ```sh

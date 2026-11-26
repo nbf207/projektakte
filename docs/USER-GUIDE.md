@@ -1,6 +1,6 @@
 # Projektakte · User Guide
 
-> **Language note:** The web UI is currently in German. English terms below are paired with the corresponding German UI labels where helpful.
+> **Languages & Currency:** Projektakte supports **English** and **German** out of the box (automatic browser detection, DE/EN switcher on sign-in/setup/demo, and per-account language & default currency selection under **Settings → Account & Security**). AI suggestions automatically follow your account language.
 
 ---
 

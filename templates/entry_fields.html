@@ -1,7 +1,7 @@
-{% load static %}
+{% load static i18n %}
 <div data-entry-editor="1">
 {{ form.non_field_errors }}{% for field in form.hidden_fields %}{{ field }}{% endfor %}
-{% if simple_entry %}<input type="hidden" name="simple" value="1"><p class="helptext">Datum, Titel und Beschreibung reichen. Bilder kannst du direkt nach dem Speichern ergänzen.</p><div class="formgrid">{% for field in form %}{% if field.name == 'title' or field.name == 'date_text' or field.name == 'description' %}<label data-entry-field="{{ field.name }}" {% if field.name == 'description' %}class="full"{% endif %}>{{ field.label }}{{ field }}{{ field.errors }}</label>{% endif %}{% endfor %}</div><details><summary>Weitere Angaben (optional)</summary>{% endif %}
+{% if simple_entry %}<input type="hidden" name="simple" value="1"><p class="helptext">{% trans 'Datum, Titel und Beschreibung reichen. Bilder kannst du direkt nach dem Speichern ergänzen.' %}</p><div class="formgrid">{% for field in form %}{% if field.name == 'title' or field.name == 'date_text' or field.name == 'description' %}<label data-entry-field="{{ field.name }}" {% if field.name == 'description' %}class="full"{% endif %}>{{ field.label }}{{ field }}{{ field.errors }}</label>{% endif %}{% endfor %}</div><details><summary>{% trans 'Weitere Angaben (optional)' %}</summary>{% endif %}
 <div class="entry-title-grid">
 {% for field in form %}{% if field.name in form.title_names %}{% if not simple_entry or field.name != 'title' %}<label data-entry-field="{{ field.name }}">{{ field.label }}{% if field.name in form.inferred_fields %}<span class="ai-inferred">*</span>{% endif %}{{ field }}{{ field.errors }}</label>{% endif %}{% endif %}{% endfor %}
 </div>
@@ -9,9 +9,9 @@
 {% for field in form %}{% if not field.is_hidden and field.name not in form.title_names and field.name not in form.dynamic_names %}{% if not simple_entry or field.name != 'date_text' and field.name != 'description' %}{% if not compact_review or field.name == 'date_text' or field.name == 'meter_text' or field.name == 'description' %}
 <label data-entry-field="{{ field.name }}" {% if field.name == 'description' %}class="full"{% endif %}>{{ field.label }}{% if field.name in form.inferred_fields %}<span class="ai-inferred">*</span>{% endif %}{{ field }}{{ field.errors }}{% if field.help_text %}<span class="helptext">{{ field.help_text }}</span>{% endif %}</label>
 {% endif %}{% endif %}{% endif %}{% endfor %}</div>
-{% if compact_review %}<details><summary>Weitere Eintragsangaben</summary><div class="formgrid">{% for field in form %}{% if not field.is_hidden and field.name not in form.title_names and field.name not in form.dynamic_names and field.name != 'date_text' and field.name != 'meter_text' and field.name != 'description' %}<label>{{ field.label }}{{ field }}{{ field.errors }}</label>{% endif %}{% endfor %}</div></details>{% endif %}
+{% if compact_review %}<details><summary>{% trans 'Weitere Eintragsangaben' %}</summary><div class="formgrid">{% for field in form %}{% if not field.is_hidden and field.name not in form.title_names and field.name not in form.dynamic_names and field.name != 'date_text' and field.name != 'meter_text' and field.name != 'description' %}<label>{{ field.label }}{{ field }}{{ field.errors }}</label>{% endif %}{% endfor %}</div></details>{% endif %}
 {{ form.definition_catalog|json_script:'entry-definitions' }}{{ form.definition_marks|json_script:'entry-field-marks' }}
-<section id="entry-extra-fields"><h3>Zusatzangaben</h3><div class="formgrid">
+<section id="entry-extra-fields"><h3>{% trans 'Zusatzangaben' %}</h3><div class="formgrid">
 {% for field, definition in form.dynamic_fields %}<label>{{ field.label }}{{ field }}{{ field.errors }}<input type="hidden" name="{{ form.prefix_extra_version }}{{ definition.pk.hex }}" value="{{ definition.version }}"></label>{% endfor %}
 </div></section>{% if simple_entry %}</details>{% endif %}
 <script src="{% static 'entry-editor.js' %}?v=review-2" defer></script>

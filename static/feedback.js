@@ -6,8 +6,9 @@ document.addEventListener('DOMContentLoaded',()=>{
  form.addEventListener('submit',async event=>{
   event.preventDefault();if(sending)return;sending=true;const button=form.querySelector('[type=submit]');button.disabled=true;
   try{const response=await ProjektakteNet.requestJSON(form.action,{method:'POST',body:new FormData(form),headers:{'X-Requested-With':'XMLHttpRequest'},signal:AbortSignal.timeout(15000)});
-   status.textContent=response.data.message||response.data.error||'Feedback nicht bestätigt.';if(response.ok){form.elements.text.value='';form.elements.image.value='';form.elements.image.dispatchEvent(new Event('change'));}
-  }catch{status.textContent='Verbindung oder Anmeldung unterbrochen. Deine Notiz bleibt im Eingabefeld.';}
+   const t=window.t||(s=>s);
+   status.textContent=response.data.message||response.data.error||t('Feedback nicht bestätigt.');if(response.ok){form.elements.text.value='';form.elements.image.value='';form.elements.image.dispatchEvent(new Event('change'));}
+  }catch{const t=window.t||(s=>s);status.textContent=t('Verbindung oder Anmeldung unterbrochen. Deine Notiz bleibt im Eingabefeld.');}
   finally{sending=false;button.disabled=false;}
  });
 });

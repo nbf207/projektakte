@@ -1,0 +1,3242 @@
+# English translation catalog for Projektakte
+msgid ""
+msgstr ""
+"Project-Id-Version: Projektakte 0.8.0\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "* = von der KI interpretiert; kann falsch sein."
+msgstr "* = inferred by AI; may be inaccurate."
+
+msgid "* = von der KI interpretiert; kann falsch sein. Geänderte Angaben verlieren die Kennzeichnung."
+msgstr "* = inferred by AI; may be inaccurate. Edited fields lose this marker."
+
+msgid "0 pausiert neue kostenpflichtige KI-Anfragen."
+msgstr "0 pauses new paid AI requests."
+
+msgid "30 Tage"
+msgstr "30 days"
+
+msgid "7 Tage"
+msgstr "7 days"
+
+msgid "90 Tage"
+msgstr "90 days"
+
+msgid "90° drehen"
+msgstr "Rotate 90°"
+
+msgid "AKTUELLES PROJEKT"
+msgstr "CURRENT PROJECT"
+
+msgid "ANDROID · TEILEN MIT PROJEKTAKTE"
+msgstr "ANDROID · SHARE TO PROJEKTAKTE"
+
+msgid "AUFGABEN"
+msgstr "TASKS"
+
+msgid "AUS VORHABEN WIRD FORTSCHRITT"
+msgstr "TURN PLANS INTO PROGRESS"
+
+msgid "Abbrechen"
+msgstr "Cancel"
+
+msgid "Abmelden"
+msgstr "Sign out"
+
+msgid "Absenden"
+msgstr "Send"
+
+msgid "Absätze, **fett**, Listen, Tabellen und Links sind möglich."
+msgstr "Paragraphs, **bold**, lists, tables, and links are supported."
+
+msgid "Aktion"
+msgstr "Action"
+
+msgid "Aktiv"
+msgstr "Active"
+
+msgid "Aktive Sitzungen & Geräte"
+msgstr "Active sessions & devices"
+
+msgid "Aktueller Zähler unbekannt oder Zählerwechsel erkannt. Kilometerbasis prüfen; der Zeitablauf bleibt sichtbar."
+msgstr "Current meter reading unknown or meter replacement detected. Verify meter baseline; time-based schedule remains visible."
+
+msgid "Aktuelles Original verglichen: weiterhin dieselbe geprüfte Rechnung. Bestätigte Kosten bleiben unverändert."
+msgstr "Compared current original: still the same reviewed invoice. Confirmed costs remain unchanged."
+
+msgid "Aktuelles Paperless-Original zum Vergleich öffnen"
+msgstr "Open current Paperless original for comparison"
+
+msgid "Alle"
+msgstr "All"
+
+msgid "Alle %(d)s Tage"
+msgstr "Every %(d)s days"
+
+msgid "Alle %(m)s Monate"
+msgstr "Every %(m)s months"
+
+msgid "Alle Kategorien"
+msgstr "All categories"
+
+msgid "Alle Meldungen"
+msgstr "All items"
+
+msgid "Alle Projekte"
+msgstr "All projects"
+
+msgid "Alle Status"
+msgstr "All statuses"
+
+msgid "Alle anderen Geräte abmelden"
+msgstr "Sign out all other devices"
+
+msgid "Alle eigenen Projekte"
+msgstr "All personal projects"
+
+msgid "Alle offenen Punkte als Codex/Opus-Prompt kopieren"
+msgstr "Copy all open items as prompt"
+
+msgid "Alles an einem Ort."
+msgstr "Everything in one place."
+
+msgid "Allgemeine Felder"
+msgstr "General fields"
+
+msgid "Allgemeine Zusatzfelder"
+msgstr "General custom fields"
+
+msgid "Alltag · Gemini Flash-Lite"
+msgstr "Everyday · Gemini Flash-Lite"
+
+msgid "Als Vorschlag speichern"
+msgstr "Save as draft suggestion"
+
+msgid "Als erledigt zuordnen"
+msgstr "Mark as completed"
+
+msgid "Alternativ in Chrome: ⋮ → „App installieren“ bzw. „Zum Startbildschirm hinzufügen“. Danach in Galerie oder PDF-App „Teilen“ → „Projektakte“ wählen. Installation und Freigabe gehören immer zu dieser HTTPS-Adresse."
+msgstr "Alternatively in Chrome: ⋮ → “Install app” or “Add to Home screen”. Then in your gallery or PDF viewer choose “Share” → “Projektakte”. Installation and sharing are bound to this HTTPS address."
+
+msgid "Anbindungen"
+msgstr "Integrations"
+
+msgid "Android-Teilen-Eingang & App installieren →"
+msgstr "Android Share Inbox & install app →"
+
+msgid "Angabe"
+msgstr "Field"
+
+msgid "Angaben bestätigen"
+msgstr "Confirm details"
+
+msgid "Anmelden"
+msgstr "Sign in"
+
+msgid "Anwenden"
+msgstr "Apply"
+
+msgid "Anzeige aktualisieren"
+msgstr "Refresh status"
+
+msgid "Anzeigedichte"
+msgstr "Display density"
+
+msgid "Appinterne Schätzungen sind kein Anbieterlimit und keine Zusage über Abo-Guthaben."
+msgstr "In-app estimates are not a provider billing limit or a guarantee of remaining API credit."
+
+msgid "Appinterne Sperre"
+msgstr "In-app limit"
+
+msgid "Appinternes Monatslimit (USD)"
+msgstr "In-app monthly limit (USD)"
+
+msgid "Aquarium"
+msgstr "Aquarium"
+
+msgid "Arbeit"
+msgstr "Work"
+
+msgid "Arbeiten, Kilometerstände und Belege gehören zusammen. Öffne einen Eintrag für die Details."
+msgstr "Work, meter readings, and receipts belong together. Open an entry to inspect its details."
+
+msgid "Arbeitsbilder hinzufügen"
+msgstr "Add work photos"
+
+msgid "Arbeitsdatum / Beginn"
+msgstr "Work date / start"
+
+msgid "Arbeitsfoto aufnehmen"
+msgstr "Take work photo"
+
+msgid "Arbeitsschritt (optional)"
+msgstr "Work step (optional)"
+
+msgid "Arbeitsschritte"
+msgstr "Work steps"
+
+msgid "Arbeitsspeicher (RAM)"
+msgstr "Memory (RAM)"
+
+msgid "Arbeitszeit"
+msgstr "Labor"
+
+msgid "Archiv"
+msgstr "Archive"
+
+msgid "Archiviert"
+msgstr "Archived"
+
+msgid "Audio-Datei & Optionen"
+msgstr "Audio file & options"
+
+msgid "Audio-Datei als Alternative"
+msgstr "Audio file as alternative"
+
+msgid "Auf diesem System nicht verfügbar"
+msgstr "Not available on this system"
+
+msgid "Aufbewahrung speichern"
+msgstr "Save retention"
+
+msgid "Aufgabe"
+msgstr "Task"
+
+msgid "Aufgabe anlegen"
+msgstr "Create task"
+
+msgid "Aufgabe erfassen / bearbeiten"
+msgstr "Create / edit task"
+
+msgid "Aufgabe für Projekt"
+msgstr "Task for project"
+
+msgid "Aufgaben"
+msgstr "Tasks"
+
+msgid "Aufgaben öffnen →"
+msgstr "Open tasks →"
+
+msgid "Aufnahme beenden"
+msgstr "Stop recording"
+
+msgid "Aufnahmedatum"
+msgstr "Date taken"
+
+msgid "Auftragsprotokoll"
+msgstr "Job log"
+
+msgid "Aus diesem Eintrag übernehmen"
+msgstr "Create from this entry"
+
+msgid "Ausgabe / Gutschrift"
+msgstr "Expense / credit"
+
+msgid "Ausgabe und Aufteilung"
+msgstr "Expense & allocation"
+
+msgid "Ausgeblendete Reiter"
+msgstr "Hidden tabs"
+
+msgid "Ausgewählte Dateien bereinigen"
+msgstr "Clean up selected files"
+
+msgid "Ausgewählte Dateien endgültig entfernen"
+msgstr "Permanently delete selected files"
+
+msgid "Ausgewählte Teile anlegen"
+msgstr "Create selected parts"
+
+msgid "Auswählen"
+msgstr "Select"
+
+msgid "Auto"
+msgstr "Vehicle"
+
+msgid "Auto-Vorlage laden"
+msgstr "Load vehicle template"
+
+msgid "Automatisch (Browser)"
+msgstr "Automatic (browser)"
+
+msgid "Automatisch aus erledigten Einträgen dieser Titel-Vorlage. Intervalle in den Projekteinstellungen bearbeiten."
+msgstr "Updated automatically from completed entries using this title template. Edit intervals in project settings."
+
+msgid "Automatisch erkennen"
+msgstr "Auto-detect"
+
+msgid "Automatische Löschung darf auch zugehörige Belegkosten endgültig entfernen"
+msgstr "Automatic cleanup may also permanently delete linked receipt costs"
+
+msgid "Automatisches Speichern hält deine Eingabe als Entwurf fest. Erst „Speichern“ bestätigt den Vorgang."
+msgstr "Autosave keeps your input as a draft. Only clicking “Save” commits the entry."
+
+msgid "BELEG"
+msgstr "RECEIPT"
+
+msgid "BELEGEINGANG"
+msgstr "RECEIPT INBOX"
+
+msgid "BELEGEINGANG / PRÜFANSICHT"
+msgstr "RECEIPT INBOX / REVIEW"
+
+msgid "BERICHTE / PORTABLE DATEN"
+msgstr "REPORTS / PORTABLE DATA"
+
+msgid "BESTÄTIGTE KOSTEN"
+msgstr "CONFIRMED COSTS"
+
+msgid "BETRIEB / TRANSPARENZ"
+msgstr "OPERATIONS / TRANSPARENCY"
+
+msgid "BETRIEBSART"
+msgstr "MODE"
+
+msgid "BUDGET"
+msgstr "BUDGET"
+
+msgid "Backup-Manager"
+msgstr "Backup manager"
+
+msgid "Basis unbekannt"
+msgstr "Basis unknown"
+
+msgid "Bauteil, Drehmoment, Anleitung …"
+msgstr "Part, torque spec, guide…"
+
+msgid "Bearbeiten"
+msgstr "Edit"
+
+msgid "Bearbeiten / Reihenfolge"
+msgstr "Edit / reorder"
+
+msgid "Bei geändertem Betrag oder anderer Rechnung keinen identischen Beleg bestätigen; Korrektur/Gutschrift gesondert erfassen."
+msgstr "If the amount changed or this is a different invoice, do not confirm as identical; record a correction or credit separately."
+
+msgid "Bei vorhandenem Beleg die Kostenquelle bearbeiten. Keine zweite Ausgabe anlegen."
+msgstr "If a receipt exists, edit its cost source instead of creating a duplicate expense."
+
+msgid "Beim Verbinden bleiben bisherige Zuordnungen erhalten, wenn unten keine Beträge eingetragen werden. Die vorhandene Ausgabe wird um den Beleg ergänzt."
+msgstr "When linking, existing allocations are preserved if no amounts are entered below. The receipt is attached to the existing expense."
+
+msgid "Beispiel einsetzen"
+msgstr "Insert example"
+
+msgid "Beispielfoto eines Motorraums"
+msgstr "Sample engine bay photo"
+
+msgid "Beispielfoto hinzufügen"
+msgstr "Add sample photo"
+
+msgid "Bekannte Teile"
+msgstr "Known parts"
+
+msgid "Beleg"
+msgstr "Receipt"
+
+msgid "Beleg aus der Quelle"
+msgstr "Source excerpt"
+
+msgid "Beleg auswählen"
+msgstr "Choose receipt"
+
+msgid "Beleg hinzufügen"
+msgstr "Add receipt"
+
+msgid "Beleg im Papierkorb"
+msgstr "Receipt in trash"
+
+msgid "Beleg ungeprüft"
+msgstr "Receipt unreviewed"
+
+msgid "Belege und Kosten"
+msgstr "Receipts & costs"
+
+msgid "Belegeingang"
+msgstr "Receipt Inbox"
+
+msgid "Benutzername"
+msgstr "Username"
+
+msgid "Bereits gebuchte Kosten bleiben erhalten."
+msgstr "Already booked costs remain intact."
+
+msgid "Bereits im Projekt sichtbar. Erst die geprüfte Übernahme bestätigt Vorgang und Kosten. * = von der KI interpretiert."
+msgstr "Already visible in the project. Only confirmed review commits the entry and costs. * = inferred by AI."
+
+msgid "Bereits in Paperless?"
+msgstr "Already in Paperless?"
+
+msgid "Bericht / Export"
+msgstr "Report / Export"
+
+msgid "Bericht erstellen"
+msgstr "Generate report"
+
+msgid "Beschreibung"
+msgstr "Description"
+
+msgid "Beschreibung / Ergebnis (Markdown)"
+msgstr "Description / outcome (Markdown)"
+
+msgid "Beschreibung und Ergebnis"
+msgstr "Description & outcome"
+
+msgid "Beschriftete Felder"
+msgstr "Labeled fields"
+
+msgid "Beschriftung"
+msgstr "Caption"
+
+msgid "Bestandsdaten importieren"
+msgstr "Import existing data"
+
+msgid "Bestandsdaten zur Prüfung"
+msgstr "Imported data awaiting review"
+
+msgid "Bestätigt · Kosten einmalig zugeordnet."
+msgstr "Confirmed · costs allocated once."
+
+msgid "Bestätigte Kostenquelle:"
+msgstr "Confirmed cost source:"
+
+msgid "Bestätigter Stand"
+msgstr "Confirmed value"
+
+msgid "Bestätigter Vorgang"
+msgstr "Confirmed entry"
+
+msgid "Betrag"
+msgstr "Amount"
+
+msgid "Betrag bekannt"
+msgstr "Amount known"
+
+msgid "Betrieb & Export"
+msgstr "Operations & Export"
+
+msgid "Betrieb und Export"
+msgstr "Operations & Export"
+
+msgid "Bezeichnung"
+msgstr "Label"
+
+msgid "Bezugsdatum oder passender Zählerstand fehlen; bitte einen erledigten Eintrag mit diesen Angaben speichern."
+msgstr "Baseline date or meter reading missing; please save a completed entry with those details."
+
+msgid "Bild bearbeiten"
+msgstr "Edit photo"
+
+msgid "Bild hinzufügen (Datei oder Strg+V)"
+msgstr "Add image (file or Ctrl+V)"
+
+msgid "Bild hinzufügen (auch Strg+V im Formular)"
+msgstr "Add image (or Ctrl+V in form)"
+
+msgid "Bilder"
+msgstr "Photos"
+
+msgid "Bilder / vorhandenes Bild zuordnen"
+msgstr "Add photos / attach existing photo"
+
+msgid "Bilder dauerhaft hochladen"
+msgstr "Upload photos permanently"
+
+msgid "Bildzuordnung wiederherstellen"
+msgstr "Restore photo link"
+
+msgid "Bis"
+msgstr "To"
+
+msgid "Bis 8 Bilder/PDFs, je Datei 8 MB, zusammen mit Audio 12 MB. Eine Rechnung mit Folgeseiten je Erfassung. Gemini erhält die Dateien, deine Notiz und den Kontext des ausgewählten Projekts. Kosten werden nicht automatisch gebucht."
+msgstr "Up to 8 images/PDFs, 8 MB per file, 12 MB total including audio. One invoice (including follow-up pages) per capture. Gemini receives the files, your note, and the selected project's context. Costs are never booked automatically."
+
+msgid "Bisher ohne Zuordnung"
+msgstr "No allocations yet"
+
+msgid "Bitte Gemini-API-Schlüssel hinterlegen"
+msgstr "Please configure a Gemini API key"
+
+msgid "Bitte Projekt auswählen"
+msgstr "Please select a project"
+
+msgid "Bitte Vorgang wählen"
+msgstr "Please select an entry"
+
+msgid "Bitte wählen"
+msgstr "Please choose"
+
+msgid "Brutto"
+msgstr "Gross"
+
+msgid "Bruttobetrag"
+msgstr "Gross total"
+
+msgid "Budget"
+msgstr "Budget"
+
+msgid "Budget (Umbau)"
+msgstr "Budget (modification)"
+
+msgid "Budget abzüglich Zuordnungen"
+msgstr "Budget minus allocations"
+
+msgid "Chronik"
+msgstr "Logbook"
+
+msgid "Chronik & Teile"
+msgstr "Logbook & Parts"
+
+msgid "Chronik durchsuchen"
+msgstr "Search logbook"
+
+msgid "Chronik entdecken →"
+msgstr "Explore logbook →"
+
+msgid "Chronik ergänzen"
+msgstr "Add to logbook"
+
+msgid "Chronik:"
+msgstr "Logbook:"
+
+msgid "Chronikeintrag nachträglich ergänzen"
+msgstr "Add logbook entry later"
+
+msgid "Chronikvorschlag prüfen →"
+msgstr "Review logbook proposal →"
+
+msgid "Chronikvorschläge aus Rechnungen"
+msgstr "Logbook proposals from receipts"
+
+msgid "DEIN BROWSER · DEIN STIL"
+msgstr "YOUR BROWSER · YOUR STYLE"
+
+msgid "DEIN PROJEKT. GUT ÜBERGEBEN."
+msgstr "YOUR PROJECT. READY TO HAND OVER."
+
+msgid "DEIN WORKSPACE"
+msgstr "YOUR WORKSPACE"
+
+msgid "DEINE AKTEN"
+msgstr "YOUR LOGBOOKS"
+
+msgid "DEINE ERSTE PROJEKTAKTE"
+msgstr "YOUR FIRST PROJECT LOGBOOK"
+
+msgid "DEINE GESCHICHTE BLEIBT ERHALTEN"
+msgstr "YOUR HISTORY STAYS INTACT"
+
+msgid "DEINE PERSÖNLICHE DOKUMENTATION"
+msgstr "YOUR PERSONAL DOCUMENTATION"
+
+msgid "Dabei sind folgende Belegkosten betroffen:"
+msgstr "The following receipt costs are affected:"
+
+msgid "Darstellung"
+msgstr "Appearance"
+
+msgid "Darstellung & Farbpaletten"
+msgstr "Appearance & color palettes"
+
+msgid "Darstellung ist frei ausprobierbar. Konto, Schnittstellen, Sicherungen und Systemeinstellungen sind in der Demo gesperrt."
+msgstr "Appearance can be tested freely. Account, integrations, backups, and system settings are disabled in the demo."
+
+msgid "Das Original bleibt erhalten. Deine Prüfung entscheidet."
+msgstr "The original is always preserved. Your review decides."
+
+msgid "Das Original in Paperless bleibt archiviert. Beim erneuten Hochladen derselben Datei wird es anhand der Prüfsumme geprüft und wiederverwendet."
+msgstr "The original in Paperless stays archived. Re-uploading the same file will match its checksum and reuse it."
+
+msgid "Das archivierte Original in Paperless bleibt bestehen. Die lokale Verarbeitung dieses Dokuments wird angehalten."
+msgstr "The archived original in Paperless remains intact. Local processing for this document will stop."
+
+msgid "Das konfigurierte Serverlimit darf nicht überschritten werden."
+msgstr "Cannot exceed the configured server limit."
+
+msgid "Datei-Aufräumer"
+msgstr "File cleanup"
+
+msgid "Dateien"
+msgstr "Files"
+
+msgid "Daten mitnehmen"
+msgstr "Take your data with you"
+
+msgid "Datenexport"
+msgstr "Data Export"
+
+msgid "Datum"
+msgstr "Date"
+
+msgid "Datum, Titel und Beschreibung reichen. Bilder kannst du direkt nach dem Speichern ergänzen."
+msgstr "Date, title, and description are enough. You can add photos right after saving."
+
+msgid "Dauerhaft annehmen"
+msgstr "Accept permanently"
+
+msgid "Deaktiviert"
+msgstr "Disabled"
+
+msgid "Dein Beleg wird verarbeitet. Die Prüfansicht aktualisiert sich automatisch, sobald die Daten fertig sind. Eigene Eingaben bleiben erhalten."
+msgstr "Your receipt is being processed. This review page will refresh automatically once ready. Your own edits are preserved."
+
+msgid "Dein Demo-Workspace"
+msgstr "Your Demo Workspace"
+
+msgid "Dein Eingang ist leer."
+msgstr "Your inbox is empty."
+
+msgid "Dein Projekt im Überblick"
+msgstr "Your project at a glance"
+
+msgid "Dein Stil, dein Workspace."
+msgstr "Your style, your workspace."
+
+msgid "Dein Text bleibt erhalten. Falls ein Bild angehängt war, wähle es bitte erneut aus."
+msgstr "Your text is preserved. If an image was attached, please select it again."
+
+msgid "Dein Workspace"
+msgstr "Your Workspace"
+
+msgid "Dein erstes Projekt"
+msgstr "Your first project"
+
+msgid "Dein erstes Projekt beginnt hier."
+msgstr "Your first project starts here."
+
+msgid "Dein persönlicher Workspace"
+msgstr "Your personal workspace"
+
+msgid "Deine Feedback-Zentrale"
+msgstr "Your feedback center"
+
+msgid "Deine Projekte."
+msgstr "Your projects."
+
+msgid "Deine nächsten Schritte."
+msgstr "Your next steps."
+
+msgid "Deine ursprüngliche Notiz"
+msgstr "Your original note"
+
+msgid "Demo beenden"
+msgstr "Exit demo"
+
+msgid "Demo zurücksetzen"
+msgstr "Reset demo"
+
+msgid "Demo-Navigation"
+msgstr "Demo navigation"
+
+msgid "Der Abgleich importiert sichtbare Belege gemäß Tag-Filter als prüfbare Entwürfe. Er löst keine automatische KI-Auswertung und keine Kostenbuchung aus."
+msgstr "Sync imports visible documents matching the tag filter as reviewable drafts. It does not trigger automatic AI processing or cost booking."
+
+msgid "Der IMAP-Abruf ist derzeit nicht konfiguriert. Hinterlege MAIL_IMAP_HOST, MAIL_IMAP_USER, MAIL_IMAP_PASSWORD und MAIL_ALLOWED_SENDER in deiner .env und starte die Container neu."
+msgstr "IMAP intake is currently not configured. Set MAIL_IMAP_HOST, MAIL_IMAP_USER, MAIL_IMAP_PASSWORD, and MAIL_ALLOWED_SENDER in your .env file and restart the containers."
+
+msgid "Der Worker erstellt den Export im Hintergrund. Die Anwendung bleibt bedienbar."
+msgstr "The worker builds the export in the background. You can keep using the app."
+
+msgid "Der zugehörige Beleg wurde endgültig entfernt. Dieser Eintrag und seine Arbeitsbilder bleiben erhalten."
+msgstr "The linked receipt was permanently deleted. This entry and its work photos remain intact."
+
+msgid "Details öffnen →"
+msgstr "Open details →"
+
+msgid "Dezent"
+msgstr "Subtle"
+
+msgid "Die App-Funktion wird aktiviert …"
+msgstr "Activating app features…"
+
+msgid "Die Einträge sind sofort für Arbeitsbilder und Schritte nutzbar."
+msgstr "These entries are immediately ready for work photos and steps."
+
+msgid "Die Login-Dauer gilt für neue Anmeldungen. Sprache und Währung greifen sofort für dein Konto und neue KI-Auswertungen."
+msgstr "Session duration applies to new sign-ins. Language and currency take effect immediately for your account and new AI jobs."
+
+msgid "Die Positionen werden vor Übernahme mit dem Gesamtbetrag abgestimmt."
+msgstr "Line items are reconciled against the gross total before confirmation."
+
+msgid "Die Schnellerfassung benötigt JavaScript. Die Musterakte kannst du über die Navigation ansehen."
+msgstr "Quick capture requires JavaScript. You can still browse the sample logbook via navigation."
+
+msgid "Die Statusanzeige aktualisiert sich automatisch."
+msgstr "Status updates automatically."
+
+msgid "Die aktuelle Seite und das Projekt werden mitgespeichert."
+msgstr "The current page and project are saved along with your note."
+
+msgid "Die automatische Übernahme aus dem Teilen-Menü braucht JavaScript. Du kannst Dateien auch mit der Dateiauswahl hochladen."
+msgstr "Automatic intake from the Share menu requires JavaScript. You can also upload files using the file picker."
+
+msgid "Die beiden Passwörter stimmen nicht überein."
+msgstr "The two passwords do not match."
+
+msgid "Die nächsten Aufgaben ansehen →"
+msgstr "View upcoming tasks →"
+
+msgid "Diese Bildzuordnung wird gelöscht. Die Datei wird entfernt, wenn sie sonst nirgendwo verwendet wird."
+msgstr "This photo link will be deleted. The file will be removed if it is not referenced anywhere else."
+
+msgid "Diese Kostenbuchung samt allen Zuordnungen ebenfalls endgültig löschen. Das gilt auch für eine zuvor verbundene manuelle Ausgabe."
+msgstr "Also permanently delete this cost record and all its allocations, including any previously linked manual expense."
+
+msgid "Diese Sitzung"
+msgstr "This session"
+
+msgid "Dieser Beleg und seine Prüfkorrekturen werden aus Projektakte entfernt. Ein verknüpfter Arbeitseintrag und dessen Bilder bleiben erhalten."
+msgstr "This receipt and its review edits will be removed from Projektakte. Any linked work entry and its photos remain intact."
+
+msgid "Dieser Bericht enthält ausschließlich deinen Demo-Musterbestand. In der App lassen sich Kosten und private Notizen gezielt ausblenden."
+msgstr "This report contains only your demo sample data. In the full app you can selectively hide costs and private notes."
+
+msgid "Dieser Eintrag mit %(steps)s Arbeitsschritten und %(photos)s Bildzuordnungen wird gelöscht. Verknüpfte Belege bleiben erhalten. Gebuchte Kosten bleiben auf dem Projekt; ihre Zuordnung zum gelöschten Eintrag entfällt."
+msgstr "This entry with %(steps)s work steps and %(photos)s photo links will be deleted. Linked receipts remain intact. Booked costs stay on the project; their link to this deleted entry is removed."
+
+msgid "Dieser Vorgang liegt im Papierkorb. Bereits gebuchte Ausgaben bleiben in den Projektkosten erhalten."
+msgstr "This entry is in the trash. Already booked expenses remain in the project's costs."
+
+msgid "Dieses Dokument auswählen"
+msgstr "Select this document"
+
+msgid "Dokument löschen"
+msgstr "Delete document"
+
+msgid "Dokument löschen?"
+msgstr "Delete document?"
+
+msgid "Dokument wiederherstellen"
+msgstr "Restore document"
+
+msgid "Dokument-ID direkt auswählen"
+msgstr "Enter document ID directly"
+
+msgid "Dokumente"
+msgstr "Documents"
+
+msgid "Dokumentiere deinen Umbau Schritt für Schritt."
+msgstr "Document your modification step by step."
+
+msgid "Dokumentieren"
+msgstr "Document"
+
+msgid "Dokumentstand prüfen"
+msgstr "Check document status"
+
+msgid "Drohne"
+msgstr "Drone"
+
+msgid "Druckbares HTML; über „Drucken“ als PDF speichern. Bei ausgeblendeten Kosten oder Händlern werden Freitext-Beschreibungen vorsorglich ebenfalls weggelassen. Titel und eigene Feldinhalte vor Weitergabe kontrollieren."
+msgstr "Printable HTML; save as PDF via “Print”. When hiding costs or vendors, free-text descriptions are also omitted as a precaution. Review titles and custom fields before sharing."
+
+msgid "Drucken / als PDF speichern"
+msgstr "Print / save as PDF"
+
+msgid "Dunkel"
+msgstr "Dark"
+
+msgid "Dunkelmodus"
+msgstr "Dark mode"
+
+msgid "Dunkelmodus aktivieren"
+msgstr "Switch to dark mode"
+
+msgid "Durchsuchen"
+msgstr "Search"
+
+msgid "E-Mail-Abruf"
+msgstr "Email fetch"
+
+msgid "E-Mail-Eingang"
+msgstr "Email intake"
+
+msgid "E-Mail-Eingang (IMAP)"
+msgstr "Email intake (IMAP)"
+
+msgid "EINE QUELLE / MEHRERE ZUORDNUNGEN"
+msgstr "ONE SOURCE / MULTIPLE ALLOCATIONS"
+
+msgid "ENTDECKEN"
+msgstr "EXPLORE"
+
+msgid "ERFASSEN / PRÜFEN / ÜBERNEHMEN"
+msgstr "CAPTURE / REVIEW / CONFIRM"
+
+msgid "ERFASSEN JETZT. PRÜFEN SPÄTER."
+msgstr "CAPTURE NOW. REVIEW LATER."
+
+msgid "ERST EINMAL AUSPROBIEREN?"
+msgstr "WANT TO TRY IT FIRST?"
+
+msgid "ERSTEINRICHTUNG"
+msgstr "FIRST-RUN SETUP"
+
+msgid "ERWEITERN"
+msgstr "EXPAND"
+
+msgid "Ecken-Rundung"
+msgstr "Corner radius"
+
+msgid "Eigene Beispieldaten · KI simuliert · 2 Stunden gültig"
+msgstr "Isolated sample data · AI simulated · expires after 2 hours"
+
+msgid "Eigene Ergänzung"
+msgstr "Personal note"
+
+msgid "Eigene Felder für dieses Projekt. Entfernte Felder behalten ihre historischen Werte."
+msgstr "Custom fields for this project. Removed fields keep their historical values."
+
+msgid "Eigene Primärfarbe"
+msgstr "Custom primary color"
+
+msgid "Eigene Sekundärfarbe"
+msgstr "Custom secondary color"
+
+msgid "Eigenen Titel eingeben"
+msgstr "Enter custom title"
+
+msgid "Eigener Musterbestand · KI simuliert · nach 2 Stunden gelöscht"
+msgstr "Isolated sample data · AI simulated · deleted after 2 hours"
+
+msgid "Eigener Titel"
+msgstr "Custom title"
+
+msgid "Ein Eintrag für Arbeitsbilder entsteht sofort. Die KI ordnet ihn im Hintergrund zu; du prüfst die Rechnung später am PC. Unklare Zuordnungen bleiben erreichbar."
+msgstr "An entry for work photos is created right away. AI classifies it in the background; you review the receipt later on desktop. Unclear matches remain accessible."
+
+msgid "Ein Gedanke."
+msgstr "One thought."
+
+msgid "Ein Projekt. Alle Möglichkeiten."
+msgstr "One project. Every possibility."
+
+msgid "Ein Webprozess · ein serieller Worker"
+msgstr "One web process · one serial worker"
+
+msgid "Ein kurzer Ablauf nach dem anderen. Keine Vorkenntnisse nötig – alle Daten sind erfunden."
+msgstr "One short workflow at a time. No prior knowledge needed — all data is synthetic."
+
+msgid "Ein portabler Export enthält keine Anmeldedaten oder API-Schlüssel. Für eine vollständige Systemwiederherstellung das gesonderte Sicherungsverfahren verwenden."
+msgstr "A portable export never contains credentials or API keys. For full disaster recovery, use the dedicated backup procedure."
+
+msgid "Einbau / Ausbau dokumentieren"
+msgstr "Log installation / removal"
+
+msgid "Eine Akte zum Mitnehmen."
+msgstr "A logbook to take with you."
+
+msgid "Eine leere Liste deaktiviert den Import. Zugangsdaten bleiben unverändert auf dem Server."
+msgstr "An empty list disables import. Credentials remain unchanged on the server."
+
+msgid "Einen Umbau dokumentieren, Arbeiten wiederfinden, Kosten verstehen und einen Bericht mitnehmen."
+msgstr "Document a modification, find past work, understand costs, and export a clean report."
+
+msgid "Einheit"
+msgstr "Unit"
+
+msgid "Einmal hinterlegt, immer im Blick: nach Zeit, Kilometerstand oder beidem."
+msgstr "Set once, always tracked: by time, mileage, or both."
+
+msgid "Einmal übernommen"
+msgstr "Confirmed once"
+
+msgid "Einstellungen"
+msgstr "Settings"
+
+msgid "Einstellungen speichern"
+msgstr "Save settings"
+
+msgid "Einstellungsbereiche"
+msgstr "Settings sections"
+
+msgid "Eintrag / Arbeitsbilder öffnen →"
+msgstr "Open entry / work photos →"
+
+msgid "Eintrag löschen"
+msgstr "Delete entry"
+
+msgid "Eintrag löschen?"
+msgstr "Delete entry?"
+
+msgid "Eintrag ohne Titel"
+msgstr "Untitled entry"
+
+msgid "Eintrag prüfen"
+msgstr "Review entry"
+
+msgid "Eintrag und Arbeitsbilder öffnen →"
+msgstr "Open entry & work photos →"
+
+msgid "Einträge"
+msgstr "Entries"
+
+msgid "Einzelpreis"
+msgstr "Unit price"
+
+msgid "Empfohlener Einstieg · 2 Minuten"
+msgstr "Recommended start · 2 minutes"
+
+msgid "Ende (bei Umbau)"
+msgstr "End date (modification)"
+
+msgid "Endgültig löschen"
+msgstr "Delete permanently"
+
+msgid "Endgültig löschen?"
+msgstr "Delete permanently?"
+
+msgid "Endgültig, nur für deinen Papierkorb. Paperless-Originale bleiben erhalten; Verknüpfungen mit Einbauhistorien werden geschützt."
+msgstr "Permanent, for your trash only. Paperless originals remain intact; links with part installation histories are protected."
+
+msgid "Entdecke eine komplette Fahrzeugakte – mit Chronik, Belegen und Wartung. Ohne Konto, ohne echte Daten."
+msgstr "Explore a complete vehicle logbook — with history, receipts, and maintenance. No account, no real data."
+
+msgid "Entfernen"
+msgstr "Remove"
+
+msgid "Entwurf löschen"
+msgstr "Delete draft"
+
+msgid "Entwürfe bleiben prüfbar. Erst die bestätigte Übernahme bucht die Kosten einmalig."
+msgstr "Drafts remain reviewable. Only explicit confirmation books costs once."
+
+msgid "Entwürfe fortsetzen"
+msgstr "Continue drafts"
+
+msgid "Erfasst – später prüfen"
+msgstr "Captured – review later"
+
+msgid "Erfassung öffnen"
+msgstr "Open capture"
+
+msgid "Erfassungsdatum"
+msgstr "Capture date"
+
+msgid "Erfolgreich"
+msgstr "Succeeded"
+
+msgid "Ergebnisse aktualisieren"
+msgstr "Refresh results"
+
+msgid "Ergänzt fehlende Felder. Vorhandene Werte bleiben erhalten."
+msgstr "Adds missing fields. Existing values are preserved."
+
+msgid "Ergänzung speichern"
+msgstr "Save note"
+
+msgid "Erkannte Angaben prüfen. Fehlende Informationen bleiben leer; Kosten werden erst beim Übernehmen gebucht."
+msgstr "Review extracted details. Missing values stay empty; costs are only booked upon confirmation."
+
+msgid "Erlaubte E-Mail-Absender (eine Adresse pro Zeile)"
+msgstr "Allowed email senders (one address per line)"
+
+msgid "Erledigt"
+msgstr "Done"
+
+msgid "Erledigte Arbeit zuordnen"
+msgstr "Link completed work"
+
+msgid "Erneut versuchen"
+msgstr "Retry"
+
+msgid "Erneutes Öffnen erzeugt keine Buchung."
+msgstr "Reopening does not create a duplicate booking."
+
+msgid "Erst die ausdrückliche Bestätigung erzeugt Vorgänge und Kosten."
+msgstr "Only explicit confirmation creates entries and costs."
+
+msgid "Erstelle eine Akte für dein Fahrzeug, dein Hobby oder dein nächstes Vorhaben."
+msgstr "Create a logbook for your vehicle, hobby, or next project."
+
+msgid "Ersten Vorgang erfassen →"
+msgstr "Create first entry →"
+
+msgid "Erstes Konto anlegen."
+msgstr "Create your first account."
+
+msgid "Es gilt ausschließlich die ausgewählte Bearbeitungsart. Beim Umschalten wird die JSON-Ansicht nicht automatisch aus ungespeicherten Zeilen neu erzeugt."
+msgstr "Only the selected editor mode applies. Switching modes does not automatically regenerate JSON from unsaved rows."
+
+msgid "Expertenansicht (optional)"
+msgstr "Expert view (optional)"
+
+msgid "Export"
+msgstr "Export"
+
+msgid "Export anfordern"
+msgstr "Request export"
+
+msgid "Export erstellen"
+msgstr "Create export"
+
+msgid "Farbschema wechseln"
+msgstr "Toggle color scheme"
+
+msgid "Favorit"
+msgstr "Favorite"
+
+msgid "Feedback"
+msgstr "Feedback"
+
+msgid "Feedback speichern"
+msgstr "Save feedback"
+
+msgid "Fehlende Arbeit zuerst als normalen Wartungsvorgang erfassen. Hier entstehen weder Vorgänge noch Kostenbuchungen."
+msgstr "Record missing work as a regular maintenance entry first. This action creates neither entries nor cost bookings."
+
+msgid "Fehlgeschlagen"
+msgstr "Failed"
+
+msgid "Feld hinzufügen"
+msgstr "Add field"
+
+msgid "Feldbearbeitung"
+msgstr "Field editor"
+
+msgid "Felddefinitionen als JSON (optional)"
+msgstr "Field definitions as JSON (optional)"
+
+msgid "Felder"
+msgstr "fields"
+
+msgid "Felder in den Einstellungen verwalten →"
+msgstr "Manage fields in settings →"
+
+msgid "Filter"
+msgstr "Filter"
+
+msgid "Filter / Teilenummer"
+msgstr "Filter / part number"
+
+msgid "Filter:"
+msgstr "Filter:"
+
+msgid "Filtern"
+msgstr "Filter"
+
+msgid "Format"
+msgstr "Format"
+
+msgid "Foto"
+msgstr "Photo"
+
+msgid "Foto / PDF / Audio"
+msgstr "Photo / PDF / Audio"
+
+msgid "Foto mit der Kamera aufnehmen"
+msgstr "Take photo with camera"
+
+msgid "Foto oder Datei"
+msgstr "Photo or file"
+
+msgid "Fotografiere eine Rechnung oder wähle ein vorhandenes Paperless-Dokument."
+msgstr "Photograph a receipt or select an existing Paperless document."
+
+msgid "Fotos & automatische Aufbewahrung"
+msgstr "Photos & automatic retention"
+
+msgid "Fotos aus Galerie (JPEG, PNG, WebP)"
+msgstr "Photos from gallery (JPEG, PNG, WebP)"
+
+msgid "Freies Projekt"
+msgstr "Custom project"
+
+msgid "FÜHLT SICH NACH DIR AN"
+msgstr "FEELS LIKE YOURS"
+
+msgid "Fällig"
+msgstr "Due"
+
+msgid "Fällig wird eine Wartung beim ersten erreichten Termin oder Kilometerstand. Erledigte Einträge mit verknüpfter Titel-Vorlage aktualisieren den Plan automatisch; andere Regeln werden ausdrücklich zugeordnet."
+msgstr "Maintenance becomes due at whichever date or meter reading comes first. Completed entries with a linked title template update the schedule automatically; other rules are linked explicitly."
+
+msgid "Für Tabellen und Listen. Bedienelemente bleiben gut erreichbar."
+msgstr "For tables and lists. Controls remain easy to reach."
+
+msgid "Gedanken festhalten. Fortschritt dokumentieren. Den Überblick behalten."
+msgstr "Capture thoughts. Document progress. Keep everything in view."
+
+msgid "Gemeinsame Schnittstellen verwaltet das Administratorkonto."
+msgstr "Shared integrations are managed by the administrator account."
+
+msgid "Gemini, Audio & Importfilter"
+msgstr "Gemini, audio & import filters"
+
+msgid "Gemini-API-Schlüssel ändern"
+msgstr "Change Gemini API key"
+
+msgid "Gemini-KI"
+msgstr "Gemini AI"
+
+msgid "Gemini-Modell"
+msgstr "Gemini model"
+
+msgid "Genauigkeit"
+msgstr "Precision"
+
+msgid "Geplant"
+msgstr "Planned"
+
+msgid "Geprüft"
+msgstr "Approved"
+
+msgid "Geprüft freigeben"
+msgstr "Approve"
+
+msgid "Geprüft übernehmen"
+msgstr "Confirm & save"
+
+msgid "Geprüfte Hinweise, Quellen und dokumentierte Erfahrungen. Ein ausgeführtes Drehmoment ist kein bestätigter Hersteller-Sollwert."
+msgstr "Verified notes, sources, and documented observations. A recorded torque value is not an official manufacturer spec."
+
+msgid "Gesamt"
+msgstr "Total"
+
+msgid "Gesamtbetrag (Gutschrift negativ)"
+msgstr "Total amount (negative for credit)"
+
+msgid "Gesamter Vorgang"
+msgstr "Entire entry"
+
+msgid "Gesamtkosten:"
+msgstr "Total costs:"
+
+msgid "Geschütztes Original öffnen →"
+msgstr "Open protected original →"
+
+msgid "Gespeichert. Dein simulierter Vorschlag ist in der Chronik – fehlende Angaben bleiben leer. Ein erkannter Betrag liegt als Belegentwurf vor, ohne Kostenbuchung."
+msgstr "Saved. Your simulated proposal is in the logbook — missing details stay empty. Any detected amount is kept as a receipt draft without booking costs."
+
+msgid "Gespeicherte Inhalte"
+msgstr "Stored content"
+
+msgid "Geteilte Dateien"
+msgstr "Shared files"
+
+msgid "Geteilte Dateien bleiben bis zum bestätigten Upload nur in diesem Browser. Danach wird das lokale Paket gelöscht. Nach 24 Stunden abgelaufene Pakete werden beim nächsten Öffnen bereinigt."
+msgstr "Shared files stay only in this browser until upload is confirmed, then the local bundle is deleted. Bundles older than 24 hours are cleaned up on next open."
+
+msgid "Geteilte Dateien werden aus dem Browser übernommen …"
+msgstr "Loading shared files from browser…"
+
+msgid "Gibt nur unterbrochene Aufträge mit abgelaufener Bearbeitungszeit frei. Laufende Aufträge und übernommene Rechnungen werden nicht neu verarbeitet."
+msgstr "Only releases interrupted jobs whose lease has expired. Active jobs and confirmed invoices are never reprocessed."
+
+msgid "Gilt auch für Sicherungen vor Updates. Ältere Rückspielstände werden erst nach einer erfolgreichen neuen Sicherung entfernt."
+msgstr "Also applies to pre-update backups. Older snapshots are only removed after a successful new backup."
+
+msgid "Gilt für Belege, Sprache, Schnellerfassung und die KI-Reparatursuche. Bereits angefragte Auswertungen zählen weiter zum laufenden Monat."
+msgstr "Applies to receipts, voice, quick capture, and AI repair search. Already requested analyses continue counting toward the current month."
+
+msgid "Gilt für dieses Gerät und diesen Browser. Kein Speichern-Button nötig."
+msgstr "Applies to this device and browser. No save button needed."
+
+msgid "Google-Modellpreise"
+msgstr "Google model pricing"
+
+msgid "Hauptnavigation"
+msgstr "Main navigation"
+
+msgid "Hell"
+msgstr "Light"
+
+msgid "Hell- & Dunkelmodus"
+msgstr "Light & dark mode"
+
+msgid "Hellmodus"
+msgstr "Light mode"
+
+msgid "Hellmodus aktivieren"
+msgstr "Switch to light mode"
+
+msgid "Herunterladen"
+msgstr "Download"
+
+msgid "Heute Ölwechsel bei 128450 km, 89,50 €."
+msgstr "Oil change today at 128450 km, €89.50."
+
+msgid "Hintergrund, Neon-Lichtbahnen und Glas-Tönung. Für einen einfarbigen Look wähle dieselbe Palette wie oben."
+msgstr "Background, neon accents, and glass tint. Choose the same palette as above for a monochrome look."
+
+msgid "Hinzufügen"
+msgstr "Add"
+
+msgid "Historie speichern"
+msgstr "Save history"
+
+msgid "Historische Angaben · Version"
+msgstr "Historical record · Version"
+
+msgid "Hochgeladen"
+msgstr "Uploaded"
+
+msgid "Händler"
+msgstr "Vendor"
+
+msgid "Händler ausblenden"
+msgstr "Hide vendors"
+
+msgid "Händler unbekannt"
+msgstr "Vendor unknown"
+
+msgid "Händler:"
+msgstr "Vendor:"
+
+msgid "Hängengebliebene Aufträge neu starten"
+msgstr "Restart stalled jobs"
+
+msgid "Höchstens 100 positive Tag-IDs verwenden."
+msgstr "Use at most 100 positive tag IDs."
+
+msgid "Höchstens 50 erlaubte Absender."
+msgstr "At most 50 allowed senders."
+
+msgid "Ich möchte die angezeigten Daten endgültig löschen."
+msgstr "I want to permanently delete the data shown above."
+
+msgid "In"
+msgstr "In"
+
+msgid "In Arbeit"
+msgstr "In progress"
+
+msgid "In Paperless suchen"
+msgstr "Search in Paperless"
+
+msgid "In Papierkorb verschieben"
+msgstr "Move to trash"
+
+msgid "In deinen Akten suchen"
+msgstr "Search your logbooks"
+
+msgid "In den Papierkorb"
+msgstr "Move to trash"
+
+msgid "In der persönlichen App kannst du Aufgaben abhaken, verschieben und mit Arbeiten verknüpfen."
+msgstr "In your personal app you can check off tasks, reschedule them, and link them to entries."
+
+msgid "In dieser Chronik suchen …"
+msgstr "Search this logbook…"
+
+msgid "In jeder Kategorie und auch bei freien Titeln verfügbar."
+msgstr "Available in every category and with custom titles."
+
+msgid "In welches Projekt?"
+msgstr "Which project?"
+
+msgid "JPEG-Qualität (%)"
+msgstr "JPEG quality (%)"
+
+msgid "JSON-Expertenansicht"
+msgstr "JSON expert view"
+
+msgid "Jeder Beleg hat seinen Platz."
+msgstr "Every receipt has its place."
+
+msgid "Jetzt manuell abgleichen"
+msgstr "Sync manually now"
+
+msgid "KATEGORIE"
+msgstr "CATEGORY"
+
+msgid "KATEGORIEN & VORLAGEN"
+msgstr "CATEGORIES & TEMPLATES"
+
+msgid "KI & Schnittstellen"
+msgstr "AI & Integrations"
+
+msgid "KI kennenlernen · 90 Sekunden"
+msgstr "Meet the AI · 90 seconds"
+
+msgid "KI soll das passende Projekt auswählen"
+msgstr "Let AI suggest the matching project"
+
+msgid "KI-Erkennung wird simuliert. Keine echten API-Aufrufe und keine echten Zahlungen."
+msgstr "AI extraction is simulated. No real API calls and no real charges."
+
+msgid "KI-Interpretationen"
+msgstr "AI inferences"
+
+msgid "KI-Interpretationen:"
+msgstr "AI inferences:"
+
+msgid "KI-Modell:"
+msgstr "AI model:"
+
+msgid "KI-Monatsbudget"
+msgstr "Monthly AI budget"
+
+msgid "KI-VERBRAUCH DIESEN MONAT"
+msgstr "AI USAGE THIS MONTH"
+
+msgid "KI-Vorschläge bleiben prüfbar."
+msgstr "AI suggestions stay reviewable."
+
+msgid "Kamera oder Galerie wählen. JPEG, PNG, WebP, PDF. Mehrseitige Belege als eine PDF hochladen."
+msgstr "Choose camera or gallery. JPEG, PNG, WebP, PDF. Upload multi-page receipts as a single PDF."
+
+msgid "Kategorie"
+msgstr "Category"
+
+msgid "Kategorie hinzufügen"
+msgstr "Add category"
+
+msgid "Kategorie umbenennen / entfernen"
+msgstr "Rename / remove category"
+
+msgid "Kategorien bearbeiten"
+msgstr "Edit categories"
+
+msgid "Kategorien hinzufügen / entfernen"
+msgstr "Add / remove categories"
+
+msgid "Kategorien hinzufügen, umbenennen oder entfernen →"
+msgstr "Add, rename, or remove categories →"
+
+msgid "Kauf allein ist kein Einbau."
+msgstr "A purchase alone is not an installation."
+
+msgid "Kauf ist kein Einbau. Nur ausgewählte Teile werden vorbereitet; Wiederholung erzeugt keine weiteren Teile."
+msgstr "A purchase is not an installation. Only selected parts are created; repeating does not create duplicates."
+
+msgid "Kein Treffer. Probiere „Öl“ oder „Dachträger“."
+msgstr "No matches. Try “oil” or “roof rack”."
+
+msgid "Keine Aufträge."
+msgstr "No jobs."
+
+msgid "Keine Herstellerquelle angegeben"
+msgstr "No manufacturer source specified"
+
+msgid "Keine Verbindung zu Gemini, Paperless oder E-Mail"
+msgstr "No connection to Gemini, Paperless, or email"
+
+msgid "Keine Wiederherstellung über den Papierkorb möglich. Gemeinsam verwendete Dateien sowie bestehende Exporte, Sicherungen und Paperless-Belege bleiben erhalten."
+msgstr "Cannot be restored from trash. Shared files, existing exports, backups, and Paperless receipts remain intact."
+
+msgid "Keine echten Kunden- oder Fahrzeugdaten"
+msgstr "No real customer or vehicle data"
+
+msgid "Keine passenden berechtigten Treffer."
+msgstr "No matching results."
+
+msgid "Keine protokollierten Fehler."
+msgstr "No logged errors."
+
+msgid "Keine verwaisten Dateien gefunden."
+msgstr "No orphaned files found."
+
+msgid "Kennzeichnung"
+msgstr "Tag"
+
+msgid "Kombiniere die Farbe deiner Konturen und Markierungen mit einer eigenen Farbstimmung für Hintergrund und Glasflächen. Beide Paletten wirken sofort und bleiben in diesem Browser gespeichert."
+msgstr "Combine your accent and outline palette with a separate mood for background and glass surfaces. Both palettes apply immediately and are saved in this browser."
+
+msgid "Kompakt"
+msgstr "Compact"
+
+msgid "Komplexe Belege · Gemini 3.8 Flash"
+msgstr "Complex receipts · Gemini 3.8 Flash"
+
+msgid "Konto & Sicherheit"
+msgstr "Account & Security"
+
+msgid "Konto erstellen & starten"
+msgstr "Create account & start"
+
+msgid "Konturen, Linien, Icons und aktive Markierungen. Keine Farbflächen über dem Hintergrund."
+msgstr "Outlines, lines, icons, and active highlights. No solid fills over the background."
+
+msgid "Korrekturen speichern"
+msgstr "Save edits"
+
+msgid "Kosten"
+msgstr "Costs"
+
+msgid "Kosten / Preise ausblenden"
+msgstr "Hide costs / prices"
+
+msgid "Kosten aufteilen oder vorhandene Ausgabe verbinden"
+msgstr "Split costs or link existing expense"
+
+msgid "Kosten:"
+msgstr "Costs:"
+
+msgid "Kostenlos"
+msgstr "Free"
+
+msgid "Kostenquelle"
+msgstr "Cost source"
+
+msgid "Kostenstatus"
+msgstr "Cost status"
+
+msgid "Kurze Notiz (optional)"
+msgstr "Short note (optional)"
+
+msgid "Kurzer Zusatztext (optional)"
+msgstr "Short note (optional)"
+
+msgid "Kurzes Feedback"
+msgstr "Quick feedback"
+
+msgid "LERNE PROJEKTAKTE KENNEN"
+msgstr "GET TO KNOW PROJEKTAKTE"
+
+msgid "Leer = alle sichtbaren Belege. Mehrere Tags gelten als ODER-Filter. Tag-IDs stehen in Paperless unter Tags."
+msgstr "Empty = all visible documents. Multiple tags act as an OR filter. Find tag IDs in Paperless under Tags."
+
+msgid "Lege deinen persönlichen Admin-Zugang fest. Diese Seite wird danach dauerhaft deaktiviert."
+msgstr "Set up your personal admin account. This page will be permanently disabled afterwards."
+
+msgid "Lege ein Projekt an, um Kategorien und Vorlagen einzurichten."
+msgstr "Create a project to configure categories and templates."
+
+msgid "Leistungsdatum:"
+msgstr "Service date:"
+
+msgid "Letzte 10 Anmeldeversuche"
+msgstr "Last 10 sign-in attempts"
+
+msgid "Letzte 30 Fehlermeldungen"
+msgstr "Last 30 error events"
+
+msgid "Letzte Hintergrund-Aktionen"
+msgstr "Recent background actions"
+
+msgid "Letzter Zugriff:"
+msgstr "Last seen:"
+
+msgid "Letzter bestätigter Zähler:"
+msgstr "Last confirmed reading:"
+
+msgid "Lieber frei erkunden →"
+msgstr "Explore freely instead →"
+
+msgid "Live"
+msgstr "Live"
+
+msgid "Live-Demo starten →"
+msgstr "Start live demo →"
+
+msgid "Login-Dauer für neue Anmeldungen"
+msgstr "Session duration for new sign-ins"
+
+msgid "Lokales Original mit diesem Paperless-Dokument verglichen; Identität stimmt."
+msgstr "Compared local original with this Paperless document; identity matches."
+
+msgid "Löschen"
+msgstr "Delete"
+
+msgid "MUSTERPROJEKT"
+msgstr "SAMPLE PROJECT"
+
+msgid "Manuelle Ausgabe / Gutschrift aufteilen →"
+msgstr "Split manual expense / credit →"
+
+msgid "Manuelle Gesamtausgabe"
+msgstr "Manual total expense"
+
+msgid "Maximal 2 MB insgesamt. Dateien werden weder dauerhaft gespeichert noch an KI-Dienste übertragen. Audio/Bildinhalte werden hier nicht erkannt."
+msgstr "Maximum 2 MB total. Files are neither stored permanently nor sent to AI services. Audio/image contents are not analyzed here."
+
+msgid "Maximale Fotobreite"
+msgstr "Maximum photo width"
+
+msgid "Medien & Papierkorb"
+msgstr "Media & Trash"
+
+msgid "Medienordner"
+msgstr "Media folder"
+
+msgid "Mehrere PDF-/Bilddateien bilden in der gewählten Reihenfolge eine Rechnung (max. 20 Dateien, 50 MB). Originalseiten bleiben erhalten. Einzelne Dateien werden unverändert übernommen."
+msgstr "Multiple PDF/image files are combined in the chosen order into one invoice (max. 20 files, 50 MB). Original pages are preserved. Single files are kept as-is."
+
+msgid "Melde dich an, um deine Projekte zu öffnen."
+msgstr "Sign in to open your projects."
+
+msgid "Menge"
+msgstr "Quantity"
+
+msgid "Menge in Litern"
+msgstr "Quantity (liters)"
+
+msgid "Menge:"
+msgstr "Quantity:"
+
+msgid "Mindestens 12 Zeichen, kein häufiges Standardpasswort."
+msgstr "At least 12 characters, no common password."
+
+msgid "Mit KI auswerten & speichern"
+msgstr "Analyze with AI & save"
+
+msgid "Mit bestehendem Vorgang verbinden"
+msgstr "Merge with existing entry"
+
+msgid "Mit gewähltem Vorgang verbinden"
+msgstr "Merge into selected entry"
+
+msgid "Mit vorhandener Ausgabe verbinden"
+msgstr "Link to existing expense"
+
+msgid "Modellwahl gilt für neue KI-Anfragen. Preise werden je Anfrage festgehalten; das vorhandene Monatsbudget bleibt unverändert. Zugangsschlüssel bleiben ausschließlich auf dem Server."
+msgstr "Model selection applies to new AI requests. Rates are recorded per request; the existing monthly budget stays unchanged. API keys remain strictly on the server."
+
+msgid "Monatslimit speichern"
+msgstr "Save monthly limit"
+
+msgid "Motoröl"
+msgstr "Engine oil"
+
+msgid "Motoröl (historischer Wert)"
+msgstr "Engine oil (historical value)"
+
+msgid "Muster-Kilometerstand"
+msgstr "Sample odometer"
+
+msgid "Musterbeleg ansehen →"
+msgstr "View sample receipt →"
+
+msgid "Musterbeleg öffnen →"
+msgstr "Open sample receipt →"
+
+msgid "Musterfoto zur Dokumentation · kein Foto dieses Dachträgers"
+msgstr "Sample documentation photo · not a photo of this roof rack"
+
+msgid "Musterrechnung"
+msgstr "Sample invoice"
+
+msgid "MwSt."
+msgstr "VAT"
+
+msgid "NICHT MEHR SUCHEN MÜSSEN"
+msgstr "NEVER SEARCH TWICE"
+
+msgid "NORDLICHT WERKSTATT · MUSTERRECHNUNG"
+msgstr "NORDLICHT GARAGE · SAMPLE INVOICE"
+
+msgid "Name, Reihenfolge und sichtbare Reiter. Der KI-Steckbrief hilft bei der Zuordnung deiner Erfassungen."
+msgstr "Name, order, and visible tabs. The AI profile helps classify your captures."
+
+msgid "Navigation öffnen"
+msgstr "Open navigation"
+
+msgid "Netto"
+msgstr "Net"
+
+msgid "Neu auswerten"
+msgstr "Re-analyze"
+
+msgid "Neu starten"
+msgstr "Restart"
+
+msgid "Neue Anmeldeversuche werden protokolliert."
+msgstr "New sign-in attempts will be logged."
+
+msgid "Neue Datei-Scans senden Originale bis %(mb)s MB zusätzlich zum OCR-Text an Gemini; größere Belege verwenden OCR. Bei „Neu auswerten“ gilt die hier gewählte Option. Eine ausdrücklich angeforderte Originalauswertung oberhalb der Dateigrenze wird mit einer Meldung zurückgewiesen."
+msgstr "New file scans send originals up to %(mb)s MB along with OCR text to Gemini; larger receipts use OCR only. When clicking “Re-analyze”, the option chosen here applies. Explicitly requesting original analysis above the file limit is rejected with a notice."
+
+msgid "Neue Dateien verwenden"
+msgstr "Use new files"
+
+msgid "Neue Kategorie"
+msgstr "New category"
+
+msgid "Neue Kostenquelle"
+msgstr "New cost source"
+
+msgid "Neuer Gemini-API-Schlüssel"
+msgstr "New Gemini API key"
+
+msgid "Neuer Scan"
+msgstr "New scan"
+
+msgid "Neues Projekt"
+msgstr "New project"
+
+msgid "Neues Teil anlegen"
+msgstr "Add new part"
+
+msgid "Neueste Sicherungen insgesamt behalten"
+msgstr "Keep newest backups in total"
+
+msgid "Nicht belegt"
+msgstr "Not documented"
+
+msgid "Nicht gefunden."
+msgstr "Not found."
+
+msgid "Noch kein Feedback vorhanden. Mit dem Feedback-Button unten kannst du eine Notiz samt Bild erfassen."
+msgstr "No feedback yet. Use the feedback button below to submit a note with an optional screenshot."
+
+msgid "Noch kein Projekt"
+msgstr "No project yet"
+
+msgid "Noch kein Wartungsplan vorhanden."
+msgstr "No maintenance schedule yet."
+
+msgid "Noch keine Bilder."
+msgstr "No photos yet."
+
+msgid "Noch keine Gerätedaten."
+msgstr "No device records yet."
+
+msgid "Noch keine Kosten zugeordnet"
+msgstr "No costs allocated yet"
+
+msgid "Noch keine Kosten zugeordnet."
+msgstr "No costs allocated yet."
+
+msgid "Noch keine Stammdatenfelder. Lege sie in den Projekteinstellungen an."
+msgstr "No master data fields yet. Create them in project settings."
+
+msgid "Noch keine Teile. Einbau und Ausbau erfasst du am jeweiligen Vorgang."
+msgstr "No parts yet. Log installation and removal on the corresponding entry."
+
+msgid "Noch keine Titel-Vorlagen. Freie Titel sind weiterhin möglich."
+msgstr "No title templates yet. Free-form titles remain available."
+
+msgid "Noch keine bestätigten Einträge."
+msgstr "No confirmed entries yet."
+
+msgid "Noch keine eigenen Felder."
+msgstr "No custom fields yet."
+
+msgid "Noch keine neue Änderung"
+msgstr "No unsaved changes"
+
+msgid "Noch keine passenden Einträge. Neue KI-Vorschläge findest du unter „Vorschläge prüfen“."
+msgstr "No matching entries yet. Check “Review suggestions” for new AI proposals."
+
+msgid "Noch keine passenden Vorgänge."
+msgstr "No matching entries yet."
+
+msgid "Noch keine projektweiten Zusatzfelder."
+msgstr "No project-wide custom fields yet."
+
+msgid "Noch keine registrierten Sicherungen."
+msgstr "No registered backups yet."
+
+msgid "Noch keine titelspezifischen Felder."
+msgstr "No template-specific fields yet."
+
+msgid "Noch keine verknüpften Belege."
+msgstr "No linked receipts yet."
+
+msgid "Noch nicht freigegeben. Bitte Quelle und Geltungsbereich prüfen."
+msgstr "Not yet approved. Please verify the source and scope."
+
+msgid "Noch nicht vorhanden"
+msgstr "Not available yet"
+
+msgid "Noch zuzuordnen"
+msgstr "Unassigned"
+
+msgid "Normale Arbeitsfotos werden beim Upload verkleinert. Im Schnelleingang geschieht dies erst nach der KI-Erkennung als Arbeitsfoto. PDFs und Rechnungsoriginale bleiben erhalten. Die Aufbewahrungsregel läuft stündlich im Worker; geschützte Historien bleiben zur Prüfung erhalten."
+msgstr "Regular work photos are resized on upload. In quick capture this happens only after AI confirms it is a work photo. PDFs and invoice originals are kept untouched. Retention runs hourly in the worker; protected histories remain intact."
+
+msgid "Notiz"
+msgstr "Note"
+
+msgid "Notiz sprechen"
+msgstr "Dictate note"
+
+msgid "Nur Dateien ohne Asset-Datenbankbezug, älter als 10 Minuten. Temporäre Uploads und symbolische Verknüpfungen sind ausgeschlossen; maximal 500 Treffer pro Prüfung."
+msgstr "Only files without an asset database record, older than 10 minutes. Temporary uploads and symlinks are excluded; up to 500 matches per scan."
+
+msgid "Nur Projekt"
+msgstr "Project only"
+
+msgid "Nur Zuordnungen · keine Doppelzählung"
+msgstr "Allocations only · no double counting"
+
+msgid "Nur auswählen, wenn diese Aufgabe zu einem einzelnen Eintrag gehört. Für die allgemeine Einordnung reicht die Kategorie."
+msgstr "Only select if this task belongs to a single entry. For general grouping, the category is enough."
+
+msgid "Nur dein Demo-Bestand wird geändert."
+msgstr "Only your demo data is modified."
+
+msgid "Nur erlaubte Absender werden übernommen. Erst nach gesicherter Ablage wird eine Nachricht als gelesen markiert."
+msgstr "Only allowed senders are imported. Messages are marked read only after safe storage."
+
+msgid "Nur numerische Tag-IDs verwenden."
+msgstr "Use numeric tag IDs only."
+
+msgid "Nur offene"
+msgstr "Open only"
+
+msgid "Nur reine E-Mail-Adressen eintragen."
+msgstr "Enter plain email addresses only."
+
+msgid "Nur zugeordnete Beträge zählen zu den Projektkosten. Fremdwährungen bleiben getrennt; keine automatische Umrechnung."
+msgstr "Only allocated amounts count toward project costs. Foreign currencies stay separate; no automatic conversion."
+
+msgid "OCR aktualisieren"
+msgstr "Refresh OCR"
+
+msgid "OCR läuft"
+msgstr "OCR running"
+
+msgid "OCR noch nicht verfügbar."
+msgstr "OCR not available yet."
+
+msgid "OCR-Text vergleichen"
+msgstr "Compare OCR text"
+
+msgid "Oder Audio-Datei hinzufügen"
+msgstr "Or attach an audio file"
+
+msgid "Oder bereits gespeichertes Bild"
+msgstr "Or attach an existing photo"
+
+msgid "Offen"
+msgstr "Open"
+
+msgid "Offener Rest:"
+msgstr "Unallocated remainder:"
+
+msgid "Ohne"
+msgstr "None"
+
+msgid "Ohne KI manuell prüfen"
+msgstr "Review manually without AI"
+
+msgid "Ohne Kategorie"
+msgstr "Uncategorized"
+
+msgid "Ohne Projekt"
+msgstr "No project"
+
+msgid "Ohne Termin"
+msgstr "No due date"
+
+msgid "Ohne dieses Häkchen bleiben Belege mit Kostenbuchungen zur manuellen Prüfung erhalten. Paperless-Originale werden nicht gelöscht."
+msgstr "Without this option, receipts with cost bookings are kept for manual review. Paperless originals are never deleted."
+
+msgid "Optional in"
+msgstr "Optional in"
+
+msgid "Original"
+msgstr "Original"
+
+msgid "Original herunterladen →"
+msgstr "Download original →"
+
+msgid "Original-Audio nach erfolgreicher Auswertung behalten"
+msgstr "Keep original audio after successful transcription"
+
+msgid "Original-PDF öffnen ↗"
+msgstr "Open original PDF ↗"
+
+msgid "Originalaufnahme behalten"
+msgstr "Keep original recording"
+
+msgid "Originalbild/PDF zusätzlich auswerten"
+msgstr "Also analyze original image/PDF"
+
+msgid "Originalrechnung"
+msgstr "Original invoice"
+
+msgid "Originalunterlagen"
+msgstr "Original manuals"
+
+msgid "PAPIERKORB"
+msgstr "TRASH"
+
+msgid "PDF / Export"
+msgstr "PDF / Export"
+
+msgid "PDF und ZIP werden seriell im Hintergrund erzeugt. ZIP enthält versioniertes JSON, Dateien, Belegoriginale, CSV und einen lesbaren Index."
+msgstr "PDF and ZIP exports are built serially in the background. ZIP contains versioned JSON, files, receipt originals, CSV, and a readable HTML index."
+
+msgid "PDF · Historie / Umbau mit Bildern und Kosten"
+msgstr "PDF · History / modifications with photos and costs"
+
+msgid "PDF · Kompakte Wartungstabelle ohne Fotos"
+msgstr "PDF · Compact maintenance table without photos"
+
+msgid "PDF-Berichte: bis %(entries)s Vorgänge und %(photos)s Bilder pro Bericht. Der vollständige ZIP-Export enthält auch größere Bestände. Zu große Berichte werden abgelehnt, nicht gekürzt."
+msgstr "PDF reports: up to %(entries)s entries and %(photos)s photos per report. Full ZIP exports support larger datasets. Oversized reports are rejected rather than truncated."
+
+msgid "PROJEKT"
+msgstr "PROJECT"
+
+msgid "PROJEKTAKTE"
+msgstr "PROJEKTAKTE"
+
+msgid "PROJEKTAKTE / ERFASSEN"
+msgstr "PROJEKTAKTE / ENTRY"
+
+msgid "PROJEKTAKTE / STAMMDATEN"
+msgstr "PROJEKTAKTE / MASTER DATA"
+
+msgid "PROJEKTWEIT"
+msgstr "PROJECT-WIDE"
+
+msgid "Paperless Import-Tags: IDs durch Komma getrennt"
+msgstr "Paperless import tags: comma-separated IDs"
+
+msgid "Paperless abgleichen"
+msgstr "Reconcile Paperless"
+
+msgid "Paperless-Abgleich"
+msgstr "Paperless sync"
+
+msgid "Paperless-Dokument"
+msgstr "Paperless document"
+
+msgid "Paperless-Dokument-ID"
+msgstr "Paperless document ID"
+
+msgid "Paperless-ID"
+msgstr "Paperless ID"
+
+msgid "Paperless-Suche"
+msgstr "Paperless search"
+
+msgid "Paperless-Verbindung"
+msgstr "Paperless connection"
+
+msgid "Paperless-ngx ist derzeit nicht konfiguriert. Hinterlege PAPERLESS_URL und PAPERLESS_TOKEN in deiner .env und starte die Container neu (docker compose up -d)."
+msgstr "Paperless-ngx is currently not configured. Set PAPERLESS_URL and PAPERLESS_TOKEN in your .env file and restart the containers (docker compose up -d)."
+
+msgid "Papierkorb"
+msgstr "Trash"
+
+msgid "Papierkorb jetzt komplett leeren"
+msgstr "Empty trash completely now"
+
+msgid "Papierkorb-Aufbewahrung in Tagen (leer = nie automatisch löschen)"
+msgstr "Trash retention in days (empty = never auto-delete)"
+
+msgid "Passwort"
+msgstr "Password"
+
+msgid "Passwort wiederholen"
+msgstr "Confirm password"
+
+msgid "Passwort ändern"
+msgstr "Change password"
+
+msgid "Pausiert"
+msgstr "Paused"
+
+msgid "Persönliche Dokumentation"
+msgstr "Personal documentation"
+
+msgid "Persönliche Ergänzung"
+msgstr "Personal note"
+
+msgid "Planwert"
+msgstr "Planned"
+
+msgid "Position"
+msgstr "Position"
+
+msgid "Position (Nummer, optional)"
+msgstr "Line item (number, optional)"
+
+msgid "Position / Teilenummer"
+msgstr "Item / part number"
+
+msgid "Position hinzufügen"
+msgstr "Add line item"
+
+msgid "Positionsbeträge brutto eingeben, einschließlich Versand. Menge, Einheit und Einzelpreis sind optional; dessen Netto-/Bruttobasis ausdrücklich wählen. Rabatt und Gutschrift mit Minuszeichen."
+msgstr "Enter line item amounts gross, including shipping. Quantity, unit, and unit price are optional; choose net/gross basis explicitly. Enter discounts and credits as negative values."
+
+msgid "Postfach jetzt abrufen"
+msgstr "Fetch mailbox now"
+
+msgid "Primärfarbe"
+msgstr "Primary color"
+
+msgid "Private Notizen ausblenden"
+msgstr "Hide private notes"
+
+msgid "Probiere zum Beispiel: „Heute Ölwechsel bei 128450 km, 89,50 €.“"
+msgstr "Try for example: “Oil change today at 128450 km, €89.50.”"
+
+msgid "Profil & Darstellung"
+msgstr "Profile & display"
+
+msgid "Projekt"
+msgstr "Project"
+
+msgid "Projekt & KI"
+msgstr "Project & AI"
+
+msgid "Projekt anlegen"
+msgstr "Create project"
+
+msgid "Projekt kann später zugeordnet werden"
+msgstr "Project can be assigned later"
+
+msgid "Projekt speichern"
+msgstr "Save project"
+
+msgid "Projekt und optional Vorgang auswählen. Ein leerer Vorgang bucht auf das Projekt. Positionsbezug ist optional: vorhandene Positionsnummer ab 1. Versand und Rabatt können eigene Positionszuordnungen erhalten. Teilzuordnung lässt einen sichtbaren Rest. Bei Gutschriften negative Beträge eintragen."
+msgstr "Select a project and optionally an entry. Leaving the entry blank allocates directly to the project. Line item reference is optional (starting at 1). Partial allocation leaves a visible remainder. Enter negative amounts for credits."
+
+msgid "Projekt wählen"
+msgstr "Choose project"
+
+msgid "Projekt öffnen"
+msgstr "Open project"
+
+msgid "Projektakte ins Teilen-Menü aufnehmen"
+msgstr "Add Projektakte to the Share menu"
+
+msgid "Projektakte installieren"
+msgstr "Install Projektakte"
+
+msgid "Projektakte · Anmeldung"
+msgstr "Projektakte · Sign in"
+
+msgid "Projektakte · Ersteinrichtung"
+msgstr "Projektakte · First-run setup"
+
+msgid "Projektakte · Live-Demo"
+msgstr "Projektakte · Live Demo"
+
+msgid "Projektbericht zur Übergabe"
+msgstr "Project handover report"
+
+msgid "Projekte"
+msgstr "Projects"
+
+msgid "Projekte & Arbeitsfotos"
+msgstr "Projects & work photos"
+
+msgid "Projektkonfiguration"
+msgstr "Project configuration"
+
+msgid "Projektname"
+msgstr "Project name"
+
+msgid "Projektweites Feld hinzufügen"
+msgstr "Add project-wide field"
+
+msgid "Prompt ansehen"
+msgstr "View prompt"
+
+msgid "Prüfansicht öffnen →"
+msgstr "Open review →"
+
+msgid "Prüfen / bearbeiten"
+msgstr "Review / edit"
+
+msgid "Prüfstatus"
+msgstr "Review status"
+
+msgid "Prüfung erforderlich"
+msgstr "Review required"
+
+msgid "Prüfung nötig"
+msgstr "Review needed"
+
+msgid "Quelle"
+msgstr "Source"
+
+msgid "Quelle und Aufteilung speichern"
+msgstr "Save source & allocations"
+
+msgid "Quelle:"
+msgstr "Source:"
+
+msgid "Quellenlink öffnen ↗"
+msgstr "Open source link ↗"
+
+msgid "RECHTZEITIG DRAN DENKEN"
+msgstr "STAY AHEAD OF SCHEDULE"
+
+msgid "Rechnung"
+msgstr "Receipt"
+
+msgid "Rechnung einsetzen, Arbeit festhalten und später prüfen. Zum Schluss steht die nächste Wartung im Plan."
+msgstr "Drop in a receipt, log the work, and review it later. Finally, the next service is scheduled automatically."
+
+msgid "Rechnung hinzufügen"
+msgstr "Add receipt"
+
+msgid "Rechnung hinzufügen →"
+msgstr "Add receipt →"
+
+msgid "Rechnung prüfen"
+msgstr "Review receipt"
+
+msgid "Rechnungsdatum"
+msgstr "Invoice date"
+
+msgid "Rechnungsdatum:"
+msgstr "Invoice date:"
+
+msgid "Rechnungsoriginal"
+msgstr "Original invoice"
+
+msgid "Rechnungsposition"
+msgstr "Line item"
+
+msgid "Rechnungspositionen"
+msgstr "Line items"
+
+msgid "Reihenfolge"
+msgstr "Order"
+
+msgid "Reparatur"
+msgstr "Repair"
+
+msgid "Reparaturanleitungen durchsuchen →"
+msgstr "Search repair manuals →"
+
+msgid "Rest"
+msgstr "Remainder"
+
+msgid "Richtiges Projekt"
+msgstr "Correct project"
+
+msgid "SCHNELLERFASSUNG"
+msgstr "QUICK CAPTURE"
+
+msgid "SQLite inkl. WAL"
+msgstr "SQLite incl. WAL"
+
+msgid "STECKBRIEF"
+msgstr "PROFILE"
+
+msgid "Schematische Illustration des fiktiven Reisekombis Nordlicht"
+msgstr "Schematic illustration of the fictional touring wagon Nordlicht"
+
+msgid "Schließen"
+msgstr "Close"
+
+msgid "Schlüssel fehlt"
+msgstr "API key missing"
+
+msgid "Schlüssel sicher speichern"
+msgstr "Save key securely"
+
+msgid "Schnelle Notiz"
+msgstr "Quick note"
+
+msgid "Schnellerfassung"
+msgstr "Quick capture"
+
+msgid "Schon festgehalten."
+msgstr "Already captured."
+
+msgid "Schritt"
+msgstr "Step"
+
+msgid "Sekundärfarbe"
+msgstr "Secondary color"
+
+msgid "Self-Hosted"
+msgstr "Self-Hosted"
+
+msgid "Server & Worker"
+msgstr "Server & Worker"
+
+msgid "Server- und Worker-Ereignisse werden ohne Zugangsschlüssel oder Anfrageinhalte gespeichert."
+msgstr "Server and worker events are logged without credentials or request payloads."
+
+msgid "Server-Standard"
+msgstr "Server default"
+
+msgid "Serverobergrenze"
+msgstr "Server ceiling"
+
+msgid "Sichert App, Bilder, Feedback und referenzierte Paperless-Originale. Server-Konfiguration, API-Schlüssel (einschließlich Änderungen hier) und eine vollständige Paperless-System-Sicherung sind separate Sicherungsbestandteile. Downloads enthalten private Daten."
+msgstr "Backs up the app database, media, feedback, and referenced Paperless originals. Server configuration, API keys, and a full Paperless system backup are separate. Downloads contain private data."
+
+msgid "Sicherung"
+msgstr "Backup"
+
+msgid "Sicherungen"
+msgstr "Backups"
+
+msgid "Sicherungen einlesen"
+msgstr "Discover backups"
+
+msgid "Simuliert zuordnen & speichern →"
+msgstr "Simulate classify & save →"
+
+msgid "So arbeitet Projektakte für dich."
+msgstr "Configure how Projektakte works for you."
+
+msgid "Sofortsicherung erstellen"
+msgstr "Create backup now"
+
+msgid "Speicher frei"
+msgstr "Free storage"
+
+msgid "Speichern"
+msgstr "Save"
+
+msgid "Sprache"
+msgstr "Language"
+
+msgid "Sprache wählen"
+msgstr "Choose language"
+
+msgid "Sprache, Rechnung oder kurze Notiz: Erlebe an vorbereiteten Beispielen, wie daraus klare Angaben werden."
+msgstr "Voice, receipt, or quick note: see how prepared examples turn into structured entries."
+
+msgid "Sprache, Währung & Login-Dauer"
+msgstr "Language, currency & session duration"
+
+msgid "Sprachnachricht"
+msgstr "Voice note"
+
+msgid "Sprachnachricht prüfen"
+msgstr "Review voice note"
+
+msgid "Sprechen"
+msgstr "Speak"
+
+msgid "Sprich es einfach ein"
+msgstr "Just speak it"
+
+msgid "Stammdaten"
+msgstr "Master data"
+
+msgid "Stammdaten speichern"
+msgstr "Save master data"
+
+msgid "Stammdaten und eigene Felder bearbeiten →"
+msgstr "Edit master data & custom fields →"
+
+msgid "Stammdatenfeld"
+msgstr "Master data field"
+
+msgid "Stand"
+msgstr "Updated"
+
+msgid "Standard"
+msgstr "Standard"
+
+msgid "Standardwährung"
+msgstr "Default currency"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Status der Anbindungen"
+msgstr "Integration status"
+
+msgid "Status unbekannt"
+msgstr "Status unknown"
+
+msgid "Suchbegriff"
+msgstr "Search query"
+
+msgid "Suche"
+msgstr "Search"
+
+msgid "Suche öffnen (/ oder Strg+K)"
+msgstr "Open search (/ or Ctrl+K)"
+
+msgid "Suchen"
+msgstr "Search"
+
+msgid "Synthetische Daten - lokale Abnahme"
+msgstr "Synthetic data - local review"
+
+msgid "Synthetische Testdaten"
+msgstr "Synthetic demo data"
+
+msgid "System & Sicherung"
+msgstr "System & Backups"
+
+msgid "TEXTE / TEILE / BILDER / OCR"
+msgstr "TEXT / PARTS / PHOTOS / OCR"
+
+msgid "TT.MM.JJJJ, JJJJ-MM-TT, MM/JJJJ, JJJJ oder leer für unbekannt."
+msgstr "DD.MM.YYYY, YYYY-MM-DD, MM/YYYY, YYYY, or empty if unknown."
+
+msgid "Tag"
+msgstr "Tag"
+
+msgid "Tags (durch Komma getrennt)"
+msgstr "Tags (comma-separated)"
+
+msgid "Tags:"
+msgstr "Tags:"
+
+msgid "Teil"
+msgstr "Part"
+
+msgid "Teil anlegen"
+msgstr "Add part"
+
+msgid "Teile"
+msgstr "Parts"
+
+msgid "Teile / Material aus der Sprachnachricht"
+msgstr "Parts / materials from voice note"
+
+msgid "Teile aus geprüften Positionen vorbereiten"
+msgstr "Prepare parts from reviewed line items"
+
+msgid "Teile und Einbauhistorie"
+msgstr "Parts & installation history"
+
+msgid "Teilzuordnung ist erlaubt. Ein vollständig offener Betrag muss ausdrücklich bestätigt werden."
+msgstr "Partial allocation is allowed. Leaving the entire amount unallocated requires explicit confirmation."
+
+msgid "Testadapter"
+msgstr "Demo adapter"
+
+msgid "Testdaten"
+msgstr "Demo data"
+
+msgid "Text, Audio und Dateien werden gemeinsam mit deinen Projektinformationen an Gemini gesendet. Ohne Häkchen wird Audio nach erfolgreicher Erkennung entfernt. Maximal 8 Fotos/PDFs, je Datei 8 MB, insgesamt mit Audio 12 MB. Eine Rechnung pro Erfassung; Folgeseiten dürfen gemeinsam hochgeladen werden."
+msgstr "Text, audio, and files are sent to Gemini together with your project context. Unless checked, audio is deleted after successful transcription. Max 8 photos/PDFs, 8 MB each, 12 MB total including audio. One receipt per capture; follow-up pages may be uploaded together."
+
+msgid "Titel"
+msgstr "Title"
+
+msgid "Titel oder Beschreibung durchsuchen"
+msgstr "Search title or description"
+
+msgid "Titel unbekannt"
+msgstr "Untitled"
+
+msgid "Titel-Vorlage"
+msgstr "Title template"
+
+msgid "Titel-Vorlage hinzufügen"
+msgstr "Add title template"
+
+msgid "Titel-Zusatz (optional)"
+msgstr "Title suffix (optional)"
+
+msgid "Tour fortsetzen"
+msgstr "Resume tour"
+
+msgid "Tour starten"
+msgstr "Start tour"
+
+msgid "Tour verlassen"
+msgstr "Exit tour"
+
+msgid "Tourauswahl"
+msgstr "Choose tour"
+
+msgid "Trage hier die Werte ein. Felder, Einheiten und Reihenfolge verwaltest du in den Projekteinstellungen."
+msgstr "Enter values here. Manage fields, units, and order in project settings."
+
+msgid "Treffer in Text, Schritten, historischen Teilen, Bildbeschriftung oder verknüpftem OCR."
+msgstr "Match in text, steps, historical parts, photo captions, or linked OCR."
+
+msgid "Umbau"
+msgstr "Modification"
+
+msgid "Umbauten"
+msgstr "Modifications"
+
+msgid "Umgesetzt · deine Prüfung offen"
+msgstr "Implemented · awaiting your review"
+
+msgid "Umsetzung offen"
+msgstr "Open"
+
+msgid "Unbekannt"
+msgstr "Unknown"
+
+msgid "Unbenannter Entwurf"
+msgstr "Untitled draft"
+
+msgid "Unterlagen im Export"
+msgstr "documents in library"
+
+msgid "Unveränderte Originalseiten"
+msgstr "Unmodified original pages"
+
+msgid "Upload mit vorhandener Paperless-ID auflösen"
+msgstr "Resolve upload with existing Paperless ID"
+
+msgid "Upload unklar · Abgleich erforderlich"
+msgstr "Upload uncertain · reconcile required"
+
+msgid "Ursprünglicher Arbeitseintrag"
+msgstr "Original work entry"
+
+msgid "VERBLEIBEND"
+msgstr "REMAINING"
+
+msgid "VERSION"
+msgstr "VERSION"
+
+msgid "Verarbeitung & Verbindung"
+msgstr "Processing & connection"
+
+msgid "Verbindung testen"
+msgstr "Test connection"
+
+msgid "Verbleibend"
+msgstr "Remaining"
+
+msgid "Verglichenen Dokumentstand bestätigen"
+msgstr "Confirm compared document state"
+
+msgid "Verknüpfen und prüfen"
+msgstr "Link and review"
+
+msgid "Verknüpfte Belege bleiben erhalten."
+msgstr "Linked receipts remain intact."
+
+msgid "Verknüpfte Kostenbuchung:"
+msgstr "Linked cost record:"
+
+msgid "Verknüpften Eintrag bearbeiten →"
+msgstr "Edit linked entry →"
+
+msgid "Version"
+msgstr "Version"
+
+msgid "Versuche"
+msgstr "attempts"
+
+msgid "Verwaiste Dateien prüfen"
+msgstr "Scan for orphaned files"
+
+msgid "Verwerfen"
+msgstr "Reject"
+
+msgid "Verworfen"
+msgstr "Rejected"
+
+msgid "Video laden"
+msgstr "Load video"
+
+msgid "Vollständige Arbeitsschritte, Abbildungen, Vorarbeiten und Drehmomenttabellen."
+msgstr "Full procedures, diagrams, prerequisites, and torque tables."
+
+msgid "Vollständigen Export anfordern"
+msgstr "Request full export"
+
+msgid "Vom ersten Foto bis zur nächsten Wartung: Erlebe, wie aus kleinen Notizen eine vollständige Projektgeschichte wird."
+msgstr "From your first photo to the next service: see how quick notes grow into a complete project history."
+
+msgid "Vom Ölwechsel zur fertigen Akte"
+msgstr "From oil change to complete logbook"
+
+msgid "Von"
+msgstr "From"
+
+msgid "Von Codex umgesetzt"
+msgstr "Implemented"
+
+msgid "Von der KI interpretiert"
+msgstr "Inferred by AI"
+
+msgid "Von der KI interpretiert; bitte prüfen"
+msgstr "Inferred by AI; please verify"
+
+msgid "Von dir geprüft"
+msgstr "Verified by you"
+
+msgid "Von dir geprüft und erledigt"
+msgstr "Verified and done"
+
+msgid "Vorgang"
+msgstr "Entry"
+
+msgid "Vorgangsart unbekannt"
+msgstr "Type unknown"
+
+msgid "Vorgemerkt"
+msgstr "Queued"
+
+msgid "Vorhandene ID zuordnen"
+msgstr "Link existing ID"
+
+msgid "Vorhandene Sicherungen einlesen"
+msgstr "Discover existing backups"
+
+msgid "Vorhandenes Dokument auswählen, ohne es erneut hochzuladen."
+msgstr "Select an existing document without uploading it again."
+
+msgid "Vorhandenes Paperless-Dokument"
+msgstr "Existing Paperless document"
+
+msgid "Vorher/Nachher"
+msgstr "Before/After"
+
+msgid "Vorlage"
+msgstr "Template"
+
+msgid "Vorlagen"
+msgstr "templates"
+
+msgid "Vorschau wird erstellt"
+msgstr "Generating preview"
+
+msgid "Vorschläge prüfen"
+msgstr "Review suggestions"
+
+msgid "Vorschläge, noch nicht übernommen"
+msgstr "suggestions, not yet imported"
+
+msgid "WAS ALS NÄCHSTES ANSTEHT"
+msgstr "WHAT'S UP NEXT"
+
+msgid "WENIGER ABLAGE. MEHR ÜBERBLICK."
+msgstr "LESS FILING. MORE CLARITY."
+
+msgid "WIEDERHERSTELLEN"
+msgstr "RESTORE"
+
+msgid "WIEDERKEHRENDE WARTUNGEN"
+msgstr "RECURRING MAINTENANCE"
+
+msgid "WORKSPACE"
+msgstr "WORKSPACE"
+
+msgid "Warnschwelle erreicht"
+msgstr "Warning threshold reached"
+
+msgid "Wartet auf KI"
+msgstr "Waiting for AI"
+
+msgid "Wartet auf Paperless"
+msgstr "Waiting for Paperless"
+
+msgid "Wartung"
+msgstr "Maintenance"
+
+msgid "Wartung / Reparatur / Umbau"
+msgstr "Maintenance / Repair / Modification"
+
+msgid "Wartung mit Gedächtnis."
+msgstr "Maintenance with memory."
+
+msgid "Wartungsplan"
+msgstr "Maintenance"
+
+msgid "Wartungsregel erfassen / bearbeiten"
+msgstr "Create / edit maintenance rule"
+
+msgid "Wartungsregel speichern"
+msgstr "Save maintenance rule"
+
+msgid "Was gehört dazu? Was hast du gemacht oder vor?"
+msgstr "What is this about? What did you do or plan?"
+
+msgid "Was hast du gemacht oder vor? Text, Fotos und Sprache lassen sich kombinieren."
+msgstr "What did you do or plan? Combine text, photos, and voice."
+
+msgid "Was hast du gemacht?"
+msgstr "What did you do?"
+
+msgid "Was ist dir aufgefallen?"
+msgstr "What did you notice?"
+
+msgid "Was möchtest du ausprobieren?"
+msgstr "What would you like to try?"
+
+msgid "Was möchtest du festhalten?"
+msgstr "What would you like to capture?"
+
+msgid "Weich"
+msgstr "Soft"
+
+msgid "Weiter"
+msgstr "Next"
+
+msgid "Weitere Angaben (optional)"
+msgstr "Additional details (optional)"
+
+msgid "Weitere Angaben · Beschreibung, Zähler und Tags"
+msgstr "More details · description, meter, and tags"
+
+msgid "Weitere Dateien auswählen"
+msgstr "Choose more files"
+
+msgid "Weitere Eintragsangaben"
+msgstr "More entry details"
+
+msgid "Weitere Einträge →"
+msgstr "More entries →"
+
+msgid "Weitere Rechnungsdetails & Positionen"
+msgstr "More invoice details & line items"
+
+msgid "Weitere Treffer →"
+msgstr "More results →"
+
+msgid "Weitere Zuordnung"
+msgstr "Add allocation"
+
+msgid "Weitere Zuordnung · konkreter Chronikeintrag"
+msgstr "Optional link · specific logbook entry"
+
+msgid "Werkstatt-Musterrechnung mit MwSt. →"
+msgstr "Sample garage invoice with VAT →"
+
+msgid "Wiederfinden statt durchblättern."
+msgstr "Find instead of digging."
+
+msgid "Wiederherstellen"
+msgstr "Restore"
+
+msgid "Wiederherstellen oder einzeln endgültig löschen. Vor dem endgültigen Löschen erscheint eine Bestätigung mit den betroffenen Daten und gegebenenfalls Kosten. Paperless-Belege bleiben archiviert; dieselbe Datei kann danach in Projektakte neu erfasst werden."
+msgstr "Restore items or delete them permanently one by one. Before permanent deletion, a confirmation shows all affected records and costs. Paperless documents stay archived and can be re-imported later."
+
+msgid "Willkommen zurück."
+msgstr "Welcome back."
+
+msgid "Wird in den Papierkorb verschoben und kann dort wiederhergestellt werden."
+msgstr "Will be moved to the trash and can be restored from there."
+
+msgid "Wird nur geschützt auf dem Server gespeichert und niemals wieder angezeigt. Gilt für Web und Worker ohne Neustart."
+msgstr "Stored securely on the server and never displayed again. Takes effect for both web and worker without restart."
+
+msgid "Wird verarbeitet"
+msgstr "Processing"
+
+msgid "Wissen"
+msgstr "Knowledge"
+
+msgid "Wissen & Originalunterlagen"
+msgstr "Knowledge & manuals"
+
+msgid "Wissen durchsuchen"
+msgstr "Search knowledge"
+
+msgid "Wissen festhalten"
+msgstr "Capture knowledge"
+
+msgid "Wissen hinzufügen"
+msgstr "Add knowledge"
+
+msgid "Wissensdatenbank"
+msgstr "Knowledge Base"
+
+msgid "Wissensdatenbank projektübergreifend durchsuchen →"
+msgstr "Search knowledge base across all projects →"
+
+msgid "Wissenseintrag prüfen / bearbeiten"
+msgstr "Review / edit knowledge entry"
+
+msgid "Worker-Heartbeat"
+msgstr "Worker heartbeat"
+
+msgid "Währung"
+msgstr "Currency"
+
+msgid "YouTube wird erst nach deinem Klick geladen. Dabei verbindet sich dein Browser mit YouTube."
+msgstr "YouTube loads only after you click. Your browser will then connect to YouTube."
+
+msgid "ZIP · JSON, CSV, lesbarer Index, Bilder und Belegoriginale"
+msgstr "ZIP · JSON, CSV, readable index, photos, and receipt originals"
+
+msgid "ZUGEORDNETE KOSTEN"
+msgstr "ALLOCATED COSTS"
+
+msgid "Zeitraum und Tags"
+msgstr "Date range & tags"
+
+msgid "Zielprojekt"
+msgstr "Target project"
+
+msgid "Zielvorgang"
+msgstr "Target entry"
+
+msgid "Zuerst wird die Datei dauerhaft gespeichert. Ein Eintrag für Arbeitsbilder ist sofort verfügbar. Danach läuft die Verarbeitung im Hintergrund weiter, auch bei geschlossenem Browser. Originale bis %(mb)s MB werden zusätzlich an Gemini gesendet, größere Belege über OCR ausgewertet."
+msgstr "First, the file is saved durably and an entry for work photos is available immediately. Background processing continues even if you close the browser. Originals up to %(mb)s MB are also sent to Gemini; larger receipts use OCR."
+
+msgid "Zugangsdaten bleiben serverseitig."
+msgstr "Credentials stay on the server."
+
+msgid "Zugehörige Belegkosten samt Zuordnungen endgültig mitlöschen"
+msgstr "Also permanently delete linked receipt costs and allocations"
+
+msgid "Zugeordnete Kosten"
+msgstr "Allocated costs"
+
+msgid "Zuletzt:"
+msgstr "Last:"
+
+msgid "Zum Beispiel Ölfilter, Teilenummer …"
+msgstr "For example oil filter, part number…"
+
+msgid "Zum Beispiel: Öl für den BMW oder Pflanzen fürs Aquarium"
+msgstr "For example: Oil for the car or plants for the aquarium"
+
+msgid "Zum Hinzufügen zuerst ein Projekt auswählen."
+msgstr "Select a project first to add an entry."
+
+msgid "Zum Inhalt"
+msgstr "Skip to content"
+
+msgid "Zum Umschalten der Darstellung bitte JavaScript aktivieren."
+msgstr "Please enable JavaScript to change appearance settings."
+
+msgid "Zuordnung"
+msgstr "Allocation"
+
+msgid "Zuordnungen"
+msgstr "Allocations"
+
+msgid "Zuordnungen bearbeiten"
+msgstr "Edit allocations"
+
+msgid "Zur Bestätigung LEEREN eingeben"
+msgstr "Type LEEREN to confirm"
+
+msgid "Zur Originalunterlage"
+msgstr "Open original manual"
+
+msgid "Zurück"
+msgstr "Back"
+
+msgid "Zusatzangaben"
+msgstr "Additional fields"
+
+msgid "Zusatzfeld"
+msgstr "Custom field"
+
+msgid "Zusatzfeld hinzufügen"
+msgstr "Add custom field"
+
+msgid "Zusatzfelder dieser Vorlage"
+msgstr "Custom fields for this template"
+
+msgid "Zähler"
+msgstr "Meter"
+
+msgid "Zähler ausdrücklich getauscht"
+msgstr "Meter explicitly replaced"
+
+msgid "Zähler getauscht"
+msgstr "Meter replaced"
+
+msgid "Zähler unbekannt"
+msgstr "Meter unknown"
+
+msgid "Zählerbezeichnung"
+msgstr "Meter label"
+
+msgid "Zählerstand (optional)"
+msgstr "Meter reading (optional)"
+
+msgid "Zählertausch"
+msgstr "Meter replaced"
+
+msgid "aktiv"
+msgstr "active"
+
+msgid "aktivierbar"
+msgstr "can be enabled"
+
+msgid "ausgebaut"
+msgstr "removed"
+
+msgid "belegt"
+msgstr "used"
+
+msgid "bestätigt"
+msgstr "confirmed"
+
+msgid "brutto"
+msgstr "gross"
+
+msgid "damalige Nummer:"
+msgstr "historical part no.:"
+
+msgid "eingebaut"
+msgstr "installed"
+
+msgid "erfasst oder reserviert"
+msgstr "spent or reserved"
+
+msgid "geschütztes Bestands-Backup"
+msgstr "protected legacy backup"
+
+msgid "im Papierkorb seit"
+msgstr "in trash since"
+
+msgid "keine"
+msgstr "none"
+
+msgid "konfiguriert · letzte bestätigte Verbindung je Beleg sichtbar"
+msgstr "configured · last confirmed sync visible per receipt"
+
+msgid "nachher"
+msgstr "after"
+
+msgid "nachvollziehbar zugeordnet"
+msgstr "transparently allocated"
+
+msgid "netto"
+msgstr "net"
+
+msgid "nicht konfiguriert"
+msgstr "not configured"
+
+msgid "noch nicht ermittelt"
+msgstr "not yet measured"
+
+msgid "noch offen"
+msgstr "no due date"
+
+msgid "noch unbekannt"
+msgstr "unknown"
+
+msgid "oder"
+msgstr "or"
+
+msgid "offen"
+msgstr "open"
+
+msgid "prüfen (langer Auftrag oder Unterbrechung)"
+msgstr "check (long job or interruption)"
+
+msgid "separat"
+msgstr "separate"
+
+msgid "spätestens"
+msgstr "due by"
+
+msgid "stillgelegt"
+msgstr "retired"
+
+msgid "synthetischer Testadapter"
+msgstr "synthetic demo adapter"
+
+msgid "verknüpfte Belege"
+msgstr "linked receipts"
+
+msgid "von"
+msgstr "of"
+
+msgid "vor %(age)s Sekunden"
+msgstr "%(age)s seconds ago"
+
+msgid "vorher"
+msgstr "before"
+
+msgid "zugeordnet"
+msgstr "allocated"
+
+msgid "zugeordnete Kosten"
+msgstr "allocated costs"
+
+msgid "Ältere Belege können hier verknüpft werden. Keine erneute KI-Auswertung und keine neue Kostenbuchung; fehlende Chronikangaben bitte ergänzen."
+msgstr "Older receipts can be linked here. No new AI call and no new cost booking; please fill in any missing logbook details."
+
+msgid "Änderungen werden mit „Speichern“ übernommen."
+msgstr "Changes are applied when you click “Save”."
+
+msgid "Änderungsverlauf"
+msgstr "Change history"
+
+msgid "Öffentliche Demo · ausschließlich Musterbestand"
+msgstr "Public demo · synthetic sample data only"
+
+msgid "Öffne Dateien und Ablagen direkt in Projektakte."
+msgstr "Open files and sections directly in Projektakte."
+
+msgid "Öl:"
+msgstr "Oil:"
+
+msgid "Ölfilter"
+msgstr "Oil filter"
+
+msgid "Ölmenge in Litern"
+msgstr "Oil quantity (liters)"
+
+msgid "Ölwechsel & Inspektion"
+msgstr "Oil change & inspection"
+
+msgid "Ölwechsel · Rechnung prüfen"
+msgstr "Oil change · review receipt"
+
+msgid "Ölwechsel, Bremsen, Dachträger …"
+msgstr "Oil change, brakes, roof rack…"
+
+msgid "Überblick gewinnen · 90 Sekunden"
+msgstr "Get the big picture · 90 seconds"
+
+msgid "Überfällig"
+msgstr "Overdue"
+
+msgid "Übergabe"
+msgstr "Handover"
+
+msgid "Übergabe an Paperless noch nicht bestätigt."
+msgstr "Handover to Paperless not yet confirmed."
+
+msgid "Übergabe- / Verkaufsbericht"
+msgstr "Handover / sale report"
+
+msgid "Übernommen"
+msgstr "Confirmed"
+
+msgid "Überträgt alle Belege, Kosten, Arbeitsschritte, Bilder und Verweise dieses Eintrags auf den gewählten Vorgang im selben Projekt. Bestehende Beträge bleiben erhalten; dieser Eintrag wird anschließend reversibel in den Papierkorb verschoben."
+msgstr "Moves all receipts, costs, work steps, photos, and links from this entry onto the chosen target entry in the same project. Existing amounts remain intact; this entry is then reversibly moved to the trash."
+
+msgid "über"
+msgstr "via"
+
+msgid "überfällig →"
+msgstr "overdue →"
+
+msgid "%(counter)s Beleg im Eingang →"
+msgid_plural "%(counter)s Belege im Eingang →"
+msgstr[0] "%(counter)s receipt in inbox →"
+msgstr[1] "%(counter)s receipts in inbox →"
+
+msgid "%(label)s als Hex-Wert"
+msgstr "%(label)s as hex value"
+
+msgid "%(label)s auswählen"
+msgstr "Select %(label)s"
+
+msgid "%(total)s Treffer"
+msgstr "%(total)s matches"
+
+msgid "Abschnitte der Anleitung (%(count)s)"
+msgstr "Manual sections (%(count)s)"
+
+msgid "Alle Bereiche"
+msgstr "All sections"
+
+msgid "Alle Dokumentarten"
+msgstr "All document types"
+
+msgid "Als Aufgabe erkannt"
+msgstr "Recognized as task"
+
+msgid "Als Chronikeintrag gespeichert. KI-Interpretationen sind dort mit * markiert. Kosten wurden nicht automatisch gebucht."
+msgstr "Saved as chronicle entry. AI interpretations are marked with *. Costs were not booked automatically."
+
+msgid "Angabe aus der Erfassung, hier nicht automatisch gebucht."
+msgstr "Captured value; not booked automatically here."
+
+msgid "Angaben bearbeiten"
+msgstr "Edit details"
+
+msgid "Anleitung öffnen →"
+msgstr "Open manual →"
+
+msgid "Arbeitsbilder"
+msgstr "Work photos"
+
+msgid "Arbeitsschritt"
+msgstr "Work step"
+
+msgid "Auswahl oder Hex-Wert wird sofort übernommen."
+msgstr "Selection or hex value is applied immediately."
+
+msgid "Auswertung erneut versuchen"
+msgstr "Retry extraction"
+
+msgid "BESTANDSDATEN / PRÜFENTWURF"
+msgstr "LEGACY DATA / REVIEW DRAFT"
+
+msgid "Beim Speichern entfernen"
+msgstr "Remove on save"
+
+msgid "Beleg scannen und zuordnen"
+msgstr "Scan and assign receipt"
+
+msgid "Bereich"
+msgstr "Section"
+
+msgid "Bereits gebuchte Kosten und das Paperless-Original bleiben erhalten."
+msgstr "Already booked costs and the Paperless original remain intact."
+
+msgid "Bereits importiert · keine erneute Buchung"
+msgstr "Already imported · no duplicate booking"
+
+msgid "Bernstein / Kupfer"
+msgstr "Amber / Copper"
+
+msgid "Bremsen"
+msgstr "Brakes"
+
+msgid "Bremsflüssigkeit"
+msgstr "Brake fluid"
+
+msgid "CHRONIK & AUFGABEN"
+msgstr "CHRONICLE & TASKS"
+
+msgid "CSV (Semikolon), JSON (UTF-8) oder Text-PDF"
+msgstr "CSV (semicolon), JSON (UTF-8), or text PDF"
+
+msgid "Chronikeintrag öffnen"
+msgstr "Open chronicle entry"
+
+msgid "Cyan / Eisblau"
+msgstr "Cyan / Ice Blue"
+
+msgid "Datei:"
+msgstr "File:"
+
+msgid "Dein Eintrag ist schon da."
+msgstr "Your entry is already ready."
+
+msgid "Dein Farbwert bleibt unverändert, auch im Hell- und Dunkelmodus."
+msgstr "Your color value remains unchanged in both light and dark mode."
+
+msgid "Deine Bilder und der Eintrag bleiben verfügbar."
+msgstr "Your photos and entry remain available."
+
+msgid "Deine Eingaben und Dateien bleiben gespeichert."
+msgstr "Your inputs and files remain saved."
+
+msgid "Deine Notiz"
+msgstr "Your note"
+
+msgid "Deine Schnellerfassung"
+msgstr "Your quick capture"
+
+msgid "Der Beleg liegt im Papierkorb. Dieser Eintrag und seine Arbeitsbilder bleiben erhalten."
+msgstr "The receipt is in the trash. This entry and its work photos remain intact."
+
+msgid "Die Darstellung übernimmt die Originalinhalte. Die Unterlage ist kein Nachweis einer ausgeführten Arbeit an deinem Fahrzeug."
+msgstr "This view displays the original content. The document is not proof of work performed on your vehicle."
+
+msgid "Die E-Mail-Quelle ist lokal gespeichert. KI-Auswertung und Belegprüfung laufen anschließend im Hintergrund."
+msgstr "The email source is saved locally. AI extraction and receipt review follow in the background."
+
+msgid "Die Felder bleiben leer."
+msgstr "Those fields stay empty."
+
+msgid "Die Glas- und Hintergrundtöne werden daraus für Hell- und Dunkelmodus abgeleitet."
+msgstr "Glass and background tones are derived from this for light and dark mode."
+
+msgid "Die KI erklärt Arbeitsumfang und Unterschiede vorhandener Originalanleitungen für deinen BMW. Die Fahrzeug-Vorauswahl ersetzt keine Prüfung der Gültigkeitsangaben."
+msgstr "AI explains the scope and differences of available original manuals for your BMW. Vehicle preselection does not replace checking applicability."
+
+msgid "Die Vorauswahl ist keine Bestätigung sämtlicher Gültigkeitsbedingungen. Motor, Baureihe, Ausstattung und Arbeitsvorschriften in jeder Originalunterlage prüfen. Der Bestand enthält auch andere Varianten. 112 PDF-Verweise waren im gelieferten Export nicht auflösbar. Interaktive ISTA-Diagnoseprogramme werden nicht ausgeführt."
+msgstr "Preselection does not confirm all applicability conditions. Verify engine, series, equipment, and procedures in each original document. The archive also contains other variants. 112 PDF references could not be resolved in the supplied export. Interactive ISTA diagnostics are not executed."
+
+msgid "Die Zuordnung ist noch unklar. Dein Eintrag und seine Bilder sind bereits gespeichert."
+msgstr "Project assignment is still unclear. Your entry and photos are already saved."
+
+msgid "Diese Kategorien gelten für deine Projekte und Aufgaben. Beim Umbenennen bleiben alle Zuordnungen erhalten. Entfernen löst nur die Kategorie-Zuordnung: Einträge, Aufgaben, Bilder und Kosten werden nicht gelöscht."
+msgstr "These categories apply to your projects and tasks. Renaming preserves all assignments. Removing only clears the category assignment; entries, tasks, photos, and costs are not deleted."
+
+msgid "Diese Unterlage liegt außerhalb der Fahrzeug-Vorauswahl."
+msgstr "This document is outside the vehicle preselection."
+
+msgid "Diese Zeile entfernen"
+msgstr "Remove this row"
+
+msgid "Dieser Beleg liegt im Papierkorb. Verarbeitung und neue Übernahme sind angehalten."
+msgstr "This receipt is in the trash. Processing and further confirmation are paused."
+
+msgid "Drehmomente"
+msgstr "Torques"
+
+msgid "Du kannst das Handy jetzt weglegen oder sofort Arbeitsbilder und Schritte ergänzen. Die Verarbeitung läuft auf dem Server weiter, auch wenn du die Seite schließt."
+msgstr "You can put your phone away now or add work photos and steps right away. Processing continues on the server even if you close this page."
+
+msgid "E-Mail-Quelle"
+msgstr "Email source"
+
+msgid "E82 / 123d – Vorauswahl"
+msgstr "E82 / 123d – preselection"
+
+msgid "Eigene Ergänzungen"
+msgstr "Personal notes & links"
+
+msgid "Eintrag ergänzen"
+msgstr "Add entry"
+
+msgid "Elektrisch & präzise"
+msgstr "Electric & precise"
+
+msgid "Erfassung in den Papierkorb"
+msgstr "Move capture to trash"
+
+msgid "Erfassung und Originaldateien öffnen →"
+msgstr "Open capture and original files →"
+
+msgid "Erkannte Sprache"
+msgstr "Recognized speech"
+
+msgid "Erkannte Teile / Material"
+msgstr "Recognized parts / material"
+
+msgid "Erkannter Betrag:"
+msgstr "Recognized amount:"
+
+msgid "Fahrzeugfilter"
+msgstr "Vehicle filter"
+
+msgid "Fahrzeugzuordnung und bekannte Grenzen"
+msgstr "Vehicle matching and known limits"
+
+msgid "Farbwähler"
+msgstr "Color picker"
+
+msgid "Fehlend oder unklar:"
+msgstr "Missing or unclear:"
+
+msgid "Fehlende Datums-/Kostenangaben bleiben unbekannt. Jede Zeile mit der Quelle vergleichen."
+msgstr "Missing dates/costs remain unknown. Compare every row against the source."
+
+msgid "GESPEICHERT · SPÄTER PRÜFEN"
+msgstr "SAVED · REVIEW LATER"
+
+msgid "Gemini wertet Text und Dateien gemeinsam aus. Du kannst diese Seite schließen."
+msgstr "Gemini is analyzing your text and files together. You can close this page."
+
+msgid "Geprüfte Stammdaten beim Bestätigen übernehmen"
+msgstr "Apply reviewed master data on confirmation"
+
+msgid "Geprüften Import einmal bestätigen"
+msgstr "Confirm reviewed import once"
+
+msgid "Gesamter Export / andere Varianten"
+msgstr "Full export / other variants"
+
+msgid "Gespeicherter Scan"
+msgstr "Saved scan"
+
+msgid "Gültigkeit im Original beachten: Baureihe, Motor, Ausstattung und Anziehvorschrift gehören zusammen."
+msgstr "Verify applicability in the original: series, engine, equipment, and torque specs belong together."
+
+msgid "Handbremse"
+msgstr "Parking brake"
+
+msgid "Hex-Farbe"
+msgstr "Hex color"
+
+msgid "Hier kannst du eigene Hinweise zu den BMW-Originalunterlagen ablegen."
+msgstr "Store your own notes for the original BMW manuals here."
+
+msgid "ISTA-Export 4.62.12 · Quellen-ID %(res_id)s · %(doc_id)s"
+msgstr "ISTA export 4.62.12 · Source ID %(res_id)s · %(doc_id)s"
+
+msgid "Import prüfen"
+msgstr "Review import"
+
+msgid "Importentwurf erstellen"
+msgstr "Create import draft"
+
+msgid "Keine Originaldateien aufbewahrt. Text und erkannte Informationen bleiben am Eintrag erhalten."
+msgstr "No original files retained. Text and extracted details remain on the entry."
+
+msgid "Keine automatische Kostenbuchung"
+msgstr "No automatic cost booking"
+
+msgid "Keine passende Unterlage. Probiere einen kürzeren Bauteilnamen oder „Alle Dokumentarten“."
+msgstr "No matching document. Try a shorter part name or \"All document types\"."
+
+msgid "Kobalt / Stahlblau"
+msgstr "Cobalt / Steel Blue"
+
+msgid "Mit diesem Vorgang verbinden"
+msgstr "Link to this entry"
+
+msgid "Monochrom / Graphit"
+msgstr "Monochrome / Graphite"
+
+msgid "Name der Kategorie"
+msgstr "Category name"
+
+msgid "Neutral & reduziert"
+msgstr "Neutral & minimal"
+
+msgid "Noch keine Kategorien. Lege unten deine erste Kategorie an."
+msgstr "No categories yet. Create your first category below."
+
+msgid "Noch keinem Projekt zugeordnet. Die KI versucht die Zuordnung im Hintergrund; du kannst sie später selbst auswählen."
+msgstr "Not assigned to a project yet. AI will try to assign it in the background, or you can choose one yourself later."
+
+msgid "Notiz, Link oder YouTube-Video hinzufügen"
+msgstr "Add note, link, or YouTube video"
+
+msgid "ORIGINALUNTERLAGE"
+msgstr "ORIGINAL DOCUMENT"
+
+msgid "Oder Dateien / Galerie auswählen"
+msgstr "Or select files / gallery"
+
+msgid "Original bis 1 GB. Hintergrund-Komprimierung auf etwa 4 Mbit/s, bei langen Videos geringer für maximal 200 MB. Keine feste Längenbegrenzung."
+msgstr "Original up to 1 GB. Background compression to ~4 Mbit/s, lower for long videos to stay under 200 MB. No fixed duration limit."
+
+msgid "Original-PDF"
+msgstr "Original PDF"
+
+msgid "Originalabbildung"
+msgstr "Original illustration"
+
+msgid "Originaldatei öffnen / herunterladen"
+msgstr "Open / download original file"
+
+msgid "Originale"
+msgstr "Originals"
+
+msgid "Originalquelle bleibt unverändert. CSV/JSON mit Spalten title;date;km;cost;description;kind. Deutsche Zahlen und ungenaue Daten sind erlaubt. PDF-Text wird seitenweise als Prüfentwurf übernommen. Datum, Kilometer und Kosten werden dabei nicht geraten. Zeilen vor Bestätigung fachlich aufteilen und korrigieren. Die bereitgestellte BMW-Tabelle wird gezielt mit Datum/Kilometer/Kosten als Entwurf erkannt; unbekannte Felder bleiben leer."
+msgstr "Original source stays untouched. CSV/JSON with columns title;date;km;cost;description;kind. German numbers and partial dates are supported. PDF text is imported page by page as a review draft without guessing dates, mileage, or costs. Split and correct rows before confirming. The supplied BMW table is parsed with date/mileage/cost as a draft; unknown fields stay empty."
+
+msgid "Originalunterlagen aus deinem ISTA-Export"
+msgstr "Original documents from your ISTA export"
+
+msgid "PAPIERKORB / BELEG"
+msgstr "TRASH / RECEIPT"
+
+msgid "Passender offener Vorgang"
+msgstr "Matching open entry"
+
+msgid "Projekt auswählen"
+msgstr "Select project"
+
+msgid "Projekt auswählen / korrigieren"
+msgstr "Select / change project"
+
+msgid "Projekt bestätigen"
+msgstr "Confirm project"
+
+msgid "Projekt übernehmen"
+msgstr "Apply project"
+
+msgid "Quellenbezug"
+msgstr "Source reference"
+
+msgid "REPARATURBIBLIOTHEK"
+msgstr "REPAIR LIBRARY"
+
+msgid "Raycast-inspiriert · Leuchtend"
+msgstr "Raycast-inspired · Vibrant"
+
+msgid "Rechnung noch ungeprüft"
+msgstr "Receipt not yet reviewed"
+
+msgid "Rechnung oder Kassenzettel fotografieren, bei Bedarf kurz erklären und senden. Die KI erhält Belegtext, Zusatztext und Namen/Beschreibungen deiner aktiven Projekte. Sofort nach dem Upload gibt es einen Eintrag für Arbeitsbilder. Du kannst das Handy dann weglegen. Die KI ordnet ihn im Hintergrund zu; unklare Fälle stehen unter „Noch zuzuordnen“. Rechnung und Kosten prüfst du später am PC. Originale bis %(limit_mb)s MB werden zusätzlich an Gemini gesendet; größere Belege werden über den OCR-Text ausgewertet."
+msgstr "Take a photo of a receipt, add an optional short note, and submit. AI receives receipt text, your note, and the names/descriptions of active projects. An entry for work photos is created immediately so you can put your phone away. AI assigns it in the background; unclear items appear under \"To be assigned\". You review the receipt and costs later on your computer. Originals up to %(limit_mb)s MB are sent directly to Gemini; larger receipts are analyzed via OCR text."
+
+msgid "Rechnung später prüfen →"
+msgstr "Review receipt later →"
+
+msgid "Reparaturbibliothek"
+msgstr "Repair library"
+
+msgid "Rubin / Signalrot"
+msgstr "Ruby / Signal Red"
+
+msgid "Seite %(page)s"
+msgstr "Page %(page)s"
+
+msgid "Smaragd / Mint"
+msgstr "Emerald / Mint"
+
+msgid "Sprachnachricht noch ungeprüft"
+msgstr "Voice note not yet reviewed"
+
+msgid "Sprachnachricht später prüfen →"
+msgstr "Review voice note later →"
+
+msgid "Standard · Engineering Green"
+msgstr "Default · Engineering Green"
+
+msgid "Steuerkette"
+msgstr "Timing chain"
+
+msgid "Technisch & klar"
+msgstr "Technical & crisp"
+
+msgid "Tief & atmosphärisch"
+msgstr "Deep & atmospheric"
+
+msgid "Turbolader"
+msgstr "Turbocharger"
+
+msgid "Turbolader tauschen, Steuerkette, Handbremse …"
+msgstr "Replace turbocharger, timing chain, parking brake …"
+
+msgid "Umbenennen"
+msgstr "Rename"
+
+msgid "Unfertiges Video entfernen"
+msgstr "Remove unfinished video"
+
+msgid "Unterlagen"
+msgstr "Documents"
+
+msgid "Unveränderte Importquelle herunterladen"
+msgstr "Download original import source"
+
+msgid "Upload abbrechen"
+msgstr "Cancel upload"
+
+msgid "Upload noch nicht vollständig"
+msgstr "Upload incomplete"
+
+msgid "Variante prüfen"
+msgstr "Check variant"
+
+msgid "Verknüpfte Unterlage"
+msgstr "Linked document"
+
+msgid "Video auswählen"
+msgstr "Select video"
+
+msgid "Video hochladen"
+msgstr "Upload video"
+
+msgid "Videos zum Arbeitseintrag"
+msgstr "Videos for this work entry"
+
+msgid "Violett / Iris"
+msgstr "Violet / Iris"
+
+msgid "Vorgeschlagene Stammdaten prüfen"
+msgstr "Review suggested master data"
+
+msgid "Warm & zurückhaltend"
+msgstr "Warm & understated"
+
+msgid "Wartet auf Verarbeitung"
+msgstr "Waiting for processing"
+
+msgid "Was möchtest du reparieren?"
+msgstr "What do you want to repair?"
+
+msgid "Weitere Originalvarianten / Sprachfassungen"
+msgstr "More original variants / languages"
+
+msgid "Weitere →"
+msgstr "Next →"
+
+msgid "Welche Anleitung passt zu deiner Arbeit?"
+msgstr "Which manual fits your job?"
+
+msgid "Welche Anleitung passt? · KI-Suchhilfe"
+msgstr "Which manual fits? · AI search helper"
+
+msgid "Wird komprimiert"
+msgstr "Compressing"
+
+msgid "Währung unbekannt"
+msgstr "Currency unknown"
+
+msgid "Zeilen prüfen und korrigieren"
+msgstr "Review and edit rows"
+
+msgid "Zu den Aufgaben"
+msgstr "Go to tasks"
+
+msgid "Zum Papierkorb"
+msgstr "Go to trash"
+
+msgid "Zuordnung ändern"
+msgstr "Change assignment"
+
+msgid "auch unter"
+msgstr "also under"
+
+msgid "gespeichert"
+msgstr "saved"

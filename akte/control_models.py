@@ -20,6 +20,8 @@ class Preferences(Base):
     trash_days = models.PositiveIntegerField(null=True, blank=True)
     trash_costs = models.BooleanField(default=False)
     backup_keep = models.PositiveIntegerField(default=10)
+    language = models.CharField(max_length=10, blank=True, default='')
+    currency = models.CharField(max_length=3, blank=True, default='')
 
 
 class SessionDevice(Owned):
@@ -41,10 +43,12 @@ class ControlTask(Owned):
     result = models.TextField(blank=True)
     @property
     def display_kind(self):
-        return {'backup':'Sicherung','backup_discover':'Sicherungen einlesen','paperless_test':'Paperless-Verbindung','paperless_sync':'Paperless-Abgleich','mail':'E-Mail-Abruf'}.get(self.kind,self.kind)
+        from django.utils.translation import gettext as _
+        return {'backup':_('Sicherung'),'backup_discover':_('Sicherungen einlesen'),'paperless_test':_('Paperless-Verbindung'),'paperless_sync':_('Paperless-Abgleich'),'mail':_('E-Mail-Abruf')}.get(self.kind,self.kind)
     @property
     def display_state(self):
-        return {'pending':'Vorgemerkt','running':'In Arbeit','done':'Erledigt','failed':'Fehlgeschlagen','blocked':'Prüfung nötig'}.get(self.job.status,self.job.status)
+        from django.utils.translation import gettext as _
+        return {'pending':_('Vorgemerkt'),'running':_('In Arbeit'),'done':_('Erledigt'),'failed':_('Fehlgeschlagen'),'blocked':_('Prüfung nötig')}.get(self.job.status,self.job.status)
 
 
 class ManagedBackup(Owned):

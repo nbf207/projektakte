@@ -26,7 +26,7 @@ def capture_context(owner, project=None, attachments=()):
     from .entry_merge import entry_references
     return {'entry_definitions':definition_catalog(projects),'routing_enabled':True,'selected_project':str(project.pk) if project else None,
         'routing_projects':[{'id':str(p.pk),'name':p.name,'kind':p.kind} for p in permitted],
-        'project_catalog':catalog,'categories':dict(KINDS),'entry_states':dict(Entry.STATES),
+        'project_catalog':catalog,'categories':{k:str(v) for k,v in KINDS},'entry_states':{k:str(v) for k,v in Entry.STATES},
         'known_parts':[{'id':str(p.pk),'project_id':str(p.project_id),'name':p.name,'number':p.number,
             'manufacturer':p.manufacturer,'state':p.state,'notes':p.notes[:1000]} for p in parts],
         'open_entries':[{'id':str(e.pk),'project_id':str(e.project_id),'title':e.title,'kind':e.kind,
@@ -149,6 +149,8 @@ def analyze_capture(document, *, text, attachments, context=None):
     if sum(len(item['data']) for item in attachments)>MAX_CAPTURE_BYTES:
         raise ValidationError('Zusammen höchstens 12 MB für die KI-Erfassung verwenden.')
     context=context or capture_context(document.owner,document.project,attachments)
+    from .i18n import effective_language
+    context={**context,'response_language':effective_language(document.owner)}
     if document.voice_data.get('mail'):
         context={**context,'source_kind':'email','email_source_index':len(attachments)-1}
     usage=reserve_ai(document,context=context)

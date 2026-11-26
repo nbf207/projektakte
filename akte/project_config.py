@@ -1,12 +1,13 @@
 """Small shared project controls and read-only form suggestions."""
 from django.core.exceptions import ValidationError
 from django.db.models import Q
+from django.utils.translation import gettext as _, gettext_lazy
 
 from .models import Entry, TitleField, Revision
 
-TABS = [('chronik', 'Chronik'), ('umbauten', 'Umbauten'), ('teile', 'Teile'),
-        ('dokumente', 'Dokumente'), ('kosten', 'Kosten'), ('aufgaben', 'Aufgaben'),
-        ('stammdaten', 'Stammdaten'), ('wartung', 'Wartungsplan')]
+TABS = [('chronik', gettext_lazy('Chronik')), ('umbauten', gettext_lazy('Umbauten')), ('teile', gettext_lazy('Teile')),
+        ('dokumente', gettext_lazy('Dokumente')), ('kosten', gettext_lazy('Kosten')), ('aufgaben', gettext_lazy('Aufgaben')),
+        ('stammdaten', gettext_lazy('Stammdaten')), ('wartung', gettext_lazy('Wartungsplan'))]
 
 
 def visible_tabs(project):

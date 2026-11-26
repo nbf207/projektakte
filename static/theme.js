@@ -51,10 +51,14 @@
       const button = document.getElementById('theme-toggle');
       if (button) {
         const dark = root.dataset.theme === 'dark';
+        const lightLabel = button.dataset.labelLight || 'Hellmodus';
+        const darkLabel = button.dataset.labelDark || 'Dunkelmodus';
+        const lightTitle = button.dataset.titleLight || 'Hellmodus aktivieren';
+        const darkTitle = button.dataset.titleDark || 'Dunkelmodus aktivieren';
         button.setAttribute('aria-pressed', String(dark));
-        button.setAttribute('aria-label', dark ? 'Hellmodus aktivieren' : 'Dunkelmodus aktivieren');
-        button.textContent = dark ? 'Hellmodus' : 'Dunkelmodus';
-        button.title = dark ? 'Hellmodus aktivieren' : 'Dunkelmodus aktivieren';
+        button.setAttribute('aria-label', dark ? lightTitle : darkTitle);
+        button.textContent = dark ? lightLabel : darkLabel;
+        button.title = dark ? lightTitle : darkTitle;
       }
     }
   }
@@ -82,11 +86,13 @@
       const names = colorNames.includes(name) ? ['secondaryPalette', 'palette', 'primaryColor', 'secondaryColor'] : [name];
       for (const key of names) localStorage.setItem(options[key].key, root.dataset[key]);
     } catch { stored = false; }
-    status(stored ? 'Übernommen und in diesem Browser gespeichert.' : 'Für diese Seite übernommen. Der Browser erlaubt keine dauerhafte Speicherung.');
+    const t = window.t || (s => s);
+    status(stored ? t('Übernommen und in diesem Browser gespeichert.') : t('Für diese Seite übernommen. Der Browser erlaubt keine dauerhafte Speicherung.'));
   }
   for (const name of Object.keys(options)) apply(name, read(name));
   refreshCustomColors();
   document.addEventListener('DOMContentLoaded', () => {
+    const t = window.t || (s => s);
     for (const name of Object.keys(options)) apply(name, root.dataset[name]);
     syncBrowserColor();
     document.getElementById('theme-toggle')?.addEventListener('click', () => choose('theme', root.dataset.theme === 'dark' ? 'light' : 'dark'));
@@ -96,9 +102,9 @@
       if (options[name].color) {
         input.addEventListener('input', () => {
           const valid = hexPattern.test(input.value);
-          input.setCustomValidity(valid ? '' : 'Bitte einen Hex-Wert mit sechs Zeichen eingeben, zum Beispiel #12abef.');
+          input.setCustomValidity(valid ? '' : t('Bitte einen Hex-Wert mit sechs Zeichen eingeben, zum Beispiel #12abef.'));
           if (valid) choose(name, input.value);
-          else status('Noch nicht übernommen: Bitte eine vollständige Hex-Farbe wie #12abef eingeben.');
+          else status(t('Noch nicht übernommen: Bitte eine vollständige Hex-Farbe wie #12abef eingeben.'));
         });
       } else {
         input.addEventListener('change', () => { if (input.checked) choose(name, input.value); });

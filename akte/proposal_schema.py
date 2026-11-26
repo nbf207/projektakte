@@ -110,7 +110,7 @@ def response_schema(projects=None, context=None):
 
 def system_instruction(context=None):
     from .definitions import SELECTION_INSTRUCTION
-    choices = {'Vorgangsart': dict(Entry.KINDS), 'Status': dict(Entry.STATES)}
+    choices = {'Vorgangsart': {k: str(v) for k, v in Entry.KINDS}, 'Status': {k: str(v) for k, v in Entry.STATES}}
     import json
     return (
         'Erzeuge einen korrigierbaren Rechnungs- und Chronikvorschlag als JSON nach Schema. '

@@ -1,6 +1,8 @@
 import os
+import re
 from pathlib import Path
 from decimal import Decimal
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 DATA_DIR = Path(os.environ.get('DATA_DIR', BASE_DIR / 'data')).resolve()
@@ -56,8 +58,10 @@ MIDDLEWARE = [
     'django.middleware.gzip.GZipMiddleware',
     'akte.public_demo.DemoBoundaryMiddleware',
     'akte.security.GuardedSessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'akte.i18n.UserLanguageMiddleware',
     'akte.security.PreAuthRateMiddleware',
     'akte.security.AuthenticationBoundaryMiddleware',
     'akte.middleware.MaintenanceMiddleware',
@@ -73,12 +77,24 @@ CACHES = {
 }
 DATABASE_ROUTERS = ['akte.demo_boundary.DemoRouter', 'akte.snapshots.SnapshotRouter']
 ROOT_URLCONF = 'config.urls'
-TEMPLATES = [{'BACKEND':'django.template.backends.django.DjangoTemplates','DIRS':[BASE_DIR/'templates'],'APP_DIRS':True,'OPTIONS':{'context_processors':['django.template.context_processors.request','django.contrib.auth.context_processors.auth','django.contrib.messages.context_processors.messages','akte.context.common']}}]
+TEMPLATES = [{'BACKEND':'django.template.backends.django.DjangoTemplates','DIRS':[BASE_DIR/'templates'],'APP_DIRS':True,'OPTIONS':{'context_processors':['django.template.context_processors.request','django.template.context_processors.i18n','django.contrib.auth.context_processors.auth','django.contrib.messages.context_processors.messages','akte.context.common']}}]
 WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {'default': {'ENGINE':'django.db.backends.sqlite3','NAME':DATA_DIR/'db.sqlite3','OPTIONS':{'timeout':20,'transaction_mode':'IMMEDIATE'}}}
 AUTH_PASSWORD_VALIDATORS = [{'NAME':'django.contrib.auth.password_validation.MinimumLengthValidator','OPTIONS':{'min_length':12}},{'NAME':'django.contrib.auth.password_validation.CommonPasswordValidator'}]
-LANGUAGE_CODE = 'de-de'
-TIME_ZONE = 'Europe/Berlin'
+LANGUAGES = [('de', 'Deutsch'), ('en', 'English')]
+DEFAULT_LANGUAGE = os.environ.get('DEFAULT_LANGUAGE', 'de').strip().lower().split('-', 1)[0] or 'de'
+if DEFAULT_LANGUAGE not in ('de', 'en'):
+    raise RuntimeError('DEFAULT_LANGUAGE muss "de" oder "en" sein.')
+LANGUAGE_CODE = DEFAULT_LANGUAGE
+LOCALE_PATHS = [BASE_DIR / 'locale']
+TIME_ZONE = (os.environ.get('TIME_ZONE') or os.environ.get('TZ') or 'Europe/Berlin').strip()
+try:
+    ZoneInfo(TIME_ZONE)
+except (ZoneInfoNotFoundError, KeyError, ValueError):
+    raise RuntimeError(f'TIME_ZONE "{TIME_ZONE}" ist keine gültige IANA-Zeitzone (z. B. Europe/Berlin oder UTC).') from None
+DEFAULT_CURRENCY = os.environ.get('DEFAULT_CURRENCY', 'EUR').strip().upper() or 'EUR'
+if not re.fullmatch(r'[A-Z]{3}', DEFAULT_CURRENCY):
+    raise RuntimeError('DEFAULT_CURRENCY muss ein dreistelliger ISO-4217-Code sein (z. B. EUR, USD, GBP, CHF).')
 USE_I18N = True
 USE_TZ = True
 STATIC_URL = '/static/'
@@ -141,7 +157,7 @@ AI_MAX_OUTPUT = 4096
 GEMINI_ORIGINAL_MAX_BYTES = int(os.environ.get('GEMINI_ORIGINAL_MAX_MB','8'))*1024*1024
 if not 0<GEMINI_ORIGINAL_MAX_BYTES<=12*1024*1024: raise RuntimeError('GEMINI_ORIGINAL_MAX_MB muss zwischen 1 und 12 liegen.')
 AI_VISION_INPUT_RESERVE = int(os.environ.get('AI_VISION_INPUT_RESERVE','1100000'))
-APP_VERSION = '0.8.0'
+APP_VERSION = '0.9.0'
 
 for name in ('AI_MONTHLY_WARN','AI_MONTHLY_LIMIT','AI_INPUT_USD_PER_M','AI_OUTPUT_USD_PER_M','AI_REQUEST_RESERVE'):
     value=globals()[name]

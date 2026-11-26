@@ -208,6 +208,22 @@ class GeminiAI:
         if repair:
             from .repair_advice import advice_schema, advice_instruction
             schema=advice_schema(context);system=advice_instruction()
+        from django.utils import translation
+        from .i18n import normalize_language
+        resp_lang = normalize_language(context.get('response_language')) or normalize_language(translation.get_language()) or 'de'
+        if resp_lang == 'en':
+            system = (
+                system
+                + ' OUTPUT LANGUAGE: Write all natural-language text values (entry.title, entry.description, reason, knowledge titles/contents, advice) '
+                + 'in natural English. Keep all JSON keys and enum values (kind, status, category, confidence, price_basis) strictly unchanged as defined by the JSON schema. '
+                + 'Keep proper names, vendor names, part numbers, and literal source_quote excerpts in their original language.'
+            )
+        else:
+            system = (
+                system
+                + ' AUSGABESPRACHE: Formuliere alle Freitextwerte (entry.title, entry.description, reason, Wissensvorschläge, Hinweise) auf natürlichem Deutsch. '
+                + 'Alle JSON-Schlüssel und Enum-Werte bleiben strikt unverändert gemäß Schema.'
+            )
         request_timeout=httpx.Timeout(150,connect=10,write=30,pool=10) if self.model=='gemini-3.8-flash' else (httpx.Timeout(90,connect=10,write=30,pool=10) if capture else 45)
         try:
             with httpx.Client(follow_redirects=False,trust_env=False) as client:

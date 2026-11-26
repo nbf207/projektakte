@@ -1,18 +1,18 @@
-{% extends 'base.html' %}
+{% extends 'base.html' %}{% load i18n %}
 {% block content %}
-<div class="pagehead"><div><p class="eyebrow">CHRONIK & AUFGABEN</p><h1>Kategorien bearbeiten</h1></div><a class="btn secondary" href="{% url 'tasks' %}">Zu den Aufgaben</a></div>
-<p class="notice">Diese Kategorien gelten für deine Projekte und Aufgaben. Beim Umbenennen bleiben alle Zuordnungen erhalten. Entfernen löst nur die Kategorie-Zuordnung: Einträge, Aufgaben, Bilder und Kosten werden nicht gelöscht.</p>
+<div class="pagehead"><div><p class="eyebrow">{% trans 'CHRONIK & AUFGABEN' as eyebrow_cat %}{{ eyebrow_cat|force_escape }}</p><h1>{% trans 'Kategorien bearbeiten' %}</h1></div><a class="btn secondary" href="{% url 'tasks' %}">{% trans 'Zu den Aufgaben' %}</a></div>
+<p class="notice">{% trans 'Diese Kategorien gelten für deine Projekte und Aufgaben. Beim Umbenennen bleiben alle Zuordnungen erhalten. Entfernen löst nur die Kategorie-Zuordnung: Einträge, Aufgaben, Bilder und Kosten werden nicht gelöscht.' %}</p>
 {% if form.errors %}<div class="notice warning">{{ form.errors }}</div>{% endif %}
 {% for category in categories %}
 <form method="post" class="panel">
   {% csrf_token %}<input type="hidden" name="category_id" value="{{ category.pk }}"><input type="hidden" name="version" value="{{ category.version }}">
-  <label>Name der Kategorie<input name="name" value="{{ category.name }}" maxlength="80" required></label>
-  <div class="actions"><button name="action" value="save">Umbenennen</button><button class="secondary" name="action" value="delete" formnovalidate>Entfernen</button></div>
+  <label>{% trans 'Name der Kategorie' %}<input name="name" value="{{ category.name }}" maxlength="80" required></label>
+  <div class="actions"><button name="action" value="save">{% trans 'Umbenennen' %}</button><button class="secondary" name="action" value="delete" formnovalidate>{% trans 'Entfernen' %}</button></div>
 </form>
-{% empty %}<p class="panel empty-state">Noch keine Kategorien. Lege unten deine erste Kategorie an.</p>{% endfor %}
+{% empty %}<p class="panel empty-state">{% trans 'Noch keine Kategorien. Lege unten deine erste Kategorie an.' %}</p>{% endfor %}
 <form method="post" class="panel">
-  <h2>Kategorie hinzufügen</h2>{% csrf_token %}
+  <h2>{% trans 'Kategorie hinzufügen' %}</h2>{% csrf_token %}
   {% include 'fields.html' with form=new_form %}
-  <button name="action" value="save">Hinzufügen</button>
+  <button name="action" value="save">{% trans 'Hinzufügen' %}</button>
 </form>
 {% endblock %}

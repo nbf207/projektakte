@@ -16,18 +16,21 @@ from django.db import transaction, DatabaseError
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotAllowed
 from django.middleware.csrf import CsrfViewMiddleware
 from django.shortcuts import render
-from django.utils import timezone
+from django.utils import timezone, translation
+from django.utils.http import url_has_allowed_host_and_scheme
+from django.utils.translation import gettext_lazy as _l
 from .demo_boundary import demo_scope
 from .demo_seed import seed_story, clear_story
+from .i18n import normalize_language
 from .models import Allocation, Category, CostSource, Document, Entry, MaintenanceRule, Project, Task
 from .security import PreAuthRateMiddleware, limited_response, security_cache, _cache_lock
 
 COOKIE = 'projektakte_demo'
 LIMIT = 2 * 1024 * 1024
-PAGES = {'start', 'home', 'chronik', 'wartung', 'aufgaben', 'belege', 'suche', 'export', 'darstellung', 'erfassen', 'reset', 'ende', 'beleg'}
-NAV = [('home','Schnellerfassung','folder'),('chronik','Chronik & Teile','folder'),('wartung','Wartungsplan','calendar'),
-       ('aufgaben','Aufgaben','check'),('belege','Belegeingang','inbox'),('suche','Suche','search'),
-       ('export','Export','system'),('darstellung','Darstellung','settings')]
+PAGES = {'start', 'home', 'chronik', 'wartung', 'aufgaben', 'belege', 'suche', 'export', 'darstellung', 'erfassen', 'reset', 'ende', 'beleg', 'sprache'}
+NAV = [('home',_l('Schnellerfassung'),'folder'),('chronik',_l('Chronik & Teile'),'folder'),('wartung',_l('Wartungsplan'),'calendar'),
+       ('aufgaben',_l('Aufgaben'),'check'),('belege',_l('Belegeingang'),'inbox'),('suche',_l('Suche'),'search'),
+       ('export',_l('Export'),'system'),('darstellung',_l('Darstellung'),'settings')]
 
 
 def cookie_response(response, session):
@@ -86,14 +89,25 @@ class DemoBoundaryMiddleware:
                 # Memory-only upload handling; no TemporaryFileUploadHandler fallback.
                 request.upload_handlers = [DemoMemoryUploadHandler(request)]
                 request.demo_page = page
+                demo_lang = (
+                    normalize_language(request.COOKIES.get(settings.LANGUAGE_COOKIE_NAME))
+                    or normalize_language(request.session.get('demo_lang'))
+                    or normalize_language(translation.get_language_from_request(request))
+                    or normalize_language(settings.LANGUAGE_CODE)
+                    or 'de'
+                )
+                request.demo_lang = demo_lang
+                request.LANGUAGE_CODE = demo_lang
                 csrf = CsrfViewMiddleware(lambda req: dispatch(req))
                 def protected(req):
                     csrf.process_request(req)
                     rejected = csrf.process_view(req, dispatch, (), {})
                     response = rejected if rejected is not None else dispatch(req)
                     return csrf.process_response(req, response)
-                response = PreAuthRateMiddleware(protected)(request)
+                with translation.override(demo_lang):
+                    response = PreAuthRateMiddleware(protected)(request)
                 response['X-Frame-Options'] = 'DENY'
+                response['Content-Language'] = demo_lang
                 return response
             except (DatabaseError, PermissionDenied):
                 return HttpResponse('Die Demo ist gerade nicht verfügbar. Bitte später erneut starten.', status=503)
@@ -101,9 +115,9 @@ class DemoBoundaryMiddleware:
 
 def dispatch(request):
     page = request.demo_page
-    if page in ('start','reset','ende','erfassen') and request.method != 'POST':
+    if page in ('start','reset','ende','erfassen','sprache') and request.method != 'POST':
         return HttpResponseNotAllowed(('POST',))
-    if page not in ('start','reset','ende','erfassen') and request.method not in ('GET','HEAD'):
+    if page not in ('start','reset','ende','erfassen','sprache') and request.method not in ('GET','HEAD'):
         return HttpResponseNotAllowed(('GET','HEAD'))
     if page == 'start':
         if request.user.is_authenticated:
@@ -119,16 +133,28 @@ def dispatch(request):
                 return limited_response(300)
             user = get_user_model().objects.create(username='demo_'+secrets.token_hex(16),
                 password='!', is_staff=False, is_superuser=False)
-            seed_story(user)
+            seed_story(user, lang=request.demo_lang)
             session = request.session
             session['_auth_user_id'] = str(user.pk)
             session['_auth_user_backend'] = 'django.contrib.auth.backends.ModelBackend'
             session['_auth_user_hash'] = user.get_session_auth_hash()
             session['_account_epoch'] = 0
+            session['demo_lang'] = request.demo_lang
             session.set_expiry(7200)
             session.create()
         return cookie_response(HttpResponseRedirect('/demo/?tour=1'), session)
     user = request.user
+    if page == 'sprache':
+        lang = normalize_language(request.POST.get('language')) or 'de'
+        request.session['demo_lang'] = lang
+        request.session.save()
+        seed_story(user, lang=lang)
+        next_url = request.POST.get('next') or '/demo/'
+        if not next_url.startswith('/demo/') or not url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}, require_https=request.is_secure()):
+            next_url = '/demo/'
+        response = HttpResponseRedirect(next_url)
+        response.set_cookie(settings.LANGUAGE_COOKIE_NAME, lang, max_age=365*86400, path='/', secure=settings.SESSION_COOKIE_SECURE, samesite='Lax')
+        return response
     if page == 'ende':
         with transaction.atomic(using='demo'):
             request.session.flush()
@@ -138,7 +164,7 @@ def dispatch(request):
         response.delete_cookie(COOKIE, path='/demo/', samesite='Lax')
         return response
     if page == 'reset':
-        seed_story(user)
+        seed_story(user, lang=request.demo_lang)
         return HttpResponseRedirect('/demo/?tour=1')
     project = Project.objects.get(owner=user)
     if page == 'erfassen':
@@ -162,7 +188,7 @@ def dispatch(request):
     if page == 'suche' and query: entries = entries.filter(title__icontains=query) | entries.filter(description__icontains=query)
     return render(request, 'public_demo.html', {'page':page, 'demo_nav':NAV, 'project':project,
         'entries':entries, 'documents':Document.objects.filter(owner=user).order_by('-created'),
-        'query':query, 'demo_result':request.GET.get('saved')=='1', 'demo_user_key':str(user.pk), 'demo_generation':str(project.pk)})
+        'query':query, 'demo_result':request.GET.get('saved')=='1', 'demo_user_key':str(user.pk), 'demo_generation':str(project.pk), 'demo_lang':request.demo_lang})
 
 
 def capture(request, project):
@@ -232,7 +258,7 @@ def capture(request, project):
             kind, title = 'notiz', 'Dachträger vor dem Urlaub kontrollieren'
         category = Category.objects.get(project=project,default_kind=kind)
         meter = re.search(r'\b(\d{2,7})\s*km\b',lower)
-        amount = re.search(r'\b(\d{1,5}(?:[.,]\d{1,2})?)\s*(?:€|eur)',lower)
+        amount = re.search(r'\b(\d{1,5}(?:[.,]\d{1,2})?)\s*(?:€|eur|\$|usd|£|gbp|chf)',lower)
         template = category.title_templates.first() if kind=='wartung' else None
         oil_grade = re.search(r'\b\d{1,2}w-\d{2}\b', lower)
         oil_quantity = re.search(r'\b(\d{1,2}(?:[.,]\d{1,2})?)\s*liter\b', lower)

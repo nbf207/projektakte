@@ -33,9 +33,10 @@ function startReviewRefresh() {
   });
   createReviewRefresh({
     fetchState: async () => {
+      const t = window.t || (s => s);
       try {
         const response = await ProjektakteNet.requestJSON(status.dataset.docStatus);
-        if (!response.ok) throw new Error('Status derzeit nicht verfügbar');
+        if (!response.ok) throw new Error(t('Status derzeit nicht verfügbar'));
         return response.data;
       } catch (error) {
         if (error.name === 'LoginRequired' && !document.querySelector('#status-login-refresh')) {
@@ -49,13 +50,14 @@ function startReviewRefresh() {
     canReload: () => !dirty && !submitting && reviewFormSnapshot(forms) === initial,
     reload: () => location.reload(),
     notify: () => {
+      const t = window.t || (s => s);
       if (submitting || document.querySelector('#review-refresh-note')) return;
       const notice = document.createElement('div');
       notice.id = 'review-refresh-note'; notice.className = 'notice';
       notice.setAttribute('role', 'status');
-      notice.textContent = 'Die Verarbeitung ist fertig. Deine Eingaben bleiben erhalten. ';
+      notice.textContent = t('Die Verarbeitung ist fertig. Deine Eingaben bleiben erhalten. ');
       const link = document.createElement('a');
-      link.href = location.href; link.textContent = 'Aktuelle Prüfdaten öffnen';
+      link.href = location.href; link.textContent = t('Aktuelle Prüfdaten öffnen');
       notice.append(link); (status.closest('.pagehead') || status).after(notice);
     },
     schedule: (callback, delay) => setTimeout(callback, delay)

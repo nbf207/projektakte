@@ -1,12 +1,12 @@
-<fieldset class="editor-row" data-editor-row>
+{% load i18n %}<fieldset class="editor-row" data-editor-row>
   <legend>{{ row_title }}</legend>
   {{ row.non_field_errors }}
   <div class="formgrid">
   {% for field in row %}
     {% if field.is_hidden %}{{ field }}
-    {% elif field.name == 'DELETE' %}<label class="editor-delete">{{ field }} Beim Speichern entfernen</label>
-    {% else %}<label data-editor-field="{{ field.name }}" {% if field.name == 'description' or field.name == 'value' or field.name == 'options' %}class="full"{% endif %}>{{ field.label }}{% if field.name in row.inferred_fields %}<span class="ai-inferred" data-ai-field="{{ field.html_name }}" title="Von der KI interpretiert; bitte prüfen">*</span>{% endif %}{{ field }}{{ field.errors }}</label>{% endif %}
+    {% elif field.name == 'DELETE' %}<label class="editor-delete">{{ field }} {% trans 'Beim Speichern entfernen' %}</label>
+    {% else %}<label data-editor-field="{{ field.name }}" {% if field.name == 'description' or field.name == 'value' or field.name == 'options' %}class="full"{% endif %}>{{ field.label }}{% if field.name in row.inferred_fields %}<span class="ai-inferred" data-ai-field="{{ field.html_name }}" title="{% trans 'Von der KI interpretiert; bitte prüfen' %}">*</span>{% endif %}{{ field }}{{ field.errors }}</label>{% endif %}
   {% endfor %}
   </div>
-  <button type="button" class="ghost" data-editor-remove>Diese Zeile entfernen</button>
+  <button type="button" class="ghost" data-editor-remove>{% trans 'Diese Zeile entfernen' %}</button>
 </fieldset>

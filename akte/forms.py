@@ -2,31 +2,32 @@ import json, uuid
 from django import forms
 from django.core.exceptions import ValidationError
 from django.db.models import Q
+from django.utils.translation import gettext_lazy as _l
 from .models import Category,Project,Entry,Step,Part,Task,TitleTemplate
 from .services import decimal_input,parse_date
 from .project_config import TABS
 
 class ScanForm(forms.Form):
-    scan_note=forms.CharField(label='Kurzer Zusatztext (optional)',max_length=1000,required=False,
-        widget=forms.Textarea(attrs={'rows':2,'placeholder':'Zum Beispiel: Öl für den BMW oder Pflanzen fürs Aquarium'}))
-    auto_route=forms.BooleanField(label='KI soll das passende Projekt auswählen',initial=True,required=False)
+    scan_note=forms.CharField(label=_l('Kurzer Zusatztext (optional)'),max_length=1000,required=False,
+        widget=forms.Textarea(attrs={'rows':2,'placeholder':_l('Zum Beispiel: Öl für den BMW oder Pflanzen fürs Aquarium')}))
+    auto_route=forms.BooleanField(label=_l('KI soll das passende Projekt auswählen'),initial=True,required=False)
 
 class ProjectRoutingForm(forms.Form):
     version=forms.IntegerField(widget=forms.HiddenInput)
-    project=forms.ModelChoiceField(label='Richtiges Projekt',queryset=Project.objects.none())
+    project=forms.ModelChoiceField(label=_l('Richtiges Projekt'),queryset=Project.objects.none())
     def __init__(self,*args,owner=None,**kwargs):
         super().__init__(*args,**kwargs)
         self.fields['project'].queryset=Project.objects.filter(owner=owner,archived=False,is_scan_inbox=False) if owner else Project.objects.none()
 
 class ProjectForm(forms.ModelForm):
     request_token=forms.UUIDField(widget=forms.HiddenInput,required=False,initial=uuid.uuid4)
-    field_editor=forms.ChoiceField(label='Feldbearbeitung',choices=[('fields','Beschriftete Felder'),('expert','JSON-Expertenansicht')],required=False,initial='fields')
-    field_json=forms.CharField(label='Felddefinitionen als JSON (optional)',widget=forms.Textarea,required=False)
+    field_editor=forms.ChoiceField(label=_l('Feldbearbeitung'),choices=[('fields',_l('Beschriftete Felder')),('expert',_l('JSON-Expertenansicht'))],required=False,initial='fields')
+    field_json=forms.CharField(label=_l('Felddefinitionen als JSON (optional)'),widget=forms.Textarea,required=False)
     version=forms.IntegerField(widget=forms.HiddenInput,required=False)
-    hidden_tabs=forms.MultipleChoiceField(label='Ausgeblendete Reiter',required=False,choices=TABS,widget=forms.CheckboxSelectMultiple)
+    hidden_tabs=forms.MultipleChoiceField(label=_l('Ausgeblendete Reiter'),required=False,choices=TABS,widget=forms.CheckboxSelectMultiple)
     class Meta:
         model=Project;fields=['name','kind','description','tags','favorite','archived','position','color','icon','ai_profile','hidden_tabs']
-        labels={'name':'Projektname','kind':'Vorlage','description':'Beschreibung','tags':'Tags (durch Komma getrennt)','favorite':'Favorit','archived':'Archiviert'}
+        labels={'name':_l('Projektname'),'kind':_l('Vorlage'),'description':_l('Beschreibung'),'tags':_l('Tags (durch Komma getrennt)'),'favorite':_l('Favorit'),'archived':_l('Archiviert')}
         widgets={'color':forms.TextInput(attrs={'type':'color'}),'ai_profile':forms.Textarea(attrs={'rows':4})}
     def clean_color(self):
         import re
@@ -57,27 +58,27 @@ class ProjectForm(forms.ModelForm):
 
 class EntryForm(forms.Form):
     title_names={'category','title_template','title_suffix','title'}
-    title=forms.CharField(label='Eigener Titel',max_length=180,required=False)
-    category=forms.ModelChoiceField(label='Kategorie',queryset=Category.objects.none(),required=False,empty_label='Ohne Kategorie')
-    title_template=forms.ModelChoiceField(label='Titel-Vorlage',queryset=TitleTemplate.objects.none(),required=False,empty_label='Eigenen Titel eingeben')
-    title_suffix=forms.CharField(label='Titel-Zusatz (optional)',max_length=100,required=False)
+    title=forms.CharField(label=_l('Eigener Titel'),max_length=180,required=False)
+    category=forms.ModelChoiceField(label=_l('Kategorie'),queryset=Category.objects.none(),required=False,empty_label=_l('Ohne Kategorie'))
+    title_template=forms.ModelChoiceField(label=_l('Titel-Vorlage'),queryset=TitleTemplate.objects.none(),required=False,empty_label=_l('Eigenen Titel eingeben'))
+    title_suffix=forms.CharField(label=_l('Titel-Zusatz (optional)'),max_length=100,required=False)
     category_version=forms.IntegerField(widget=forms.HiddenInput,required=False)
     template_version=forms.IntegerField(widget=forms.HiddenInput,required=False)
-    kind=forms.ChoiceField(choices=[('','Unbekannt'),*Entry.KINDS],required=False,widget=forms.HiddenInput)
-    date_text=forms.CharField(label='Arbeitsdatum / Beginn',required=False,help_text='TT.MM.JJJJ, JJJJ-MM-TT, MM/JJJJ, JJJJ oder leer für unbekannt.')
-    end_text=forms.CharField(label='Ende (bei Umbau)',required=False)
-    status=forms.ChoiceField(label='Status',choices=[('','Unbekannt'),*Entry.STATES],initial='erledigt',required=False)
-    meter_text=forms.CharField(label='Zählerstand (optional)',required=False)
-    meter_name=forms.CharField(label='Zählerbezeichnung',initial='Kilometerzähler',required=False,max_length=100)
-    meter_unit=forms.CharField(label='Einheit',initial='km',required=False,max_length=20)
-    meter_replaced=forms.BooleanField(label='Zähler ausdrücklich getauscht',required=False)
-    oil=forms.CharField(label='Motoröl (historischer Wert)',required=False,max_length=200,widget=forms.HiddenInput)
-    quantity=forms.CharField(label='Ölmenge in Litern',required=False,widget=forms.HiddenInput)
-    filter=forms.CharField(label='Filter / Teilenummer',required=False,max_length=150,widget=forms.HiddenInput)
-    description=forms.CharField(label='Beschreibung / Ergebnis (Markdown)',required=False,widget=forms.Textarea,help_text='Absätze, **fett**, Listen, Tabellen und Links sind möglich.')
-    cost_state=forms.ChoiceField(label='Kostenstatus',choices=[('unknown','Unbekannt'),('free','Kostenlos'),('known','Betrag bekannt')])
-    amount=forms.CharField(label='Manuelle Gesamtausgabe in EUR',required=False,help_text='Bei vorhandenem Beleg die Kostenquelle bearbeiten. Keine zweite Ausgabe anlegen.')
-    budget_text=forms.CharField(label='Budget in EUR (Umbau)',required=False)
+    kind=forms.ChoiceField(choices=[('',_l('Unbekannt')),*Entry.KINDS],required=False,widget=forms.HiddenInput)
+    date_text=forms.CharField(label=_l('Arbeitsdatum / Beginn'),required=False,help_text=_l('TT.MM.JJJJ, JJJJ-MM-TT, MM/JJJJ, JJJJ oder leer für unbekannt.'))
+    end_text=forms.CharField(label=_l('Ende (bei Umbau)'),required=False)
+    status=forms.ChoiceField(label=_l('Status'),choices=[('',_l('Unbekannt')),*Entry.STATES],initial='erledigt',required=False)
+    meter_text=forms.CharField(label=_l('Zählerstand (optional)'),required=False)
+    meter_name=forms.CharField(label=_l('Zählerbezeichnung'),initial='Kilometerzähler',required=False,max_length=100)
+    meter_unit=forms.CharField(label=_l('Einheit'),initial='km',required=False,max_length=20)
+    meter_replaced=forms.BooleanField(label=_l('Zähler ausdrücklich getauscht'),required=False)
+    oil=forms.CharField(label=_l('Motoröl (historischer Wert)'),required=False,max_length=200,widget=forms.HiddenInput)
+    quantity=forms.CharField(label=_l('Ölmenge in Litern'),required=False,widget=forms.HiddenInput)
+    filter=forms.CharField(label=_l('Filter / Teilenummer'),required=False,max_length=150,widget=forms.HiddenInput)
+    description=forms.CharField(label=_l('Beschreibung / Ergebnis (Markdown)'),required=False,widget=forms.Textarea,help_text=_l('Absätze, **fett**, Listen, Tabellen und Links sind möglich.'))
+    cost_state=forms.ChoiceField(label=_l('Kostenstatus'),choices=[('unknown',_l('Unbekannt')),('free',_l('Kostenlos')),('known',_l('Betrag bekannt'))])
+    amount=forms.CharField(label=_l('Manuelle Gesamtausgabe'),required=False,help_text=_l('Bei vorhandenem Beleg die Kostenquelle bearbeiten. Keine zweite Ausgabe anlegen.'))
+    budget_text=forms.CharField(label=_l('Budget (Umbau)'),required=False)
     tags=forms.CharField(label='Tags',max_length=250,required=False)
     token=forms.UUIDField(widget=forms.HiddenInput)
     version=forms.IntegerField(widget=forms.HiddenInput,initial=0)

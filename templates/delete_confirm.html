@@ -1,7 +1,7 @@
-{% extends 'base.html' %}{% block content %}
-<p class="eyebrow">PAPIERKORB</p><h1>{% if doc %}Dokument{% else %}Eintrag{% endif %} löschen?</h1>
-<section class="panel"><h2>{% if doc %}{{ doc.asset.name|default:'Paperless-Dokument' }}{% else %}{{ entry.title|default:'Titel unbekannt' }}{% endif %}</h2>
-<p>Wird in den Papierkorb verschoben und kann dort wiederhergestellt werden.</p>
-<p class="notice">Bereits gebuchte Kosten bleiben erhalten. {% if doc %}Das archivierte Original in Paperless bleibt bestehen. Die lokale Verarbeitung dieses Dokuments wird angehalten.{% else %}Verknüpfte Belege bleiben erhalten.{% endif %}</p>
-<form method="post">{% csrf_token %}<input type="hidden" name="version" value="{% if doc %}{{ doc.version }}{% else %}{{ entry.version }}{% endif %}"><div class="actions"><a href="{% if doc %}{% url 'review' doc.pk %}{% else %}{% url 'entry' entry.pk %}{% endif %}" class="btn secondary">Abbrechen</a><button>In Papierkorb verschieben</button></div></form></section>
+{% extends 'base.html' %}{% load i18n %}{% block content %}
+<p class="eyebrow">{% trans 'PAPIERKORB' %}</p><h1>{% if doc %}{% trans 'Dokument löschen?' %}{% else %}{% trans 'Eintrag löschen?' %}{% endif %}</h1>
+<section class="panel"><h2>{% if doc %}{{ doc.asset.name|default:_('Paperless-Dokument') }}{% else %}{{ entry.title|default:_('Titel unbekannt') }}{% endif %}</h2>
+<p>{% trans 'Wird in den Papierkorb verschoben und kann dort wiederhergestellt werden.' %}</p>
+<p class="notice">{% trans 'Bereits gebuchte Kosten bleiben erhalten.' %} {% if doc %}{% trans 'Das archivierte Original in Paperless bleibt bestehen. Die lokale Verarbeitung dieses Dokuments wird angehalten.' %}{% else %}{% trans 'Verknüpfte Belege bleiben erhalten.' %}{% endif %}</p>
+<form method="post">{% csrf_token %}<input type="hidden" name="version" value="{% if doc %}{{ doc.version }}{% else %}{{ entry.version }}{% endif %}"><div class="actions"><a href="{% if doc %}{% url 'review' doc.pk %}{% else %}{% url 'entry' entry.pk %}{% endif %}" class="btn secondary">{% trans 'Abbrechen' %}</a><button>{% trans 'In Papierkorb verschieben' %}</button></div></form></section>
 {% endblock %}

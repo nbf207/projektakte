@@ -20,7 +20,7 @@ from django.utils.http import content_disposition_header
 from .operations import operation_gate
 
 LOGIN_PATHS = frozenset(('/login/', '/anmelden/'))
-PUBLIC_VIEWS = {'login': '/login/', 'first_run_setup': '/setup/', 'manifest': '/manifest.json', 'service_worker': '/sw.js'}
+PUBLIC_VIEWS = {'login': '/login/', 'first_run_setup': '/setup/', 'set_language': '/sprache/', 'manifest': '/manifest.json', 'service_worker': '/sw.js'}
 # No bearer-link feature exists. Never exempt an arbitrary /teilen/<token>/ prefix.
 # Future share routes must be reviewed and registered by exact route name here,
 # and must validate token expiry + explicit file membership in their own view.
@@ -164,10 +164,10 @@ class PreAuthRateMiddleware:
             response = self.request_budget(request, 'share', now)
             if response is not None:
                 return response
-        if path == '/setup/':
+        if path in ('/setup/', '/sprache/'):
             if request.method not in ('GET', 'HEAD', 'POST'):
                 return HttpResponseNotAllowed(('GET', 'HEAD', 'POST'))
-            response = self.request_budget(request, 'setup-requests', now)
+            response = self.request_budget(request, 'setup-requests' if path == '/setup/' else 'language-requests', now)
             if response is not None:
                 return response
             return self.get_response(request)

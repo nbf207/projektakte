@@ -1,7 +1,8 @@
 /* Shared request boundary: Access redirects are never parsed as application JSON. */
 (function (root) {
+  const t = (s, v) => (root.t ? root.t(s, v) : s);
   class LoginRequired extends Error {
-    constructor() { super('Anmeldung oder Sicherheitsnachweis erneuern.'); this.name = 'LoginRequired'; }
+    constructor() { super(t('Anmeldung oder Sicherheitsnachweis erneuern.')); this.name = 'LoginRequired'; }
   }
   function providerURL(value) {
     try {
@@ -24,14 +25,14 @@
     const response = await fetch(url, {...options, credentials: 'same-origin', redirect: 'manual', cache: 'no-store'});
     if (needsLogin(response)) throw new LoginRequired();
     if (!(response.headers.get('Content-Type') || '').includes('application/json')) {
-      throw new Error('Antwort nicht bestätigt. Eingaben bleiben erhalten.');
+      throw new Error(t('Antwort nicht bestätigt. Eingaben bleiben erhalten.'));
     }
     return {ok: response.ok, status: response.status, data: await response.json()};
   }
   function loginNotice(target, returnURL, text) {
-    target.textContent = text || 'Anmeldung oder Verbindung unterbrochen. Deine Eingaben bleiben erhalten. ';
+    target.textContent = text || t('Anmeldung oder Verbindung unterbrochen. Deine Eingaben bleiben erhalten. ');
     const link = document.createElement('a');
-    link.href = refreshURL(returnURL); link.textContent = 'Anmeldung erneuern und fortsetzen';
+    link.href = refreshURL(returnURL); link.textContent = t('Anmeldung erneuern und fortsetzen');
     target.append(' ', link);
   }
   const api = {LoginRequired, providerURL, needsLogin, refreshURL, requestJSON, loginNotice};

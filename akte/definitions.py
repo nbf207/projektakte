@@ -11,8 +11,11 @@ from .models import Category, TitleTemplate, TitleField
 def category_hint(category):
     if not category:return ''
     names={'wartung':'wartung','wartungen':'wartung','pflege':'wartung',
-           'umbau':'umbau','umbauten':'umbau','reparatur':'reparatur','reparaturen':'reparatur',
-           'notiz':'notiz','notizen':'notiz','teile & zubehör':'notiz'}
+           'maintenance':'wartung','care':'wartung','care & notes':'notiz',
+           'umbau':'umbau','umbauten':'umbau','modification':'umbau','modifications':'umbau',
+           'reparatur':'reparatur','reparaturen':'reparatur','repair':'reparatur','repairs':'reparatur',
+           'notiz':'notiz','notizen':'notiz','teile & zubehör':'notiz',
+           'note':'notiz','notes':'notiz','parts & accessories':'notiz'}
     return names.get(category.name.casefold(),category.default_kind or '')
 
 
@@ -246,11 +249,21 @@ def apply_definition(entry, selection, *, manual=False, inferred_paths=()):
 
 def ensure_project_definitions(project):
     if project.categories.exists():return
-    for name,kind in [('Wartung','wartung'),('Umbau','umbau'),('Reparatur','reparatur'),('Notizen','notiz'),('Pflege',''),('Teile & Zubehör','')]:
+    from .i18n import effective_language
+    en = effective_language(project.owner if project.owner_id else None) == 'en'
+    if en:
+        defaults = [('Maintenance','wartung'),('Modification','umbau'),('Repair','reparatur'),('Notes','notiz'),('Care',''),('Parts & Accessories','')]
+        maint_key, oil_name = 'maintenance', 'Oil Change'
+        oil_fields = [('Engine oil','text','','oil'),('Oil quantity','number','l','quantity_l'),('Filter / Part number','text','','filter')]
+    else:
+        defaults = [('Wartung','wartung'),('Umbau','umbau'),('Reparatur','reparatur'),('Notizen','notiz'),('Pflege',''),('Teile & Zubehör','')]
+        maint_key, oil_name = 'wartung', 'Ölwechsel'
+        oil_fields = [('Motoröl','text','','oil'),('Ölmenge','number','l','quantity_l'),('Filter / Teilenummer','text','','filter')]
+    for name,kind in defaults:
         Category.objects.get_or_create(project=project,name_key=name.casefold(),defaults={'owner':project.owner,'name':name,'default_kind':kind})
     if project.kind=='auto':
-        template,_=TitleTemplate.objects.get_or_create(category=project.categories.get(name_key='wartung'),name='Ölwechsel')
-        for label,typ,unit,key in [('Motoröl','text','','oil'),('Ölmenge','number','l','quantity_l'),('Filter / Teilenummer','text','','filter')]:
+        template,_=TitleTemplate.objects.get_or_create(category=project.categories.get(name_key=maint_key),name=oil_name)
+        for label,typ,unit,key in oil_fields:
             TitleField.objects.get_or_create(template=template,label=label,defaults={'field_type':typ,'unit':unit,'legacy_key':key})
 
 

@@ -237,39 +237,43 @@ def run_one():
     job = reserve()
     if not job:
         return False
-    try:
-        if job.kind == 'control':
-            from .control_tasks import process_control
-            process_control(job)
-        elif job.kind == 'capture':
-            from .capture import process_capture
-            process_capture(job)
-        elif job.kind == 'voice':
-            from .voice import process_voice
-            process_voice(job)
-        elif job.kind == 'export':
-            from .exports import perform_export
-            perform_export(job.export,job=job)
-        elif job.kind == 'thumbnail':
-            thumbnail(job.asset)
-            commit_job(job, status='done', leased_until=None, error='')
-        else:
-            doc = Document.objects.get(pk=job.document_id)
-            if doc.status == 'accepted' or doc.deleted_at:
-                commit_job(job, status='done', leased_until=None)
+    from django.utils import translation
+    from .i18n import effective_language
+    job_owner = (job.document.owner if job.document_id else job.asset.owner if job.asset_id else job.export.owner if job.export_id else job.control.owner if job.control_id else None)
+    job_lang = effective_language(job_owner)
+    with translation.override(job_lang):
+        try:
+            if job.kind == 'control':
+                from .control_tasks import process_control
+                process_control(job)
+            elif job.kind == 'capture':
+                from .capture import process_capture
+                process_capture(job)
+            elif job.kind == 'voice':
+                from .voice import process_voice
+                process_voice(job)
+            elif job.kind == 'export':
+                from .exports import perform_export
+                perform_export(job.export,job=job)
+            elif job.kind == 'thumbnail':
+                thumbnail(job.asset)
+                commit_job(job, status='done', leased_until=None, error='')
             else:
-                process_document(job, doc)
-    except (IntegrationError, ValidationError, OSError) as exc:
-        fail(job, exc)
-    except Exception:
-        from .account_events import error_event
-        owner=(job.document.owner if job.document_id else job.asset.owner if job.asset_id else job.export.owner if job.export_id else job.control.owner if job.control_id else None)
-        error_event('Worker','Unerwarteter Verarbeitungsfehler; Eingaben bleiben gespeichert.',owner)
-        # Never persist invoice bodies, vendor responses, tokens or credentials in errors.
-        commit_job(job, {'status': 'failed', 'error': 'Verarbeitung fehlgeschlagen. Original bleibt gespeichert.'},
-                   status='failed', error='Unerwarteter Verarbeitungsfehler. Original bleibt gespeichert; Konfiguration prüfen.', leased_until=None)
-    if job.export_id:
-        with_export_error(job)
+                doc = Document.objects.get(pk=job.document_id)
+                if doc.status == 'accepted' or doc.deleted_at:
+                    commit_job(job, status='done', leased_until=None)
+                else:
+                    process_document(job, doc)
+        except (IntegrationError, ValidationError, OSError) as exc:
+            fail(job, exc)
+        except Exception:
+            from .account_events import error_event
+            error_event('Worker','Unerwarteter Verarbeitungsfehler; Eingaben bleiben gespeichert.',job_owner)
+            # Never persist invoice bodies, vendor responses, tokens or credentials in errors.
+            commit_job(job, {'status': 'failed', 'error': 'Verarbeitung fehlgeschlagen. Original bleibt gespeichert.'},
+                       status='failed', error='Unerwarteter Verarbeitungsfehler. Original bleibt gespeichert; Konfiguration prüfen.', leased_until=None)
+        if job.export_id:
+            with_export_error(job)
     return True
 
 
