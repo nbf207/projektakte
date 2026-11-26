@@ -263,7 +263,7 @@ class Paket1SelfHosterAndSecurityTests(TestCase):
         fallback = model_spec(self.user)
         self.assertIn(fallback[0], django_settings.ALLOWED_GEMINI_MODELS)
 
-    @override_settings(AI_ENABLED=False, GEMINI_API_KEY='', PAPERLESS_URL='', PAPERLESS_TOKEN='', IMAP_HOST='')
+    @override_settings(DEMO_MODE=False, AI_ENABLED=False, GEMINI_API_KEY='', PAPERLESS_URL='', PAPERLESS_TOKEN='', IMAP_HOST='')
     def test_integrations_status_hides_dead_buttons_when_unconfigured(self):
         page = self.client.get('/einstellungen/anbindungen/')
         self.assertEqual(page.status_code, 200)
