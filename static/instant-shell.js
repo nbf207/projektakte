@@ -6,7 +6,7 @@
 
   const MAX_ENTRIES = 24;
   const TTL_MS = 15_000;       // 15s fresh RAM cache (never written to disk; never swaps DOM asynchronously)
-  const SKIP_PATH = /\/(abmelden|logout|login|anmelden|demo|admin|media|export|teilen|loeschen|endgueltig|druck|pdf|backup)(\/|$)/i;
+  const SKIP_PATH = /\/(abmelden|logout|login|anmelden|demo|admin|media|medien|export|teilen|loeschen|endgueltig|druck|pdf|backup|neu|bearbeiten|edit)(\/|$)/i;
   const BRIDGED_SCRIPTS = /(^|\/)(capture|voice)\.js(\?|$)/;
 
   const cache = new Map();
@@ -196,8 +196,10 @@
     const u = normUrl(link.href);
     if (!canHandleUrl(u)) return;
     if (u.href === normUrl(location.href)?.href) return;
+    const cached = cache.get(u.href);
+    if (!cached || Date.now() - cached.ts >= TTL_MS) return;
     e.preventDefault();
-    navigate(u.href, { push: true, scrollTop: true });
+    applyEntry(cached, { push: true, scrollTop: true, animate: false });
   });
 
   // Support browser Back/Forward smoothly from RAM.

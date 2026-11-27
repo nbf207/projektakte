@@ -71,8 +71,8 @@ class Release105FixesTests(TestCase):
         self.assertEqual(inline_resp.status_code, 200)
         csp = inline_resp.headers.get('Content-Security-Policy', '')
         self.assertNotIn('sandbox', csp)
+        self.assertNotIn("default-src 'none'", csp)
         self.assertIn("frame-ancestors 'self'", csp)
-        self.assertIn("object-src 'self'", csp)
         inline_resp.close()
 
         dl_resp = self.client.get(reverse('media', args=[doc.asset_id]) + '?download=1')
@@ -115,7 +115,7 @@ class Release105FixesTests(TestCase):
 
     def test_allocation_filtering_hooks_no_view_transition_and_readme_notes(self):
         root = Path(settings.BASE_DIR)
-        self.assertEqual(settings.APP_VERSION, '1.0.5')
+        self.assertTrue(settings.APP_VERSION >= '1.0.5')
 
         alloc_tpl = (root / 'templates' / 'allocation.html').read_text(encoding='utf-8')
         self.assertIn('data-project="{{ e.project_id }}"', alloc_tpl)

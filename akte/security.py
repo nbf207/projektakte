@@ -88,7 +88,7 @@ class SecurityHeadersMiddleware:
             mime = response.get('Content-Type', '').split(';', 1)[0].lower()
             is_attachment = response.get('Content-Disposition', '').startswith('attachment')
             if mime == 'application/pdf' and not is_attachment:
-                response['Content-Security-Policy'] = "default-src 'none'; frame-ancestors 'self'; object-src 'self'; style-src 'unsafe-inline'"
+                response['Content-Security-Policy'] = "frame-ancestors 'self'"
             else:
                 response['Content-Security-Policy'] = "sandbox; default-src 'none'"
             filename = getattr(response, 'filename', '')

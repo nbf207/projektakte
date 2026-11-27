@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [1.0.6] - 2026-11-27
+
+### Fixed
+- **Compact, overflow-safe entry image thumbnails (`templates/entry.html`, `static/style.css`):** Framed entry photos in compact square `photo-thumb` previews (`130–175px`, `aspect-ratio: 1/1`, `overflow: hidden`, `object-fit: contain`) so 90°/270° rotated images never spill over the section heading or caption; clicking opens the full original.
+- **Immediate first click after login (`templates/login.html`, `templates/setup.html`, `static/style.css`, `static/instant-shell.js`):** Removed all leftover `::view-transition-*` CSS rules, aligned `login.html` and `setup.html` CSS cache-busters (`?v=106`) to eliminate stale cached `@view-transition` rules after login, excluded form routes (`/neu/`, `/bearbeiten/`, `/edit/`) from `instant-shell.js`, and stopped calling `e.preventDefault()` on uncached links so native browser navigation runs immediately on the first click.
+- **Readable embedded PDF preview (`akte/security.py`, `templates/review.html`, `static/style.css`):** Changed inline `application/pdf` CSP to `frame-ancestors 'self'` (removing `default-src 'none'` which still blocked Chromium's built-in PDF viewer inside iframes), added `color-scheme: light` on `.document-frame`, and added an "Im neuen Tab öffnen" link alongside the download link.
+
 ## [1.0.5] - 2026-11-27
 
 ### Fixed

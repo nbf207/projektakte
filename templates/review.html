@@ -10,7 +10,7 @@
   {% if doc.asset %}
     {% if doc.asset.mime == 'application/pdf' %}<iframe class="document-frame" src="{% url 'media' doc.asset_id %}" title="{% trans 'Rechnungsoriginal' %}"></iframe>
     {% else %}<a href="{% url 'media' doc.asset_id %}" target="_blank" rel="noopener"><img style="width:100%" src="{% url 'media' doc.asset_id %}" alt="{% trans 'Originalrechnung' %}"></a>{% endif %}
-    <a href="{% url 'media' doc.asset_id %}?download=1">{% trans 'Original herunterladen →' %}</a>
+    <div class="actions" style="justify-content:flex-start;margin-top:8px"><a href="{% url 'media' doc.asset_id %}" target="_blank" rel="noopener">{% trans 'Im neuen Tab öffnen →' %}</a><a href="{% url 'media' doc.asset_id %}?download=1">{% trans 'Original herunterladen →' %}</a></div>
   {% elif doc.paperless_id %}<p>{% trans 'Paperless-Dokument' %} #{{ doc.paperless_id }}</p><a href="{% url 'document_original' doc.pk %}" target="_blank" rel="noopener">{% trans 'Geschütztes Original öffnen →' %}</a>{% endif %}
   <details style="margin-top:20px"><summary>{% trans 'OCR-Text vergleichen' %}</summary><pre style="white-space:pre-wrap;font:12px/1.8 monospace;overflow-wrap:anywhere">{{ doc.ocr|default:_('OCR noch nicht verfügbar.') }}</pre></details>
   </section>

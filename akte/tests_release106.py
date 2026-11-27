@@ -1,0 +1,34 @@
+from pathlib import Path
+
+from django.conf import settings
+from django.test import TestCase
+
+
+class Release106FixesTests(TestCase):
+    def test_v106_gallery_thumbs_no_view_transition_and_pdf_csp(self):
+        root = Path(settings.BASE_DIR)
+        self.assertEqual(settings.APP_VERSION, '1.0.6')
+
+        entry_tpl = (root / 'templates' / 'entry.html').read_text(encoding='utf-8')
+        self.assertIn('class="photo-thumb"', entry_tpl)
+
+        style_css = (root / 'static' / 'style.css').read_text(encoding='utf-8')
+        self.assertIn('.gallery .photo-thumb{', style_css)
+        self.assertIn('aspect-ratio:1/1;overflow:hidden', style_css)
+        self.assertIn('object-fit:contain', style_css)
+        self.assertNotIn('view-transition', style_css)
+        self.assertIn('color-scheme:light', style_css)
+
+        login_tpl = (root / 'templates' / 'login.html').read_text(encoding='utf-8')
+        self.assertIn("style.css' %}?v=106", login_tpl)
+        self.assertNotIn('?v=0710', login_tpl)
+
+        setup_tpl = (root / 'templates' / 'setup.html').read_text(encoding='utf-8')
+        self.assertIn("style.css' %}?v=106", setup_tpl)
+
+        shell_js = (root / 'static' / 'instant-shell.js').read_text(encoding='utf-8')
+        self.assertIn('neu|bearbeiten|edit', shell_js)
+        self.assertIn('if (!cached || Date.now() - cached.ts >= TTL_MS) return;', shell_js)
+
+        review_tpl = (root / 'templates' / 'review.html').read_text(encoding='utf-8')
+        self.assertIn('Im neuen Tab öffnen', review_tpl)
