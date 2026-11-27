@@ -255,6 +255,8 @@ def portable_export(destination,owner,project=None,entry=None):
                     raise IntegrationError(f'Belegoriginal fehlt im lokalen Speicher ({doc.asset.name or doc.asset.file.name}, Beleg {doc.pk}). Export ist nicht vollständig und wird abgebrochen.')
                 name=f'belege/{doc.pk}'+Path(doc.asset.file.name).suffix;writefile(name,asset_path)
             elif doc.capture_type in ('snap','voice') and not doc.paperless_id:
+                if doc.capture_type == 'snap' and doc.entry_id and not doc.pages.exists():
+                    continue
                 capture_text=(doc.voice_data or {}).get('text') or doc.ocr or doc.scan_note or ''
                 name=f'belege/{doc.pk}.txt';write(name,capture_text)
             elif settings.DEMO_MODE:

@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [1.0.4] - 2026-11-27
+
+### Fixed
+- **Cost splitting in receipt review (`static/review-simple.css`, `akte/views.py`):** Stopped hiding the `alloc_project` selector inside `#review-allocation` so additional split rows can target any project (including projects without chronicle entries), and added a clear German validation message when a split row has no project selected instead of a raw UUID error.
+- **Default currency in manual receipt review (`akte/views.py`):** Pre-filled `currency` with the user's effective default currency (e.g. `EUR`) on manual receipts and applied the same fallback on submit so "Geprüft übernehmen" works without opening the collapsed details section.
+- **Pure text quick-captures no longer duplicate as receipts (`akte/views.py`, `akte/exports.py`):** Accepted file-less text notes (`capture_type='snap'` with an active chronicle entry and no files) no longer appear as `Beleg · Übernommen` in Inbox, no longer produce duplicate search results, and no longer write redundant `belege/<id>.txt` files in ZIP exports.
+- **First-click reliability & ViewTransition console errors (`static/instant-shell.js`, `static/style.css`):** Removed asynchronous Stale-While-Revalidate DOM replacement (which was triggered by Django's per-request CSRF tokens and swallowed clicks right after navigation) and removed the conflicting cross-document `@view-transition { navigation: auto }` rule that caused `ViewTransition opt-in disabled` on POST redirects (e.g. language switching).
+- **Clean first-boot log on empty DB (`akte/updates.py`):** Checked `db_path.exists() and st_size > 0` before opening the SQLite connection so a brand-new empty database no longer creates or logs a spurious pre-migration snapshot.
+
 ## [1.0.3] - 2026-11-27
 
 ### Fixed

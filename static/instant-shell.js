@@ -5,8 +5,7 @@
   if (location.pathname.startsWith('/demo/') || location.pathname.startsWith('/login')) return;
 
   const MAX_ENTRIES = 24;
-  const TTL_MS = 180_000;      // 3 min in Browser RAM (never written to disk)
-  const REVALIDATE_MS = 15_000; // background refresh if cached entry is > 15s old
+  const TTL_MS = 15_000;       // 15s fresh RAM cache (never written to disk; never swaps DOM asynchronously)
   const SKIP_PATH = /\/(abmelden|logout|login|anmelden|demo|admin|media|export|teilen|loeschen|endgueltig|druck|pdf|backup)(\/|$)/i;
   const BRIDGED_SCRIPTS = /(^|\/)(capture|voice)\.js(\?|$)/;
 
@@ -173,17 +172,8 @@
     const cached = cache.get(urlStr);
     const now = Date.now();
     if (cached && now - cached.ts < TTL_MS) {
-      // 0ms instant swap from Browser RAM!
+      // 0ms instant swap from Browser RAM without background DOM replacement (preserves clicks & CSRF tokens).
       applyEntry(cached, { push, scrollTop, animate: true });
-      // Stale-While-Revalidate silently in background if older than REVALIDATE_MS.
-      if (now - cached.ts > REVALIDATE_MS) {
-        fetchEntry(urlStr, { background: true }).then(fresh => {
-          if (seq !== navSeq || !fresh || fresh.fallback) return;
-          if (fresh.contentHtml !== cached.contentHtml && !isUserEditing()) {
-            applyEntry(fresh, { push: false, scrollTop: false, animate: false });
-          }
-        });
-      }
       return;
     }
     const fresh = await fetchEntry(urlStr, { background: false });

@@ -94,7 +94,6 @@ body{transition:background-color var(--speed-ui) var(--ease),color var(--speed-u
  .row:hover{background:color-mix(in srgb,var(--ink) 3.5%,transparent)}
  .gallery a:hover .file-image{filter:brightness(1.04)}
 }
-@view-transition{navigation:auto}
 ::view-transition-old(root),::view-transition-new(root){animation:none}
 ::view-transition-group(lg-content){animation-duration:0ms}
 ::view-transition-image-pair(lg-content){isolation:isolate}

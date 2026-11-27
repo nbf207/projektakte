@@ -312,8 +312,9 @@ def prepare_startup(data_dir=None, app_version=None, auto_migrate=None, keep=5, 
     conn = connections[connection_alias]
     db_name = conn.settings_dict.get('NAME')
     db_path = Path(db_name) if db_name and str(db_name) != ':memory:' else None
+    db_had_data = bool(db_path and db_path.exists() and db_path.stat().st_size > 0)
 
-    if db_path and db_path.exists():
+    if db_had_data:
         check_sqlite_integrity(db_path)
     check_downgrade(data_dir, app_version, connection=conn)
 
@@ -321,7 +322,7 @@ def prepare_startup(data_dir=None, app_version=None, auto_migrate=None, keep=5, 
     if auto_migrate:
         plan = pending_migrations(conn)
         if plan:
-            if db_path and db_path.exists():
+            if db_had_data:
                 snapshot = create_pre_migrate_snapshot(db_path, data_dir, app_version, keep=keep)
             call_command('migrate', database=connection_alias, interactive=False, verbosity=1)
         if connection_alias == 'default' and 'demo' in connections:

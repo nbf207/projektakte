@@ -352,7 +352,10 @@ def tasks(request,project_id=None,pk=None):
 
 @login_required
 def inbox(request):
-    return render(request,'inbox.html',{'documents':Document.objects.filter(owner=request.user,deleted_at__isnull=True).select_related('asset','project','entry').order_by('-created')[:100]})
+    docs=Document.objects.filter(owner=request.user,deleted_at__isnull=True).exclude(
+        capture_type='snap',status='accepted',asset__isnull=True,paperless_id__isnull=True,pages__isnull=True,source__isnull=True
+    ).select_related('asset','project','entry').order_by('-created')[:100]
+    return render(request,'inbox.html',{'documents':docs})
 
 @login_required
 def document_upload(request,project_id=None,entry_id=None):
@@ -437,6 +440,7 @@ def allocation_rows(request):
         raise ValidationError('Kostenzuordnungen sind unvollständig. Alle Zeilen erneut prüfen.')
     for i,(project_id,amount) in enumerate(zip(projects,amounts)):
         if not amount.strip(): continue
+        if not project_id: raise ValidationError('Bitte für jede Kostenzuordnung ein Projekt auswählen.')
         project=owned_project(request,project_id)
         entry=owned_entry(request,entries[i]) if i<len(entries) and entries[i] else None
         step=get_object_or_404(Step,pk=steps[i],entry__project__owner=request.user) if steps and steps[i] else None
@@ -466,7 +470,10 @@ def review(request,pk):
         values['inferred_fields']=[field for field in values.get('inferred_fields',[]) if not field.startswith('entry.')] + ['entry.'+field for field in provisional.inferred_fields]
     if not isinstance(values.get('positions',[]),list) or any(not isinstance(item,dict) for item in values.get('positions',[])):
         messages.warning(request,'Gespeicherte Positionsdaten sind ungültig. Bitte mit Original und Expertenansicht vergleichen und korrigieren.')
+    from .i18n import effective_currency
     initial={**values,'version':doc.version,'draft_version':doc.review_version}
+    if not initial.get('currency'):
+        initial['currency']=effective_currency(request.user)
     from .invoice_chronicle import entry_initial, attach_accepted
     from .proposal_schema import retained_inferences
     initial.update(entry_initial(values),chronicle_mode='existing' if doc.entry_id else ('create' if doc.project_id else 'document'),chronicle_project=doc.project_id,chronicle_entry=doc.entry_id)
@@ -519,6 +526,8 @@ def review(request,pk):
     if valid and request.POST.get('action')!='entry_project' and (request.POST.get('action')=='chronicle' or expert or position_set.is_valid()):
         try:
             p=form.proposal([] if request.POST.get('action')=='chronicle' else (None if expert else position_data(position_set)))
+            if not p.get('currency'):
+                p['currency']=effective_currency(request.user)
             from .definitions import retain_review_definition
             retain_review_definition(p,values)
             if 'chronicle-title_template' in request.POST and (provisional or not doc.entry_id) and form.chronicle_choice(doc)['mode']!='document':
@@ -666,6 +675,7 @@ def search(request):
     if q:
         document_matches=indexed_ids(docs,'document',q)
         if document_matches is not None: docs=Document.objects.filter(owner=request.user,deleted_at__isnull=True,pk__in=document_matches)
+        docs=docs.exclude(capture_type='snap',status='accepted',entry__isnull=False,entry__deleted_at__isnull=True,asset__isnull=True,paperless_id__isnull=True,pages__isnull=True,source__isnull=True)
     page=Paginator(entries.select_related('project'),30).get_page(request.GET.get('page'))
     for entry in page:
         step=entry.steps.filter(Q(title__icontains=q)|Q(text__icontains=q)).first()
