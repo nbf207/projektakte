@@ -54,7 +54,40 @@ document.addEventListener('DOMContentLoaded',()=>{
   const initContent = () => {
     document.querySelectorAll('form[data-autosave]').forEach(form=>{if(form.dataset.autosaveBound)return;form.dataset.autosaveBound='1';autosave(form,false);});
     document.querySelectorAll('form[data-review-autosave]').forEach(form=>{if(form.dataset.autosaveBound)return;form.dataset.autosaveBound='1';autosave(form,true);});
-    document.querySelectorAll('[data-add-allocation]').forEach(btn=>{if(btn.dataset.allocBound)return;btn.dataset.allocBound='1';btn.addEventListener('click',()=>{const rows=document.querySelector('#allocation-rows'),copy=rows.lastElementChild.cloneNode(true);copy.querySelectorAll('input').forEach(e=>e.value='');copy.querySelectorAll('select').forEach(e=>e.selectedIndex=0);rows.append(copy)});});
+    const syncAllocationRow=row=>{
+      const proj=row.querySelector('[name=alloc_project]');
+      const entry=row.querySelector('[name=alloc_entry]');
+      const step=row.querySelector('[name=alloc_step]');
+      const projId=proj?proj.value:'';
+      if(entry){
+        [...entry.options].forEach(opt=>{
+          if(!opt.dataset.project)return;
+          const hide=Boolean(projId&&opt.dataset.project!==projId);
+          opt.hidden=hide;opt.disabled=hide;
+        });
+        const sel=entry.selectedOptions[0];
+        if(sel&&sel.disabled)entry.value='';
+      }
+      const entryId=entry?entry.value:'';
+      if(step){
+        [...step.options].forEach(opt=>{
+          if(!opt.dataset.entry)return;
+          const hide=Boolean(!entryId||opt.dataset.entry!==entryId);
+          opt.hidden=hide;opt.disabled=hide;
+        });
+        const sel=step.selectedOptions[0];
+        if(sel&&sel.disabled)step.value='';
+      }
+    };
+    const bindAllocationRow=row=>{
+      if(row.dataset.allocRowBound)return;
+      row.dataset.allocRowBound='1';
+      row.querySelector('[name=alloc_project]')?.addEventListener('change',()=>syncAllocationRow(row));
+      row.querySelector('[name=alloc_entry]')?.addEventListener('change',()=>syncAllocationRow(row));
+      syncAllocationRow(row);
+    };
+    document.querySelectorAll('.allocation-row').forEach(bindAllocationRow);
+    document.querySelectorAll('[data-add-allocation]').forEach(btn=>{if(btn.dataset.allocBound)return;btn.dataset.allocBound='1';btn.addEventListener('click',()=>{const rows=document.querySelector('#allocation-rows'),copy=rows.lastElementChild.cloneNode(true);delete copy.dataset.allocRowBound;copy.querySelectorAll('input').forEach(e=>e.value='');copy.querySelectorAll('select').forEach(e=>e.selectedIndex=0);rows.append(copy);bindAllocationRow(copy);});});
     document.querySelectorAll('form[data-upload]').forEach(form=>{if(form.dataset.uploadBound)return;form.dataset.uploadBound='1';form.addEventListener('submit',event=>{
       const t=window.t||(s=>s);
       event.preventDefault();const xhr=new XMLHttpRequest(),progress=form.querySelector('progress'),status=form.querySelector('.upload-status'),button=form.querySelector('button');button.disabled=true;progress.hidden=false;status.textContent=t('Upload läuft. Annahme wird nach dauerhafter Speicherung bestätigt.');

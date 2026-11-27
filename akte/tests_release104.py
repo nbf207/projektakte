@@ -155,4 +155,4 @@ class Release104FixesTests(TestCase):
         shell_js = (root / 'static' / 'instant-shell.js').read_text(encoding='utf-8')
         self.assertNotIn('REVALIDATE_MS', shell_js)
 
-        self.assertEqual(settings.APP_VERSION, '1.0.4')
+        self.assertTrue(settings.APP_VERSION >= '1.0.4')

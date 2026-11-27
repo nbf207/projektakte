@@ -86,7 +86,11 @@ class SecurityHeadersMiddleware:
             response['Cache-Control'] = 'no-store, private'
         if response.streaming and not request.path_info.startswith('/static/'):
             mime = response.get('Content-Type', '').split(';', 1)[0].lower()
-            response['Content-Security-Policy'] = "sandbox; default-src 'none'"
+            is_attachment = response.get('Content-Disposition', '').startswith('attachment')
+            if mime == 'application/pdf' and not is_attachment:
+                response['Content-Security-Policy'] = "default-src 'none'; frame-ancestors 'self'; object-src 'self'; style-src 'unsafe-inline'"
+            else:
+                response['Content-Security-Policy'] = "sandbox; default-src 'none'"
             filename = getattr(response, 'filename', '')
             active = Path(filename).suffix.lower() in ('.html', '.htm', '.svg', '.xml', '.xhtml', '.js', '.mht')
             if mime not in INLINE_TYPES or active:

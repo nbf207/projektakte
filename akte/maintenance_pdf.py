@@ -57,7 +57,7 @@ def maintenance_pdf(destination,project,entry=None):
             if foreign:
                 cost+='\n'+'; '.join(f'{number(n,money=True)} {currency}' for n,currency in foreign)+f' ({_("separat")})'
             description=marked(item,'title',item.title or _('Titel unbekannt'))
-            if item.description:
+            if item.description and item.description.strip() != (item.title or '').strip():
                 description+='\n'+marked(item,'description',item.description)
             details=[f'{label}: {marked(item,key,item.snapshot[key])}' for label,key in [('Öl','oil'),('Liter','quantity_l'),('Filter','filter')] if item.snapshot.get(key)]
             if details: description+='\n'+' · '.join(details)

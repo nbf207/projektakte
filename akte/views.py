@@ -426,7 +426,10 @@ def document_route(request,pk):
     if form.is_valid():
         try:
             from .project_routing import assign_project
-            assign_project(request.user,doc,form.cleaned_data['project'],form.cleaned_data['version'])
+            doc=assign_project(request.user,doc,form.cleaned_data['project'],form.cleaned_data['version'])
+            if doc.capture_type=='snap' and doc.status=='accepted' and doc.entry_id:
+                messages.success(request,'Projekt zugeordnet.')
+                return redirect('entry',pk=doc.entry_id)
             messages.success(request,'Projekt zugeordnet. Chronikvorschlag und Kostenziele bitte prüfen; keine Kosten übernommen.')
         except ValidationError as exc: messages.error(request,err(exc))
     else: messages.error(request,'Aktives eigenes Projekt auswählen; bei Änderung Seite neu laden.')

@@ -59,11 +59,13 @@ docker compose up -d
 
 On first start, the `web` container automatically:
 1. Generates a persistent random secret key inside the `/data` volume (`/data/.secret-key`) if `SECRET_KEY` is left empty.
-2. Runs database migrations safely before accepting traffic (with `worker` waiting until `web` is healthy).
+2. Runs database migrations safely before accepting traffic (with `worker` waiting until `web` is healthy). On a headless Raspberry Pi 4, expect this very first start to take **about 1 minute**—check progress with `docker compose ps` until `web` shows `(healthy)` and `worker` is `Up`.
 
 Open [http://127.0.0.1:8010/](http://127.0.0.1:8010/)—with zero users in the database, you are redirected to the one-time `/setup/` page to create your admin account directly in the browser. Once created, `/setup/` is permanently disabled (`404`).
 
 > **Accessing from another device on your LAN (e.g. Raspberry Pi):** Add your server's LAN IP or hostname to `ALLOWED_HOSTS` in `.env` (keep `127.0.0.1` for the healthcheck) and change the port binding in `compose.yaml` from `127.0.0.1:${APP_PORT:-8010}:8000` to `${APP_PORT:-8010}:8000` (or place a reverse proxy with HTTPS in front).
+
+> **Running a second isolated instance on the same host:** `compose.yaml` pins `name: projektakte`, so copying it into a second directory will reuse the same containers and `projektakte_data` volume. For a separate test/staging instance, pass a distinct project name and port, e.g. `APP_PORT=8011 docker compose -p projektakte-test up -d` (or set `COMPOSE_PROJECT_NAME` and `APP_PORT` in `.env`).
 
 ### 2. Enable Optional Integrations Anytime Later
 

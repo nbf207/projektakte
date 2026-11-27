@@ -94,7 +94,8 @@ def _render_pdf(destination,project,entries,image_folder):
             if e.snapshot.get(key): rows.append([label,marked(e,key,e.snapshot[key])])
         rows.append([_('Kosten') + f' ({curr})',_('Unbekannt') if e.cost_state=='unknown' and not e.allocations.exists() else (_('Kostenlos') if e.cost_state=='free' and not e.cost else eur(e.cost))])
         if e.budget is not None: rows.extend([[_('Budget'),eur(e.budget)],[_('Verbleibend'),eur(e.remaining)]])
-        content.extend([table(rows,[145,350]),Spacer(1,14),*blocks(marked(e,'description',e.description)),Spacer(1,16)])
+        desc_blocks = blocks(marked(e,'description',e.description)) if (e.description or '').strip() != (e.title or '').strip() else []
+        content.extend([table(rows,[145,350]),Spacer(1,14),*desc_blocks,Spacer(1,16)])
         for step in e.steps.iterator(chunk_size=20): content.extend([p(step.title,'Heading3'),p(step.date.strftime('%d.%m.%Y') if step.date else 'Datum unbekannt','Caption'),*blocks(step.text),Spacer(1,12)])
         for photo in e.photo_links:
             source=photo.asset.thumbnail or photo.asset.file
@@ -113,7 +114,7 @@ def _render_pdf(destination,project,entries,image_folder):
             except OSError: raise IntegrationError('Ein ausgewähltes Bild fehlt. Bericht nicht vollständig.')
         costs=[['Kostenquelle / Rechnungsdatum','Zuordnung']]
         for a in e.allocations.select_related('source'):
-            costs.append([f'{a.source.label} {a.source.invoice_number}\nRechnungsdatum: {a.source.invoice_date or "unbekannt"}',f'{a.amount} {a.source.currency}'])
+            costs.append([f'{a.source.label} {a.source.invoice_number}\nRechnungsdatum: {a.source.invoice_date or "unbekannt"}',format_money(a.amount, currency=a.source.currency, use_symbol=False)])
         if len(costs)>1: content.extend([p('Belege und Kosten','Heading3'),table(costs,[350,145])])
     def footer(canvas,doc):
         canvas.setFont('Akte',8);canvas.setFillColor(colors.HexColor('#67777c'))

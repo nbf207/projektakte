@@ -67,7 +67,12 @@ def assign_project(owner, document, project, version):
     doc=Document.objects.get(pk=document.pk)
     check_owner(owner,doc)
     check_owner(owner,project)
-    if doc.deleted_at or doc.status=='accepted':
+    in_inbox_snap = (
+        doc.capture_type == 'snap'
+        and doc.entry_id is not None
+        and doc.entry.project.is_scan_inbox
+    )
+    if doc.deleted_at or (doc.status == 'accepted' and not in_inbox_snap):
         raise ValidationError('Nur offene Belege außerhalb des Papierkorbs hier zuordnen.')
     if doc.version!=version:
         raise Conflict('Beleg inzwischen geändert. Bitte neu laden.')
@@ -86,8 +91,18 @@ def assign_project(owner, document, project, version):
         doc.review_draft={key:value for key,value in draft.items() if key not in ('fields','allocations','connect')}
         doc.review_draft['fields']=fields
     doc.routing={'status':'manual','applied':True,'project_id':str(project.pk)}
+    finalize_snap = (
+        doc.capture_type == 'snap'
+        and not doc.ai_enabled
+        and not doc.pages.filter(asset__mime='application/pdf').exists()
+    )
+    if finalize_snap:
+        doc.status='accepted'
+        if doc.entry_id and doc.entry.is_provisional:
+            doc.entry.is_provisional=False
+            doc.entry.save(update_fields=['is_provisional'])
     doc.version+=1
-    doc.save(update_fields=['project','auto_route','routing','review_draft','version'])
+    doc.save(update_fields=['project','auto_route','routing','review_draft','status','version'])
     link_document(doc,project,doc.entry)
     audit(owner,doc,'Projektzuordnung bestätigt',{'project':str(project.pk)})
     from .scan_entries import apply_scan_proposal

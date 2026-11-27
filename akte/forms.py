@@ -189,7 +189,9 @@ class PartForm(forms.ModelForm):
         super().__init__(*args,**kwargs)
         from .models import Document
         if self.instance.pk: self.initial['version']=self.instance.version
-        self.fields['documents'].queryset=Document.objects.filter(owner=owner,deleted_at__isnull=True).select_related('asset','entry') if owner else Document.objects.none()
+        self.fields['documents'].queryset=Document.objects.filter(owner=owner,deleted_at__isnull=True).exclude(
+            capture_type='snap',asset__isnull=True,paperless_id__isnull=True,pages__isnull=True,source__isnull=True
+        ).select_related('asset','entry') if owner else Document.objects.none()
 
 class TaskForm(forms.ModelForm):
     request_token=forms.UUIDField(widget=forms.HiddenInput,required=False,initial=uuid.uuid4)

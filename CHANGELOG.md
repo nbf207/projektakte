@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [1.0.5] - 2026-11-27
+
+### Fixed
+- **Unassigned quick text notes can now be assigned to a project (`akte/capture.py`, `akte/project_routing.py`, `akte/views.py`):** File-less quick notes without a selected project stay open (`status='review'`) until assigned to an active project (and legacy inbox notes are also accepted by `assign_project()`), then automatically finalize as a normal chronicle entry and redirect directly to the entry.
+- **No receipt wording or Parts dropdown leak for pure text notes (`templates/scan_entry_notice.html`, `akte/forms.py`):** Saved text quick-captures no longer display "Beleg / Rechnung direkt prüfen" wording and are excluded from the Parts form's "Verknüpfte Belege" selector.
+- **Embedded PDF preview in receipt review (`akte/security.py`):** Inline `application/pdf` responses now use a PDF-viewer-compatible CSP (`default-src 'none'; frame-ancestors 'self'; object-src 'self'; style-src 'unsafe-inline'`) instead of `sandbox`, fixing the dark/blank PDF iframe in Chromium while preserving strict framing and script isolation.
+- **Project-scoped entry filtering in cost splitting (`templates/allocation.html`, `static/app.js`):** Selecting a project in any allocation row now filters the row's "Vorgang" dropdown to entries belonging to that project (and filters "Arbeitsschritt" to the selected entry), including dynamically added split rows.
+- **Zero ViewTransition errors & reliable first-click navigation (`static/instant-shell.js`, `static/workspace.css`):** Removed `document.startViewTransition` and `view-transition-name: lg-content` so Chromium no longer logs `ViewTransition opt-in disabled` or stalls clicks right after login/search, and ensured real clicks never wait on low-priority hover pre-warms.
+- **Consistent PDF report formatting & no duplicate quick-note text (`akte/exports.py`, `akte/maintenance_pdf.py`):** Formatted receipt allocation amounts with locale-aware `format_money()` (`14,50 EUR` consistently) and suppressed duplicate description paragraphs when a single-line quick note's title and description are identical.
+- **Headless Raspberry Pi Quickstart documentation (`README.md`):** Documented the ~1 minute first-boot migration duration and how to isolate a second instance via `docker compose -p <name>` / `COMPOSE_PROJECT_NAME` + distinct `APP_PORT`.
+
 ## [1.0.4] - 2026-11-27
 
 ### Fixed

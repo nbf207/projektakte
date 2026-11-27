@@ -134,7 +134,7 @@ class Release103FixesTests(TestCase):
         part_form = PartForm(owner=self.user)
         rendered_parts = str(part_form['documents'])
         self.assertNotIn('Document object', rendered_parts)
-        self.assertIn('Reifendruck kontrolliert 2,4 bar', rendered_parts)
+        self.assertNotIn('Reifendruck kontrolliert 2,4 bar', rendered_parts)
 
         project_form = ProjectForm()
         self.assertEqual(str(project_form.fields['color'].label), 'Farbe')
@@ -195,5 +195,4 @@ class Release103FixesTests(TestCase):
         self.assertIn('erfordern HTTPS', pwa_js)
 
         shell_js = (root / 'static' / 'instant-shell.js').read_text(encoding='utf-8')
-        self.assertIn('skipTransition', shell_js)
-        self.assertIn('updateCallbackDone.catch', shell_js)
+        self.assertNotIn('startViewTransition', shell_js)

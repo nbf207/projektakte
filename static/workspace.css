@@ -135,7 +135,7 @@ html[data-theme=dark] .workspace-atmosphere::after{opacity:.82}
 .app-window .sidebar nav a .icon,.window-search .icon{transition:transform 160ms var(--ease-spring),color var(--speed-fast) var(--ease)}
 .app-window .sidebar nav a:hover .icon,.window-search:hover .icon{transform:scale(1.08)}
 @media(prefers-reduced-motion:no-preference){
- .app-window .content{view-transition-name:lg-content}
+ .app-window .content{contain:layout style}
  .window-layout>main.lg-expanding .content{animation:lg-expand-in 420ms cubic-bezier(.16,1,.3,1) both}
 }
 @media(prefers-reduced-motion:reduce){.project-record,.project-record:hover .record-arrow,.project-record:hover .record-icon,.record-arrow,.record-icon,.window-search,.app-window .sidebar nav a,.app-window .row{transition:none;transform:none;animation:none}}

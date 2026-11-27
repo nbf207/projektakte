@@ -84,13 +84,14 @@
   };
 
   const fetchEntry = async (urlStr, { background = false } = {}) => {
-    if (inflight.has(urlStr)) return inflight.get(urlStr);
+    if (background && inflight.has(urlStr)) return inflight.get(urlStr);
     const p = (async () => {
       try {
         const res = await fetch(urlStr, {
           credentials: 'same-origin',
           headers: { 'X-Instant-Shell': '1' },
           priority: background ? 'low' : 'high',
+          signal: AbortSignal.timeout(4000),
         });
         if (!res.ok) return { fallback: true };
         const finalUrl = normUrl(res.url);
@@ -139,32 +140,7 @@
       if (scrollTop) window.scrollTo({ top: 0, behavior: 'instant' });
       document.dispatchEvent(new CustomEvent('lg:navigate', { detail: { url: entry.url } }));
     };
-    const reduced = matchMedia('(prefers-reduced-motion:reduce)').matches;
-    let committed = false;
-    const runCommit = () => {
-      if (committed) return;
-      committed = true;
-      commit();
-    };
-    if (animate && !reduced && document.visibilityState === 'visible' && typeof document.startViewTransition === 'function') {
-      if (activeTransition) {
-        try { activeTransition.skipTransition(); } catch {}
-        activeTransition = null;
-      }
-      try {
-        const vt = document.startViewTransition(runCommit);
-        activeTransition = vt;
-        const clear = () => { if (activeTransition === vt) activeTransition = null; };
-        vt.ready.catch(() => {});
-        vt.updateCallbackDone.catch(() => { runCommit(); });
-        vt.finished.catch(() => {}).finally(() => { clear(); runCommit(); });
-      } catch {
-        activeTransition = null;
-        runCommit();
-      }
-    } else {
-      runCommit();
-    }
+    commit();
   };
 
   const navigate = async (urlStr, { push = true, scrollTop = true } = {}) => {

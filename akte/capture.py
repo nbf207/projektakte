@@ -68,7 +68,7 @@ def receive_capture(owner, *, text='', uploads=(), audio=None, project=None, tok
                 status='ai' if use_ai else 'review',
                 scan_note=text[:1000],ocr=text,voice_data={'text':text,'fingerprint':fingerprint,**({'mail':mail_source} if mail_source else {})})
             doc=ensure_scan_entry(doc)
-            if not use_ai and not has_pdf:
+            if not use_ai and not has_pdf and project:
                 doc.status='accepted'
                 doc.save(update_fields=['status'])
             entry=doc.entry
