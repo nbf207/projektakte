@@ -13,6 +13,7 @@
   const cache = new Map();
   const inflight = new Map();
   let navSeq = 0;
+  let activeTransition = null;
 
   const normUrl = href => {
     try {
@@ -140,10 +141,30 @@
       document.dispatchEvent(new CustomEvent('lg:navigate', { detail: { url: entry.url } }));
     };
     const reduced = matchMedia('(prefers-reduced-motion:reduce)').matches;
-    if (animate && !reduced && typeof document.startViewTransition === 'function') {
-      document.startViewTransition(commit);
-    } else {
+    let committed = false;
+    const runCommit = () => {
+      if (committed) return;
+      committed = true;
       commit();
+    };
+    if (animate && !reduced && document.visibilityState === 'visible' && typeof document.startViewTransition === 'function') {
+      if (activeTransition) {
+        try { activeTransition.skipTransition(); } catch {}
+        activeTransition = null;
+      }
+      try {
+        const vt = document.startViewTransition(runCommit);
+        activeTransition = vt;
+        const clear = () => { if (activeTransition === vt) activeTransition = null; };
+        vt.ready.catch(() => {});
+        vt.updateCallbackDone.catch(() => { runCommit(); });
+        vt.finished.catch(() => {}).finally(() => { clear(); runCommit(); });
+      } catch {
+        activeTransition = null;
+        runCommit();
+      }
+    } else {
+      runCommit();
     }
   };
 

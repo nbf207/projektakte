@@ -27,7 +27,7 @@ class ProjectForm(forms.ModelForm):
     hidden_tabs=forms.MultipleChoiceField(label=_l('Ausgeblendete Reiter'),required=False,choices=TABS,widget=forms.CheckboxSelectMultiple)
     class Meta:
         model=Project;fields=['name','kind','description','tags','favorite','archived','position','color','icon','ai_profile','hidden_tabs']
-        labels={'name':_l('Projektname'),'kind':_l('Vorlage'),'description':_l('Beschreibung'),'tags':_l('Tags (durch Komma getrennt)'),'favorite':_l('Favorit'),'archived':_l('Archiviert')}
+        labels={'name':_l('Projektname'),'kind':_l('Vorlage'),'description':_l('Beschreibung'),'tags':_l('Tags (durch Komma getrennt)'),'favorite':_l('Favorit'),'archived':_l('Archiviert'),'position':_l('Reihenfolge'),'color':_l('Farbe'),'icon':_l('Symbol'),'ai_profile':_l('KI-Profil')}
         widgets={'color':forms.TextInput(attrs={'type':'color'}),'ai_profile':forms.Textarea(attrs={'rows':4})}
     def clean_color(self):
         import re
@@ -189,7 +189,7 @@ class PartForm(forms.ModelForm):
         super().__init__(*args,**kwargs)
         from .models import Document
         if self.instance.pk: self.initial['version']=self.instance.version
-        self.fields['documents'].queryset=Document.objects.filter(owner=owner) if owner else Document.objects.none()
+        self.fields['documents'].queryset=Document.objects.filter(owner=owner,deleted_at__isnull=True).select_related('asset','entry') if owner else Document.objects.none()
 
 class TaskForm(forms.ModelForm):
     request_token=forms.UUIDField(widget=forms.HiddenInput,required=False,initial=uuid.uuid4)

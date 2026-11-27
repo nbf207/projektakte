@@ -237,6 +237,33 @@ class Document(Owned):
     class Meta:
         indexes = [models.Index(fields=['owner','deleted_at','created'],name='doc_owner_trash_created')]
         constraints = [models.UniqueConstraint(fields=['owner','instance','paperless_id'],name='document_identity'),models.UniqueConstraint(fields=['owner','asset'],name='document_asset')]
+    def __str__(self):
+        from django.utils.translation import gettext as _
+        if self.capture_type == 'voice':
+            return _('Sprachnachricht')
+        if self.capture_type == 'snap':
+            if self.entry_id and self.entry.title:
+                return self.entry.title
+            note = (self.scan_note or (self.voice_data or {}).get('text') or self.ocr or '').strip()
+            if note:
+                first = next((line.strip() for line in note.splitlines() if line.strip()), '')
+                if first:
+                    return first[:80]
+            return _('Schnellerfassung')
+        data = {**(self.proposal or {}), **(self.edits or {})}
+        vendor = (data.get('vendor') or '').strip()
+        inv = (data.get('invoice_number') or '').strip()
+        if vendor and inv:
+            return f'{vendor} · {inv}'
+        if inv:
+            return inv
+        if self.asset_id and self.asset.name:
+            return f'{vendor} · {self.asset.name}' if vendor else self.asset.name
+        if vendor:
+            return vendor
+        if self.paperless_id:
+            return f'{_("Paperless-Dokument")} #{self.paperless_id}'
+        return _('Beleg')
 
 class CostSource(Owned):
     document = models.OneToOneField(Document,null=True,blank=True,on_delete=models.PROTECT,related_name='source')

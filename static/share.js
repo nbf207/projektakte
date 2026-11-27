@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded',async()=>{
   if(input.files.length<1||input.files.length>8||files.some(file=>file.size>8*1024*1024)||files.reduce((sum,file)=>sum+file.size,0)>12*1024*1024){message.textContent=t('1–8 Bilder/PDFs, je Datei 8 MB und zusammen mit Audio höchstens 12 MB verwenden.');return;}
   uploading=true;clearTimeout(timer);try{await saveDraft();}catch{}
   const data=new FormData(form),buttons=[...form.querySelectorAll('button')].map(button=>[button,button.disabled]),progress=form.querySelector('progress');
-  buttons.forEach(([button])=>button.disabled=true);progress.hidden=false;message.textContent=t('Dateien werden dauerhaft gespeichert. KI-Auswertung folgt im Hintergrund …');
+  buttons.forEach(([button])=>button.disabled=true);progress.hidden=false;message.textContent=form.dataset.aiActive==='1'?t('Dateien werden dauerhaft gespeichert. KI-Auswertung folgt im Hintergrund …'):t('Dateien werden dauerhaft gespeichert …');
   const restore=()=>{uploading=false;buttons.forEach(([button,disabled])=>button.disabled=disabled);};
   progress.removeAttribute('value');
   try{

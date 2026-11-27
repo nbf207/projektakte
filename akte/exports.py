@@ -228,7 +228,7 @@ def portable_export(destination,owner,project=None,entry=None):
             for link in e.photo_links: index.append(f'<figure><img src="medien/{link.asset.file.name}" alt="{html.escape(link.caption)}"><figcaption>{html.escape(link.caption)}</figcaption></figure>')
             index.append('</article>')
         for asset in assets:
-            if not Path(media_path(asset.file)).is_file(): raise IntegrationError('Eine referenzierte Datei fehlt. Export abgebrochen.')
+            if not Path(media_path(asset.file)).is_file(): raise IntegrationError(f'Eine referenzierte Datei fehlt ({asset.name or asset.file.name}). Export abgebrochen.')
             writefile('medien/'+asset.file.name,media_path(asset.file))
             if asset.thumbnail: writefile('medien/'+asset.thumbnail.name,media_path(asset.thumbnail))
         index.append('<h2>Belegoriginale</h2>')
@@ -250,11 +250,19 @@ def portable_export(destination,owner,project=None,entry=None):
                 elif raw[:4]==b'RIFF' and raw[8:12]==b'WEBP': name=name[:-4]+'.webp'
                 write(name,raw)
             elif doc.asset:
-                name=f'belege/{doc.pk}'+Path(doc.asset.file.name).suffix;writefile(name,media_path(doc.asset.file))
+                asset_path=media_path(doc.asset.file)
+                if not Path(asset_path).is_file():
+                    raise IntegrationError(f'Belegoriginal fehlt im lokalen Speicher ({doc.asset.name or doc.asset.file.name}, Beleg {doc.pk}). Export ist nicht vollständig und wird abgebrochen.')
+                name=f'belege/{doc.pk}'+Path(doc.asset.file.name).suffix;writefile(name,asset_path)
+            elif doc.capture_type in ('snap','voice') and not doc.paperless_id:
+                capture_text=(doc.voice_data or {}).get('text') or doc.ocr or doc.scan_note or ''
+                name=f'belege/{doc.pk}.txt';write(name,capture_text)
             elif settings.DEMO_MODE:
                 name=f'belege/{doc.pk}.txt';write(name,doc.ocr or 'Synthetisches Bestandsdokument ohne Original im Testadapter.')
-            else: raise IntegrationError('Belegoriginal nicht erreichbar. Export ist nicht vollständig und wird abgebrochen.')
-            index.append(f'<p><a href="{name}">{html.escape(doc.proposal.get("invoice_number") or str(doc.pk))}</a> | {html.escape("Im Papierkorb · "+doc.get_status_display() if doc.deleted_at else doc.get_status_display())}</p>')
+            else:
+                label=doc.proposal.get('invoice_number') or doc.edits.get('invoice_number') or str(doc.pk)
+                raise IntegrationError(f'Belegoriginal nicht erreichbar ({label}, Beleg {doc.pk}). Export ist nicht vollständig und wird abgebrochen.')
+            index.append(f'<p><a href="{name}">{html.escape(str(doc))}</a> | {html.escape("Im Papierkorb · "+doc.get_status_display() if doc.deleted_at else doc.get_status_display())}</p>')
         index.append('<h2>Kosten im Exportumfang</h2><p>Geteilte Rechnungen sind als ganze Belege enthalten. Außerhalb zugeordnete Beträge sind keine offenen Kosten dieses Ausschnitts.</p>')
         for context in source_context:
             index.append('<p>'+html.escape(f'Quelle {context["source_id"]}: {context["amount"]} {context["currency"]} gesamt · {context["allocated_in_scope"]} im Ausschnitt · {context["allocated_outside_scope"]} außerhalb zugeordnet · {context["unallocated_total"]} insgesamt offen')+'</p>')

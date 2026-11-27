@@ -63,6 +63,17 @@ document.addEventListener('DOMContentLoaded',()=>{
       xhr.onerror=()=>{button.disabled=false;status.textContent=t('Verbindung unklar. Eingang prüfen; identische Datei wird anhand ihres Hashes wiedererkannt.')};xhr.send(new FormData(form));
     });});
     document.querySelectorAll('[data-ai-field]').forEach(marker=>{if(marker.dataset.aiFieldBound)return;marker.dataset.aiFieldBound='1';const field=document.getElementsByName(marker.dataset.aiField)[0];if(!field)return;const initial=field.value;field.addEventListener('input',()=>{marker.hidden=field.value!==initial});field.addEventListener('change',()=>{marker.hidden=field.value!==initial})});
+    document.querySelectorAll('form[data-maintenance-form]').forEach(form=>{
+      if(form.dataset.maintenanceBound)return;
+      form.dataset.maintenanceBound='1';
+      const days=form.elements.interval_days,months=form.elements.interval_months,km=form.elements.interval_km,baseDate=form.elements.base_date,baseMeter=form.elements.base_meter;
+      const syncReq=()=>{
+        if(baseDate)baseDate.required=Boolean((days&&days.value.trim())||(months&&months.value.trim()));
+        if(baseMeter)baseMeter.required=Boolean(km&&km.value.trim());
+      };
+      [days,months,km].forEach(el=>{if(el){el.addEventListener('input',syncReq);el.addEventListener('change',syncReq);}});
+      syncReq();
+    });
     if(location.pathname==='/suche/'){const input=document.querySelector('main input[name=q]');if(input&&!input.value)input.focus();}
     restoreChronicle();
   };

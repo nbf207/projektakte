@@ -12,7 +12,8 @@ class KnowledgeForm(forms.ModelForm):
         fields = ['title', 'subject', 'kind', 'content', 'value', 'unit', 'source_reference', 'source_url']
         labels = {'title':'Titel','subject':'Bauteil / Thema','kind':'Art der Angabe',
                   'content':'Beschreibung / Geltungsbereich','value':'Wert','unit':'Einheit',
-                  'source_reference':'Quelle (Dokument, Seite, Hersteller)'}
+                  'source_reference':'Quelle (Dokument, Seite, Hersteller)',
+                  'source_url':'Quell-URL (optional)'}
         widgets = {'content': forms.Textarea(attrs={'rows':6})}
     youtube_url = forms.URLField(label='YouTube-Link',required=False,max_length=2000)
     version = forms.IntegerField(widget=forms.HiddenInput, min_value=0)

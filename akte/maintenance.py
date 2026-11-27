@@ -17,6 +17,7 @@ class MaintenanceForm(forms.ModelForm):
         fields = ['title','interval_days','interval_months','interval_km','meter_unit','base_date','base_meter','active']
         labels = {'title':'Wartung','interval_months':'Intervall in Monaten','interval_km':'Intervall in km','base_date':'Zuletzt erledigt am / Bezugsdatum','base_meter':'Zähler bei letzter Wartung (km)','active':'Aktiv'}
         labels.update(interval_days='Intervall in Tagen',interval_km='Zählerintervall',meter_unit='Zählereinheit',base_meter='Zähler bei letzter Wartung')
+        help_texts = {'base_date':'Pflicht, sobald ein Zeitintervall (Tage oder Monate) angegeben ist.','base_meter':'Pflicht, sobald ein Zählerintervall angegeben ist.'}
         widgets = {'base_date':forms.DateInput(format='%Y-%m-%d',attrs={'type':'date'})}
         localized_fields = ['interval_km','base_meter']
     def clean(self):
@@ -85,8 +86,14 @@ def complete_maintenance(owner,rule,entry,expected_version):
         raise ValidationError('Für die Fortschreibung ist ein taggenaues Arbeitsdatum erforderlich.')
     if rule.base_date and entry.date and entry.date<rule.base_date:
         raise ValidationError('Ein älterer Vorgang darf den Wartungsplan nicht zurücksetzen.')
-    if rule.interval_km is not None and (entry.meter is None or entry.meter_unit!=rule.meter_unit or entry.meter_replaced or (rule.base_meter is not None and entry.meter<rule.base_meter)):
-        raise ValidationError('Passenden km-Stand wählen; bei Zählertausch die Bezugsdaten ausdrücklich bearbeiten.')
+    if rule.interval_km is not None:
+        if entry.meter is None:
+            raise ValidationError('Passenden km-Stand wählen; der gewählte Vorgang hat keinen Zählerstand.')
+        if entry.meter_unit != rule.meter_unit:
+            current_unit = entry.meter_unit or 'keine Einheit'
+            raise ValidationError(f'Zählereinheit des Vorgangs ({current_unit}) passt nicht zur Regel ({rule.meter_unit}). Bitte am Vorgang die passende Einheit ergänzen.')
+        if entry.meter_replaced or (rule.base_meter is not None and entry.meter < rule.base_meter):
+            raise ValidationError('Passenden km-Stand wählen; bei Zählertausch die Bezugsdaten ausdrücklich bearbeiten.')
     snapshot={'title':entry.title,'date':entry.date.isoformat() if entry.date else None,'meter':str(entry.meter) if entry.meter is not None else None,'previous_date':rule.base_date.isoformat() if rule.base_date else None,'previous_meter':str(rule.base_meter) if rule.base_meter is not None else None}
     completion=MaintenanceCompletion.objects.create(rule=rule,entry=entry,snapshot=snapshot)
     if entry.date:

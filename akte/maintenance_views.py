@@ -48,6 +48,15 @@ def maintenance(request,project_id=None,pk=None):
     states=[]
     for item in rules:
         state=rule_state(item)
-        state['entries']=Entry.objects.filter(project=item.project,deleted_at__isnull=True,status='erledigt').order_by('-date')[:100]
+        eligible=Entry.objects.filter(project=item.project,deleted_at__isnull=True,status='erledigt')
+        if item.interval_months or item.interval_days:
+            eligible=eligible.filter(date__isnull=False,precision='day')
+            if item.base_date:
+                eligible=eligible.filter(date__gte=item.base_date)
+        if item.interval_km is not None:
+            eligible=eligible.filter(meter__isnull=False,meter_replaced=False,meter_unit=item.meter_unit)
+            if item.base_meter is not None:
+                eligible=eligible.filter(meter__gte=item.base_meter)
+        state['entries']=eligible.order_by('-date','-created')[:100]
         states.append(state)
     return render(request,'maintenance.html',{'form':form,'project':project,'projects':Project.objects.filter(owner=request.user),'states':states})

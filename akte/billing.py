@@ -106,8 +106,10 @@ def accept_document(owner,doc,proposal,rows,*,expected_version,connect=None,allo
     if doc.deleted_at: raise ValidationError('Beleg liegt im Papierkorb. Zuerst wiederherstellen.')
     if doc.status=='accepted': return doc.source
     if doc.version!=expected_version: raise Conflict('Die Rechnung wurde zwischenzeitlich geändert. Neu laden; deine gespeicherten Korrekturen bleiben erhalten.')
-    if not doc.paperless_id or not doc.verified_at: raise ValidationError('Paperless-Dokument noch nicht bestätigt. Erst Übergabe bzw. Abgleich abschließen.')
-    if doc.remote_state in ('changed','missing'): raise ValidationError('Paperless-Dokument verändert oder nicht verfügbar. Zuerst abgleichen und Prüfstand aktualisieren.')
+    local_only = doc.instance == 'local' and bool(doc.asset_id) and not doc.paperless_id
+    if not local_only:
+        if not doc.paperless_id or not doc.verified_at: raise ValidationError('Paperless-Dokument noch nicht bestätigt. Erst Übergabe bzw. Abgleich abschließen.')
+        if doc.remote_state in ('changed','missing'): raise ValidationError('Paperless-Dokument verändert oder nicht verfügbar. Zuerst abgleichen und Prüfstand aktualisieren.')
     validate_proposal(proposal,final=True)
     amount=exact_money(proposal['gross_total'])
     similar=CostSource.objects.filter(owner=owner,invoice_number=proposal.get('invoice_number') or '-',amount=amount,document__isnull=False).exclude(document=doc)

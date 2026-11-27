@@ -1,13 +1,13 @@
 {% load static akte i18n %}<!doctype html>
 <html lang="{{ current_language|default:'de' }}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="{% static 'i18n.js' %}?v=1"></script>
+<script src="{% static 'i18n.js' %}?v=103"></script>
 <script src="{% static 'theme.js' %}?v=091"></script>
 <title>{% block title %}Projektakte{% endblock %}</title>
 <link rel="stylesheet" href="{% static 'style.css' %}?v=100">
 <link rel="stylesheet" href="{% static 'editors.css' %}?v=material-1">
 <link rel="stylesheet" href="{% static 'theme.css' %}?v=0720">
 <link rel="stylesheet" href="{% static 'workspace.css' %}?v=0730">
-<script src="{% static 'htmx.min.js' %}" defer></script><script src="{% static 'app.js' %}?v=091" defer></script><script src="{% static 'instant-shell.js' %}?v=0728" defer></script><script src="{% static 'editors.js' %}?v=091" defer></script>
+<script src="{% static 'htmx.min.js' %}" defer></script><script src="{% static 'app.js' %}?v=103" defer></script><script src="{% static 'instant-shell.js' %}?v=103" defer></script><script src="{% static 'editors.js' %}?v=091" defer></script>
 {% include 'pwa_head.html' %}</head>
 <body class="has-workspace {% if request.resolver_match.url_name == 'home' %}workspace-home{% endif %}">
 <a class="skip-link" href="#main-content">{% trans 'Zum Inhalt' %}</a>

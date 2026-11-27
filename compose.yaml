@@ -4,7 +4,7 @@ x-app: &app
   # Prebuilt multi-arch image (linux/amd64 + linux/arm64 for Raspberry Pi).
   # Pin to a specific version tag for reproducible updates and clean rollbacks.
   # To build locally from source, combine with deployment/compose-build.yaml.
-  image: ${PROJEKTAKTE_IMAGE:-ghcr.io/nbf207/projektakte:1.0.2}
+  image: ${PROJEKTAKTE_IMAGE:-ghcr.io/nbf207/projektakte:1.0.3}
   env_file:
     - path: ${PROJEKTAKTE_ENV_FILE:-.env}
       required: false
@@ -32,10 +32,10 @@ services:
     command: ["python", "scripts/entrypoint.py", "--host", "0.0.0.0", "--port", "8000"]
     healthcheck:
       test: ["CMD", "python", "-m", "akte.healthcheck"]
-      interval: 15s
+      interval: 10s
       timeout: 8s
-      start_period: 25s
-      retries: 3
+      start_period: 120s
+      retries: 6
 
   worker:
     <<: *app

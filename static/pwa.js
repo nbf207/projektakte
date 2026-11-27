@@ -1,7 +1,19 @@
 (()=>{
  const t=window.t||(s=>s);
  if(new URL(location.href).searchParams.has('auth_refresh')){const clean=new URL(location.href);clean.searchParams.delete('auth_refresh');history.replaceState(null,'',clean);}
- if(!('serviceWorker' in navigator)||!window.isSecureContext)return;
+ const setStatus=text=>{
+  const apply=()=>{const status=document.querySelector('[data-pwa-status]');if(status)status.textContent=text;};
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});
+  else apply();
+ };
+ if(!window.isSecureContext){
+  setStatus(t('App-Installation und Android-Teilen-Menü erfordern HTTPS (oder localhost). Über HTTP im LAN kannst du Dateien direkt oben über die Dateiauswahl hochladen.'));
+  return;
+ }
+ if(!('serviceWorker' in navigator)){
+  setStatus(t('Dieser Browser unterstützt die App-Installation nicht. Du kannst Dateien direkt oben über die Dateiauswahl hochladen.'));
+  return;
+ }
  let installPrompt;
  window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();installPrompt=event;document.querySelectorAll('[data-install-app]').forEach(button=>button.hidden=false);});
  window.addEventListener('appinstalled',()=>{installPrompt=null;document.querySelectorAll('[data-install-app]').forEach(button=>button.hidden=true);});

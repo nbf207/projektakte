@@ -6,6 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [1.0.3] - 2026-11-27
+
+### Fixed
+- **First-boot Raspberry Pi 4 healthcheck (`compose.yaml`):** Increased `web` healthcheck `start_period` to `120s` (`interval: 10s`, `retries: 6`) so initial SQLite migrations on a Raspberry Pi 4 complete without marking `web` unhealthy and leaving `worker` in `Created`.
+- **Standalone receipt acceptance without Paperless-ngx (`akte/views.py`, `akte/billing.py`):** Accepting a locally uploaded receipt (`instance='local'`) no longer calls `sync_document()` or requires a `paperless_id` / `verified_at`.
+- **Project ZIP export with text quick-captures & clearer missing-file errors (`akte/exports.py`):** Pure text/voice quick-captures (`capture_type` in `snap`/`voice`) without an attached file now export cleanly as `belege/<id>.txt`; genuinely missing originals now report the affected filename/document ID.
+- **UI labels, Document `__str__`, and standalone messages (`akte/models.py`, `akte/forms.py`, `akte/knowledge.py`, `akte/views.py`, `templates/inbox.html`, `templates/search.html`, `templates/review.html`, `templates/scan_entry_notice.html`, `templates/share.html`, `static/share.js`):**
+  - Added human-readable `Document.__str__()` so Parts ("Verknüpfte Belege"), Inbox, Search, and Review no longer show `Document object (<uuid>)`, `Paperless-Dokument`, or `Paperless-Beleg` for text quick-captures or local uploads.
+  - Localized remaining English form labels (`Farbe`, `KI-Profil`, `Reihenfolge`, `Symbol`, `Quell-URL (optional)`).
+  - Removed misleading AI background routing messages after upload when AI is disabled.
+- **ViewTransition navigation reliability (`static/instant-shell.js`):** Properly skip active transitions, guard `commit()` with an idempotent `runCommit()` fallback, and catch aborted/rejected `startViewTransition` promises so link clicks never stall on the old page or throw `InvalidStateError`.
+- **Maintenance plan usability (`akte/maintenance.py`, `akte/maintenance_views.py`, `templates/maintenance.html`, `static/app.js`):** Added help texts and dynamic `required` toggling for `base_meter`/`base_date`, filtered the completion dropdown to entries with compatible meter units/dates, displayed meter units in options, and clarified unit-mismatch errors.
+- **LAN HTTP notice on `/teilen/` (`static/pwa.js`, `static/i18n.js`):** Replaced the permanent `Die App-Funktion wird aktiviert …` placeholder over plain HTTP with a clear hint that PWA installation / Android Share Target requires HTTPS (or localhost) while direct file selection works immediately.
+
 ## [1.0.2] - 2026-11-27
 
 ### Added

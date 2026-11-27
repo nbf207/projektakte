@@ -121,6 +121,9 @@
     // share.js
     'Entfernen': 'Remove',
     'Dateien werden dauerhaft gespeichert. KI-Auswertung folgt im Hintergrund …': 'Saving files durably. AI extraction follows in the background …',
+    'Dateien werden dauerhaft gespeichert …': 'Saving files durably …',
+    'App-Installation und Android-Teilen-Menü erfordern HTTPS (oder localhost). Über HTTP im LAN kannst du Dateien direkt oben über die Dateiauswahl hochladen.': 'App installation and Android share menu require HTTPS (or localhost). Over HTTP on your LAN you can upload files directly using the file picker above.',
+    'Dieser Browser unterstützt die App-Installation nicht. Du kannst Dateien direkt oben über die Dateiauswahl hochladen.': 'This browser does not support app installation. You can upload files directly using the file picker above.',
     'Bitte 1–8 Dateien, je höchstens 8 MB und zusammen 12 MB teilen.': 'Please share 1–8 files, max 8 MB each and 12 MB total.',
     'Geteiltes Dateiformat nicht unterstützt. Bitte Bilder oder PDFs teilen.': 'Shared file format not supported. Please share images or PDFs.',
     'Der lokale Teilen-Eingang enthält bereits fünf Pakete. Bitte vorhandene Pakete zuerst speichern.': 'The local share inbox already contains five packages. Please save existing packages first.',

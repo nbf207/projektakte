@@ -384,7 +384,14 @@ def document_upload(request,project_id=None,entry_id=None):
             from .scan_entries import ensure_scan_entry
             doc=ensure_scan_entry(doc)
             link_document(doc,project,entry)
-            messages.success(request,'Beleg und Eintrag dauerhaft gespeichert. Verarbeitung läuft im Hintergrund; du kannst das Handy jetzt weglegen.' if new else 'Bereits vorhandener Beleg gefunden. Es wurde keine zweite Kostenquelle angelegt.')
+            from .preferences import ai_is_active, paperless_is_active
+            if new:
+                if ai_is_active() or paperless_is_active():
+                    messages.success(request,'Beleg und Eintrag dauerhaft gespeichert. Verarbeitung läuft im Hintergrund; du kannst das Handy jetzt weglegen.')
+                else:
+                    messages.success(request,'Beleg und Eintrag dauerhaft gespeichert. Du kannst ihn jetzt direkt prüfen und einem Projekt zuordnen.')
+            else:
+                messages.success(request,'Bereits vorhandener Beleg gefunden. Es wurde keine zweite Kostenquelle angelegt.')
             return redirect('entry',pk=doc.entry_id) if doc.entry_id else redirect('review',pk=doc.pk)
         except (ValidationError,IntegrationError,ValueError) as e:
             if request.headers.get('X-Requested-With')=='XMLHttpRequest': return JsonResponse({'error':err(e)},status=400)
@@ -544,7 +551,8 @@ def review(request,pk):
                 if unallocated: rows=[]
                 if not connect and not rows and p.get('gross_total') is not None and Decimal(p['gross_total'])!=0 and not unallocated:
                     raise ValidationError('Bitte Kostenziel und Betrag auswählen oder „Betrag zunächst vollständig unzugeordnet lassen“ ausdrücklich bestätigen.')
-                if not settings.DEMO_MODE:
+                from .preferences import paperless_is_active
+                if not settings.DEMO_MODE and (doc.paperless_id or (paperless_is_active() and doc.instance != 'local')):
                     from .documents import sync_document
                     doc=sync_document(doc)
                 source=accept_document(request.user,doc,p,rows,expected_version=form.cleaned_data['version'],connect=connect,allow_similar=form.cleaned_data['separate'],chronicle=chronicle)
