@@ -229,8 +229,14 @@ def settings_center(request,section):
         if request.GET.get('scan')=='1':
             require_system_access(request.user);context['orphans']=orphan_files(request.user);context['scanned']=True
     elif section=='system':
+        from .backup import latest_backup_progress
         events=ErrorEvent.objects.filter(Q(owner=request.user)|Q(owner=None)) if system_access(request.user) else ErrorEvent.objects.filter(owner=request.user)
-        context.update(monitor=monitor(),backups=ManagedBackup.objects.filter(owner=request.user).order_by('-created'),errors=events.order_by('-created','-id')[:30])
+        context.update(
+            monitor=monitor(),
+            backups=ManagedBackup.objects.filter(owner=request.user).order_by('-created'),
+            backup_progress=latest_backup_progress() if system_access(request.user) else None,
+            errors=events.order_by('-created','-id')[:30],
+        )
     return render(request,'settings_center.html',context)
 
 
@@ -277,6 +283,12 @@ def feedback_image(request,key,identity):
 @login_required
 @require_http_methods(['GET'])
 def settings_status(request):
+    from .backup import latest_backup_progress
     tasks=ControlTask.objects.filter(owner=request.user).select_related('job').order_by('-created')[:12]
-    return JsonResponse({'monitor':monitor() if request.GET.get('monitor')=='1' else None,
-        'tasks':[{'id':str(task.pk),'state':task.display_state,'result':task.result or (task.job.error if hasattr(task,'job') else '')} for task in tasks]})
+    is_sys=system_access(request.user)
+    return JsonResponse({
+        'monitor':monitor() if request.GET.get('monitor')=='1' else None,
+        'backup_progress':latest_backup_progress() if (request.GET.get('monitor')=='1' and is_sys) else None,
+        'backups_count':ManagedBackup.objects.filter(owner=request.user).count() if request.GET.get('monitor')=='1' else None,
+        'tasks':[{'id':str(task.pk),'state':task.display_state,'result':task.result or (task.job.error if hasattr(task,'job') else '')} for task in tasks],
+    })

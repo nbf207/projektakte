@@ -3294,3 +3294,9 @@ msgstr "Quick capture · analyzing"
 
 msgid "Was hast du gemacht oder vor? Notiz, Fotos oder PDFs direkt festhalten."
 msgstr "What did you do or plan? Save a note, photos, or PDFs directly."
+
+msgid "Sicherung läuft …"
+msgstr "Backup in progress …"
+
+msgid "Die App bleibt während der Sicherung normal nutzbar."
+msgstr "The app remains fully usable while the backup runs."

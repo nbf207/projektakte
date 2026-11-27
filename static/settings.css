@@ -87,3 +87,10 @@ html[data-theme=dark] .swatch-cyan{--swatch-bg:#050a0d;--swatch-glass:rgba(10,25
 .custom-color-hex input{font-family:ui-monospace,monospace}
 .custom-color-hex input:invalid{border-color:var(--danger)}
 @media(max-width:600px){.custom-color-row{grid-template-columns:76px minmax(0,1fr)}.custom-color-row .custom-color-choice{grid-column:1/-1}}
+.backup-progress{margin:16px 0;padding:14px 16px;border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--field)}
+.backup-progress-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:8px;font-size:13px}
+.backup-progress progress{display:block;width:100%;height:10px;border:0;border-radius:999px;overflow:hidden;background:var(--line);accent-color:var(--accent)}
+.backup-progress progress::-webkit-progress-bar{background:var(--line);border-radius:999px}
+.backup-progress progress::-webkit-progress-value{background:var(--accent);border-radius:999px;transition:width 240ms var(--ease)}
+.backup-progress progress::-moz-progress-bar{background:var(--accent);border-radius:999px}
+.backup-progress .helptext{margin:8px 0 0}

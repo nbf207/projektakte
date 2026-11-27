@@ -21,20 +21,32 @@ def message(exc):
     return '; '.join(exc.messages) if isinstance(exc, ValidationError) else str(exc)[:480]
 
 
+BACKUP_JOB_Q = Q(kind='control', stage='backup')
+
+
 @guarded
 @transaction.atomic
-def reserve():
+def reserve(*, allow_backup=True, only_backup=False):
     now = timezone.now()
     # Recover older jobs interrupted after publishing a completed export.
     Job.objects.filter(kind='export',export__status='done').exclude(status='done').update(
         status='done',leased_until=None,error='',updated=now)
-    if Job.objects.filter(status='running', leased_until__gt=now).exists():
-        return None
-    job = Job.objects.filter(
+    due = (
         Q(status='pending', available__lte=now) |
         Q(status='running', leased_until__lte=now) |
         Q(status='running', leased_until__isnull=True)
-    ).order_by('available', 'id').first()
+    )
+    if only_backup:
+        if Job.objects.filter(BACKUP_JOB_Q, status='running', leased_until__gt=now).exists():
+            return None
+        candidates = Job.objects.filter(BACKUP_JOB_Q).filter(due)
+    else:
+        if Job.objects.exclude(BACKUP_JOB_Q).filter(status='running', leased_until__gt=now).exists():
+            return None
+        candidates = Job.objects.filter(due)
+        if not allow_backup or Job.objects.filter(BACKUP_JOB_Q, status='running', leased_until__gt=now).exists():
+            candidates = candidates.exclude(BACKUP_JOB_Q)
+    job = candidates.order_by('available', 'id').first()
     if job:
         job.status = 'running'
         job.lease_token = uuid.uuid4()
@@ -237,12 +249,7 @@ def with_asset_error(asset_id):
     Asset.objects.filter(pk=asset_id).update(error='Vorschau fehlgeschlagen. Original bleibt erhalten.')
 
 
-def run_one():
-    if (settings.DATA_DIR / '.maintenance').exists():
-        return False
-    job = reserve()
-    if not job:
-        return False
+def run_job(job):
     from django.utils import translation
     from .i18n import effective_language
     job_owner = (job.document.owner if job.document_id else job.asset.owner if job.asset_id else job.export.owner if job.export_id else job.control.owner if job.control_id else None)
@@ -281,6 +288,15 @@ def run_one():
         if job.export_id:
             with_export_error(job)
     return True
+
+
+def run_one(*, allow_backup=True):
+    if (settings.DATA_DIR / '.maintenance').exists():
+        return False
+    job = reserve(allow_backup=allow_backup)
+    if not job:
+        return False
+    return run_job(job)
 
 
 @guarded

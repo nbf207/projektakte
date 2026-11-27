@@ -15,7 +15,7 @@ from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 from .adapters import paperless, IntegrationError
 from .models import ControlTask, Document, Job, ManagedBackup, Preferences
-from .operations import guarded, operation_gate
+from .operations import backup_gate, guarded, operation_gate
 from .preferences import preferences, require_system_access
 from .storage import durable_replace
 
@@ -133,37 +133,96 @@ def discover_backups(owner):
     return added
 
 
-def create_backup(owner,identity):
-    from .backup import backup
+def create_backup(owner,identity,*,job=None):
+    from .backup import backup, write_backup_progress
     from .documents import remote_signature
     require_system_access(owner)
     relative='backups/'+str(identity)+'/projektakte.zip';destination=backup_path(relative)
     folder=destination.parent;folder.mkdir(parents=True,mode=0o700,exist_ok=True)
-    with operation_gate():
-        if not destination.exists():
-            bundle=folder/'paperless.zip'
+    started_at=timezone.now().isoformat()
+    heartbeat=settings.DATA_DIR/'worker.heartbeat'
+    last_write=[0.0]
+    last_phase=['']
+    last_heartbeat=[0.0]
+    last_lease=[time.monotonic()]
+
+    def emit(phase,percent,bytes_done=0,bytes_total=0,files_done=0,files_total=0,*,status='running',force=False):
+        now_mono=time.monotonic()
+        if now_mono-last_heartbeat[0]>=15.0:
+            try:heartbeat.touch()
+            except OSError:pass
+            last_heartbeat[0]=now_mono
+        if job is not None and status=='running' and now_mono-last_lease[0]>=300.0:
             try:
-                signatures={}
-                with zipfile.ZipFile(bundle,'w',zipfile.ZIP_DEFLATED) as archive:
-                    for doc in Document.objects.filter(paperless_id__isnull=False).select_related('owner'):
-                        before=paperless(doc).read(doc.paperless_id,doc)
-                        raw=paperless(doc).original(doc.paperless_id)
-                        after=paperless(doc).read(doc.paperless_id,doc)
-                        if remote_signature(before)!=remote_signature(after):raise ValidationError('Paperless-Beleg während der Sicherung geändert. Erneut versuchen.')
-                        prefix=str(doc.pk)+'/'
-                        archive.writestr(prefix+'original',raw)
-                        archive.writestr(prefix+'metadata.json',json.dumps(after,ensure_ascii=False))
-                        archive.writestr(prefix+'sha256',hashlib.sha256(raw).hexdigest())
-                        signatures[str(doc.pk)]=remote_signature(after)
-                    archive.writestr('signatures.json',json.dumps(signatures))
-                bundle.chmod(0o600)
-                backup(destination,bundle,complete_control=identity)
-            finally:bundle.unlink(missing_ok=True)
-        with zipfile.ZipFile(destination) as archive:
-            if archive.testzip():raise ValidationError('Sicherungsarchiv beschädigt.')
-        record,_=ManagedBackup.objects.get_or_create(path=relative,defaults={'owner':owner,'size':destination.stat().st_size,'managed':True})
-        if record.owner_id!=owner.pk:raise ValidationError('Fremde Sicherung.')
-        prune_backups(owner)
+                with operation_gate(timeout=2):
+                    Job.objects.filter(pk=job.pk,status='running',lease_token=job.lease_token).update(
+                        leased_until=timezone.now()+timedelta(minutes=60),updated=timezone.now())
+                last_lease[0]=now_mono
+            except Exception:
+                pass
+        if not force and phase==last_phase[0] and now_mono-last_write[0]<1.0:
+            return
+        last_phase[0]=phase
+        last_write[0]=now_mono
+        try:
+            write_backup_progress(folder,{
+                'task_id':str(identity),
+                'status':status,
+                'phase':phase,
+                'percent':max(0,min(100,int(round(percent)))),
+                'bytes_done':int(bytes_done),
+                'bytes_total':int(bytes_total),
+                'files_done':int(files_done),
+                'files_total':int(files_total),
+                'started_at':started_at,
+                'updated_at':timezone.now().isoformat(),
+            })
+        except OSError:
+            pass
+
+    def on_backup_progress(phase,bytes_done,bytes_total,files_done,files_total):
+        ratio=(bytes_done/bytes_total) if bytes_total>0 else 0.0
+        if phase=='snapshot':
+            emit('snapshot',10,bytes_done,bytes_total,files_done,files_total,force=True)
+        elif phase=='archive':
+            emit('archive',10+ratio*65,bytes_done,bytes_total,files_done,files_total,force=(bytes_done==0 or bytes_done>=bytes_total))
+        elif phase=='verify':
+            emit('verify',75+ratio*20,bytes_done,bytes_total,files_done,files_total,force=(bytes_done==0 or bytes_done>=bytes_total))
+
+    with backup_gate(timeout=0):
+        try:
+            emit('paperless',0,force=True)
+            if not destination.exists():
+                bundle=folder/'paperless.zip'
+                try:
+                    signatures={}
+                    docs=list(Document.objects.filter(paperless_id__isnull=False).select_related('owner'))
+                    total_docs=len(docs)
+                    with zipfile.ZipFile(bundle,'w',zipfile.ZIP_DEFLATED) as archive:
+                        for idx,doc in enumerate(docs,1):
+                            before=paperless(doc).read(doc.paperless_id,doc)
+                            raw=paperless(doc).original(doc.paperless_id)
+                            after=paperless(doc).read(doc.paperless_id,doc)
+                            if remote_signature(before)!=remote_signature(after):raise ValidationError('Paperless-Beleg während der Sicherung geändert. Erneut versuchen.')
+                            prefix=str(doc.pk)+'/'
+                            archive.writestr(prefix+'original',raw)
+                            archive.writestr(prefix+'metadata.json',json.dumps(after,ensure_ascii=False))
+                            archive.writestr(prefix+'sha256',hashlib.sha256(raw).hexdigest())
+                            signatures[str(doc.pk)]=remote_signature(after)
+                            emit('paperless',(idx/total_docs)*10,files_done=idx,files_total=total_docs)
+                        archive.writestr('signatures.json',json.dumps(signatures))
+                    bundle.chmod(0o600)
+                    backup(destination,bundle,complete_control=identity,progress=on_backup_progress)
+                finally:bundle.unlink(missing_ok=True)
+            emit('finalize',95,force=True)
+            with operation_gate():
+                record,_=ManagedBackup.objects.get_or_create(path=relative,defaults={'owner':owner,'size':destination.stat().st_size,'managed':True})
+                if record.owner_id!=owner.pk:raise ValidationError('Fremde Sicherung.')
+                prune_backups(owner)
+            emit('done',100,status='done',force=True)
+        except Exception:
+            emit('error',0,status='error',force=True)
+            raise
     return 'Sicherung erstellt und geprüft. Sie steht im Backup-Manager zum Download bereit.'
 
 
@@ -202,7 +261,7 @@ def process_control(job):
     from .worker import commit_job
     task=job.control;require_system_access(task.owner)
     more=False
-    if task.kind=='backup':result=create_backup(task.owner,task.pk)
+    if task.kind=='backup':result=create_backup(task.owner,task.pk,job=job)
     elif task.kind=='backup_discover':
         added=discover_backups(task.owner)
         result=f'{added} bisher nicht registrierte Sicherung(en) eingelesen.' if added else 'Keine neuen unregistrierten Sicherungen gefunden.'

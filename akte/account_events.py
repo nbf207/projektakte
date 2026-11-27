@@ -9,7 +9,7 @@ from django.dispatch import receiver
 from django.shortcuts import redirect
 from django.utils import timezone
 from .models import LoginAttempt, SessionDevice, ErrorEvent
-from .operations import operation_gate
+from .operations import OperationBusy, operation_gate
 from .preferences import preferences
 
 
@@ -65,9 +65,12 @@ class DeviceMiddleware:
                 now=timezone.now()
                 device=SessionDevice.objects.filter(session_key=key).first()
                 if device is None or device.last_seen<now-timedelta(minutes=1):
-                    with operation_gate():
-                        SessionDevice.objects.update_or_create(session_key=key,
-                            defaults={'owner':request.user,'browser':browser_name(request),'last_seen':now})
+                    try:
+                        with operation_gate(timeout=0):
+                            SessionDevice.objects.update_or_create(session_key=key,
+                                defaults={'owner':request.user,'browser':browser_name(request),'last_seen':now})
+                    except OperationBusy:
+                        pass
         return self.get_response(request)
 
 

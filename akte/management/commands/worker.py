@@ -1,12 +1,14 @@
+import threading
 import time
 from django.core.management.base import BaseCommand
 from django.db import close_old_connections
 from django.conf import settings
-from akte.worker import run_one
+from akte.backup import cleanup_stale_backups
+from akte.worker import reserve, run_job, run_one
 from akte.mail_ingest import MailPoller
 from akte.operations import OperationBusy
 class Command(BaseCommand):
-    help='Ein serieller Worker. --once verarbeitet einen fälligen Schritt.'
+    help='Ein serieller Worker mit separatem Backup-Thread. --once verarbeitet einen fälligen Schritt.'
     def add_arguments(self,parser): parser.add_argument('--once',action='store_true')
     def handle(self,*args,**options):
         lock=(settings.DATA_DIR/'worker.lock').open('a+b')
@@ -21,10 +23,19 @@ class Command(BaseCommand):
         except OSError:
             from django.core.management.base import CommandError
             raise CommandError('Ein serieller Worker läuft bereits.')
+        cleanup_stale_backups()
         mail=MailPoller()
         next_demo_cleanup=time.monotonic()+60
         next_housekeeping=time.monotonic()+60
         next_media_usage=time.monotonic()+5
+        backup_thread=None
+
+        def run_backup_thread(job):
+            try:
+                run_job(job)
+            finally:
+                close_old_connections()
+
         while True:
             (settings.DATA_DIR/'worker.heartbeat').touch()
             close_old_connections()
@@ -47,7 +58,12 @@ class Command(BaseCommand):
                 except Exception: pass  # Demo housekeeping must not block live jobs.
                 next_demo_cleanup=time.monotonic()+300
             try:
-                worked = run_one()
+                if not options['once'] and (backup_thread is None or not backup_thread.is_alive()) and not (settings.DATA_DIR/'.maintenance').exists():
+                    bjob = reserve(only_backup=True)
+                    if bjob is not None:
+                        backup_thread = threading.Thread(target=run_backup_thread, args=(bjob,), daemon=True, name='projektakte-backup')
+                        backup_thread.start()
+                worked = run_one(allow_backup=bool(options['once']))
                 if options['once']:
                     return
                 if not worked:

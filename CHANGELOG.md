@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [1.0.2] - 2026-11-27
+
+### Added
+- **Dedicated backup worker thread & separate `.backup.lock` (`akte/operations.py`, `akte/worker.py`, `akte/management/commands/worker.py`):** Backups run in their own worker slot/thread with `close_old_connections()` cleanup and periodic heartbeat/lease renewal so regular jobs (uploads, AI, thumbnails, mail) continue uninterrupted.
+- **Live backup progress UI (`akte/backup.py`, `akte/control_tasks.py`, `akte/control_views.py`, `templates/settings_center.html`, `static/settings.js`, `static/settings.css`):** Atomic `progress.json` reporting with a CSP-safe native `<progress>` bar, phase/percent/size display, and `lg:navigate`-aware polling in Settings → System & Backup (bilingual DE/EN).
+- **Backup crash cleanup (`akte/backup.py`):** Always removes `.staging-*` directories in `finally` and cleans up orphaned `.staging-*` directories and stale `running` `progress.json` files on worker startup.
+
+### Fixed
+- **Zero-downtime large backups (`akte/backup.py`, `akte/control_tasks.py`):** Shortened the exclusive `operation_gate()` hold from the full archive/verification duration to a sub-second SQLite online backup + zero-copy hardlink snapshot (never copying large files under `operation_gate`), removed the redundant second full-archive `testzip()` pass, and stored already-compressed media (`.jpg`, `.png`, `.webp`, `.heic`, `.mp4`, `.mov`, `.zip`, `.gz`, etc.) with `ZIP_STORED`.
+- **Non-blocking `DeviceMiddleware` & `OperationBusy` HTTP 503 (`akte/account_events.py`, `akte/middleware.py`):** `DeviceMiddleware` now skips its `last_seen` update immediately (`timeout=0`) if the write gate is busy instead of blocking Waitress threads and raising HTTP 500; `MaintenanceMiddleware` catches any `OperationBusy` across all HTTP methods and returns HTTP `503` with `Retry-After`.
+
 ## [1.0.1] - 2026-11-26
 
 ### Added

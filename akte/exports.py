@@ -261,7 +261,7 @@ def portable_export(destination,owner,project=None,entry=None):
         write('chronik.csv',out.getvalue());write('index.html','\n'.join(index));write('manifest.json',json.dumps({'schema_version':1,'sha256':checksums},indent=2))
     verify_archive(destination)
 
-def verify_archive(path, *, backup=False):
+def verify_archive(path, *, backup=False, on_progress=None):
     with zipfile.ZipFile(path) as z:
         entries=z.infolist()
         if any(item.flag_bits&1 or ((item.external_attr>>16)&0o170000)==0o120000 for item in entries):raise ValueError('Verschlüsselte oder verknüpfte Archiveinträge ausgeschlossen.')
@@ -271,11 +271,18 @@ def verify_archive(path, *, backup=False):
         manifest=json.loads(z.read('manifest.json'))
         names=set(z.namelist())
         if names!=set(manifest['sha256'])|{'manifest.json'}: raise ValueError('Manifest und Dateiliste stimmen nicht überein.')
-        for name,digest in manifest['sha256'].items():
+        sizes={item.filename:item.file_size for item in entries}
+        total_bytes=sum(sizes.get(name,0) for name in manifest['sha256'])
+        total_files=len(manifest['sha256'])
+        done_bytes=0
+        for idx,(name,digest) in enumerate(manifest['sha256'].items(),1):
             p=Path(name)
             if p.is_absolute() or '..' in p.parts or '\\' in name or ':' in name: raise ValueError('Unsicherer Archivpfad.')
             with z.open(name) as f:
                 if hashlib.file_digest(f,'sha256').hexdigest()!=digest: raise ValueError('Prüfsumme stimmt nicht: '+name)
+            done_bytes+=sizes.get(name,0)
+            if on_progress is not None:
+                on_progress(done_bytes,total_bytes,idx,total_files)
     return manifest
 
 def perform_export(export,job=None):

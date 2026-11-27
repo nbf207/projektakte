@@ -23,12 +23,13 @@ _local = threading.local()
 
 
 @contextmanager
-def operation_gate(timeout=30):
-    key = str(settings.DATA_DIR.resolve())
+def _named_gate(lock_name, timeout, busy_message):
+    key = (lock_name, str(settings.DATA_DIR.resolve()))
     with _registry_lock:
         mutex = _mutexes.setdefault(key, threading.RLock())
-    if not mutex.acquire(timeout=timeout):
-        raise OperationBusy('Sicherung oder anderer Schreibvorgang läuft. Bitte erneut versuchen.')
+    acquired = mutex.acquire(blocking=False) if timeout <= 0 else mutex.acquire(timeout=timeout)
+    if not acquired:
+        raise OperationBusy(busy_message)
     held = getattr(_local, 'held', {})
     _local.held = held
     handle = None
@@ -36,12 +37,12 @@ def operation_gate(timeout=30):
         if key in held:
             yield
             return
-        lock_path = settings.DATA_DIR / '.operations.lock'
+        lock_path = settings.DATA_DIR / lock_name
         handle = lock_path.open('a+b')
         if lock_path.stat().st_size == 0:
             handle.write(b'0')
             handle.flush()
-        deadline = time.monotonic() + timeout
+        deadline = time.monotonic() + max(0, timeout)
         while True:
             try:
                 if os.name == 'nt':
@@ -53,8 +54,8 @@ def operation_gate(timeout=30):
                     fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
                 break
             except (BlockingIOError, OSError):
-                if time.monotonic() >= deadline:
-                    raise OperationBusy('Sicherung oder anderer Schreibvorgang läuft. Bitte erneut versuchen.')
+                if timeout <= 0 or time.monotonic() >= deadline:
+                    raise OperationBusy(busy_message)
                 time.sleep(.05)
         held[key] = True
         try:
@@ -72,6 +73,18 @@ def operation_gate(timeout=30):
         if handle is not None:
             handle.close()
         mutex.release()
+
+
+@contextmanager
+def operation_gate(timeout=30):
+    with _named_gate('.operations.lock', timeout, 'Sicherung oder anderer Schreibvorgang läuft. Bitte erneut versuchen.'):
+        yield
+
+
+@contextmanager
+def backup_gate(timeout=0):
+    with _named_gate('.backup.lock', timeout, 'Eine Sicherung oder Wiederherstellung läuft bereits.'):
+        yield
 
 
 def guarded(function):
