@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-11-27
+
+### Fixed
+- **Mobile top-bar theme toggle overflow (`static/workspace.css`):** Hid button text (`font-size: 0; color: transparent; overflow: hidden`) inside the compact 38×38px mobile `#theme-toggle` icon button so "Hellmodus" / "Dunkelmodus" no longer spills into the adjacent search and menu buttons.
+- **Mobile chronicle row alignment (`static/style.css`, `static/workspace.css`):** Reset `margin: 0` on `<summary class="row">` (preventing inherited `margin-inline: -10px` from `summary`), aligned wrapped `.titlecell` lines cleanly beside the `>` chevron, and matched mobile horizontal padding (`14px`) between category headings and chronicle rows.
+
 ## [1.0.6] - 2026-11-27
 
 ### Fixed

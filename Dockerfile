@@ -6,7 +6,7 @@ LABEL org.opencontainers.image.title="Projektakte"
 LABEL org.opencontainers.image.description="Self-hosted project logbook for repairs, maintenance, and receipts."
 LABEL org.opencontainers.image.source="https://github.com/nbf207/projektakte"
 LABEL org.opencontainers.image.licenses="AGPL-3.0-only"
-LABEL org.opencontainers.image.version="1.0.6"
+LABEL org.opencontainers.image.version="1.1.0"
 WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt && useradd --uid 10001 --create-home akte
